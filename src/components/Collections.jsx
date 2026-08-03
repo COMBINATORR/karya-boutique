@@ -5,13 +5,13 @@ import { whatsappRequestUrl } from '@/constants/contact'
 
 /**
  * Photos:
- *   public/images/assortment/{women|men}/c1.jpg          — main
- *   public/images/assortment/{women|men}/c1-hover.jpg    — hover (disabled)
+ *   public/images/assortment/{women|men}/c1.webp          — main
+ *   public/images/assortment/{women|men}/c1-hover.webp    — hover (disabled)
  */
 const CATEGORY_IDS = ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10']
 
 /** Cache-bust when catalog images are regenerated */
-const PHOTO_V = 12
+const PHOTO_V = 14
 
 const PLACEHOLDER = {
   women: [
@@ -41,7 +41,7 @@ const PLACEHOLDER = {
 }
 
 function photoSrc(line, id) {
-  return `/images/assortment/${line}/${id}.jpg?v=${PHOTO_V}`
+  return `/images/assortment/${line}/${id}.webp?v=${PHOTO_V}`
 }
 
 function CategoryPhoto({ line, id, index, alt, className = '' }) {
@@ -278,7 +278,7 @@ export function Collections() {
                       'cursor-pointer rounded-[4px] focus-visible:ring-2 focus-visible:ring-[#1A1817]/30 focus-visible:ring-offset-2',
                     ].join(' ')}
                   >
-                    <div className="overflow-hidden rounded-[4px] border border-[var(--border-color)]/60 bg-white transition-shadow duration-300 group-hover:shadow-[0_12px_40px_-18px_rgba(26,24,23,0.35)]">
+                    <div className="overflow-hidden bg-white">
                       <CategoryPhoto line={line} id={id} index={idx} alt={title} />
                     </div>
                     <p className="mt-3 font-display text-xs font-bold uppercase tracking-[0.14em] text-[var(--text-primary)] transition-colors group-hover:text-[#8C5E3C] sm:mt-4 sm:text-sm">
