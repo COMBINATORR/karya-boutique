@@ -83,23 +83,68 @@ function CategoryModal({ line, id, index, onClose }) {
   const waUrl = whatsappRequestUrl(`${lineLabel}: ${title}`)
 
   useEffect(() => {
-    const prev = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
+    // iOS/Android: overflow:hidden alone still scrolls the page behind modals.
+    // Lock with position:fixed + restore scrollY on close.
+    const scrollY = window.scrollY || window.pageYOffset || 0
+    const html = document.documentElement
+    const body = document.body
+    const prev = {
+      htmlOverflow: html.style.overflow,
+      bodyOverflow: body.style.overflow,
+      bodyPosition: body.style.position,
+      bodyTop: body.style.top,
+      bodyLeft: body.style.left,
+      bodyRight: body.style.right,
+      bodyWidth: body.style.width,
+      bodyPaddingRight: body.style.paddingRight,
+    }
+    const scrollbarGap = window.innerWidth - html.clientWidth
+
+    html.style.overflow = 'hidden'
+    body.style.overflow = 'hidden'
+    body.style.position = 'fixed'
+    body.style.top = `-${scrollY}px`
+    body.style.left = '0'
+    body.style.right = '0'
+    body.style.width = '100%'
+    if (scrollbarGap > 0) body.style.paddingRight = `${scrollbarGap}px`
+    body.dataset.modalScrollY = String(scrollY)
+
     closeRef.current?.focus()
 
     const onKey = (e) => {
       if (e.key === 'Escape') onClose()
     }
+    // Block touch-driven scroll on the page (backdrop / empty areas)
+    const onTouchMove = (e) => {
+      const target = e.target
+      if (!(target instanceof Element)) return
+      // Allow scrolling only inside the dialog panel content
+      if (target.closest('[data-modal-scroll]')) return
+      e.preventDefault()
+    }
     window.addEventListener('keydown', onKey)
+    document.addEventListener('touchmove', onTouchMove, { passive: false })
+
     return () => {
-      document.body.style.overflow = prev
+      html.style.overflow = prev.htmlOverflow
+      body.style.overflow = prev.bodyOverflow
+      body.style.position = prev.bodyPosition
+      body.style.top = prev.bodyTop
+      body.style.left = prev.bodyLeft
+      body.style.right = prev.bodyRight
+      body.style.width = prev.bodyWidth
+      body.style.paddingRight = prev.bodyPaddingRight
+      delete body.dataset.modalScrollY
+      window.scrollTo(0, scrollY)
       window.removeEventListener('keydown', onKey)
+      document.removeEventListener('touchmove', onTouchMove)
     }
   }, [onClose])
 
   return (
     <motion.div
-      className="fixed inset-0 z-[80] flex items-end justify-center p-0 sm:items-center sm:p-6"
+      className="fixed inset-0 z-[80] flex items-end justify-center overscroll-none p-0 sm:items-center sm:p-6"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -108,7 +153,7 @@ function CategoryModal({ line, id, index, onClose }) {
       {/* Backdrop */}
       <button
         type="button"
-        className="absolute inset-0 bg-[#1A1817]/55 backdrop-blur-[2px]"
+        className="absolute inset-0 touch-none bg-[#1A1817]/55 backdrop-blur-[2px]"
         aria-label={t('categories.close')}
         onClick={onClose}
       />
@@ -117,19 +162,23 @@ function CategoryModal({ line, id, index, onClose }) {
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="relative z-10 flex max-h-[min(92dvh,920px)] w-full max-w-lg flex-col overflow-hidden rounded-t-[16px] bg-white shadow-2xl sm:max-w-3xl sm:flex-row sm:rounded-[12px]"
+        className="relative z-10 flex max-h-[min(92dvh,920px)] w-full max-w-lg flex-col overflow-hidden overscroll-contain rounded-t-[16px] bg-white shadow-2xl sm:max-w-3xl sm:flex-row sm:rounded-[12px]"
         initial={{ opacity: 0, y: 28 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 16 }}
         transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Photo */}
         <div className="relative w-full shrink-0 border-b border-[var(--border-color)] bg-white sm:w-[46%] sm:border-b-0 sm:border-r">
           <CategoryPhoto line={line} id={id} index={index} alt={title} />
         </div>
 
-        {/* Text + actions */}
-        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-5 sm:p-7">
+        {/* Text + actions — only this pane may scroll while modal is open */}
+        <div
+          data-modal-scroll
+          className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain p-5 sm:p-7"
+        >
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-[10px] font-display font-bold uppercase tracking-[0.16em] text-[var(--text-muted)]">
