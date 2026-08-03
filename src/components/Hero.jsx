@@ -118,8 +118,7 @@ export function Hero() {
               <span className="inline-block h-px w-6 bg-[#8C5E3C] sm:w-8" aria-hidden />
             </p>
 
-            <h1 className="animate-fade-up-delay-1 font-display font-bold leading-[0.96] tracking-[-0.035em] text-[#F8F7F4] text-[clamp(2.5rem,11vw,5.75rem)]">
-              {t('hero.titleLead')}{' '}
+            <h1 className="animate-fade-up-delay-1 font-display font-bold leading-[0.96] tracking-[-0.035em] text-[#F8F7F4] text-[clamp(2.75rem,12vw,6rem)]">
               <ShinyText
                 text={t('hero.titleAccent')}
                 speed={3}
@@ -128,7 +127,7 @@ export function Hero() {
                 shineColor="#ffffff"
                 spread={110}
                 direction="left"
-                className="font-serif-italic font-normal text-[clamp(2.5rem,11vw,5.75rem)]"
+                className="font-display font-bold text-[clamp(2.75rem,12vw,6rem)] tracking-[-0.035em]"
               />
             </h1>
 
