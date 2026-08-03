@@ -3,9 +3,18 @@ import { useTranslation } from 'react-i18next'
 import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion'
 import ShinyText from '@/components/ShinyText'
 
-/** Scrub-optimized clip (short GOP, no B-frames) — falls back to original if missing */
-const HERO_VIDEO_SCRUB = '/videos/Hero_BG_scroll_scrub.mp4'
+/** Scrub-optimized encodes (dense keyframes, no B-frames) */
+const HERO_VIDEO_DESKTOP = '/videos/Hero_BG_scroll_scrub.mp4'
+const HERO_VIDEO_MOBILE = '/videos/Hero_BG_scroll_mobile.mp4'
 const HERO_VIDEO_FALLBACK = '/videos/Hero_BG_scroll.mp4'
+
+function pickHeroVideo() {
+  if (typeof window === 'undefined') return HERO_VIDEO_DESKTOP
+  const coarse =
+    window.matchMedia('(pointer: coarse)').matches ||
+    window.matchMedia('(max-width: 768px)').matches
+  return coarse ? HERO_VIDEO_MOBILE : HERO_VIDEO_DESKTOP
+}
 
 export function Hero() {
   const { t } = useTranslation()
@@ -14,11 +23,12 @@ export function Hero() {
   const durationRef = useRef(0)
   const targetTimeRef = useRef(0)
   const seekingRef = useRef(false)
+  const seekTimeoutRef = useRef(null)
   const rafRef = useRef(null)
+  const unlockedRef = useRef(false)
   const readyRef = useRef(false)
-  const [videoSrc, setVideoSrc] = useState(HERO_VIDEO_SCRUB)
+  const [videoSrc, setVideoSrc] = useState(() => pickHeroVideo())
 
-  // Progress 0 → sticky pin starts; 1 → hero track fully scrolled past.
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end start'],
@@ -33,27 +43,40 @@ export function Hero() {
   const textScale = useTransform(scrollYProgress, [0, 0.35, 0.78], [1, 0.985, 0.96])
   const veilOpacity = useTransform(scrollYProgress, [0.15, 0.55, 0.82], [0, 0.35, 0.72])
 
-  /** Apply pending target time once the decoder is free */
+  const clearSeekLock = useCallback(() => {
+    seekingRef.current = false
+    if (seekTimeoutRef.current != null) {
+      window.clearTimeout(seekTimeoutRef.current)
+      seekTimeoutRef.current = null
+    }
+  }, [])
+
   const flushSeek = useCallback(() => {
     const video = videoRef.current
     if (!video || !readyRef.current || !durationRef.current) return
+    // iOS: seeking before unlock often leaves a black frame
+    if (!unlockedRef.current) return
 
     const duration = durationRef.current
-    // Leave a tiny tail so browsers don't clamp awkwardly at exact duration
-    const target = Math.max(0, Math.min(targetTimeRef.current, duration - 0.04))
-    const delta = Math.abs(video.currentTime - target)
-
-    // Ignore sub-frame noise (~24fps → ~0.04s)
-    if (delta < 0.035) return
+    const target = Math.max(0, Math.min(targetTimeRef.current, Math.max(0, duration - 0.05)))
+    const delta = Math.abs((video.currentTime || 0) - target)
+    if (delta < 0.03) return
     if (seekingRef.current) return
 
     seekingRef.current = true
+    // Safety: if 'seeked' never fires (common on some WebViews), unlock after a beat
+    if (seekTimeoutRef.current != null) window.clearTimeout(seekTimeoutRef.current)
+    seekTimeoutRef.current = window.setTimeout(() => {
+      seekingRef.current = false
+      seekTimeoutRef.current = null
+    }, 220)
+
     try {
       video.currentTime = target
     } catch {
-      seekingRef.current = false
+      clearSeekLock()
     }
-  }, [])
+  }, [clearSeekLock])
 
   const scheduleSeek = useCallback(() => {
     if (rafRef.current != null) return
@@ -63,11 +86,47 @@ export function Hero() {
     })
   }, [flushSeek])
 
-  // Drive scrub from scroll progress (not a free-running lerp loop)
+  /** iOS/Safari: must play (muted) once before programmatic seeks work reliably */
+  const unlockVideo = useCallback(async () => {
+    const video = videoRef.current
+    if (!video || unlockedRef.current) return true
+
+    try {
+      video.muted = true
+      video.defaultMuted = true
+      video.playsInline = true
+      video.setAttribute('muted', '')
+      video.setAttribute('playsinline', '')
+      video.setAttribute('webkit-playsinline', '')
+
+      // Nudge decode pipeline
+      const playPromise = video.play()
+      if (playPromise && typeof playPromise.then === 'function') {
+        await playPromise
+      }
+      video.pause()
+      unlockedRef.current = true
+      // Re-apply scroll position after unlock
+      if (durationRef.current) {
+        targetTimeRef.current = scrollYProgress.get() * durationRef.current
+      }
+      clearSeekLock()
+      scheduleSeek()
+      return true
+    } catch {
+      unlockedRef.current = false
+      return false
+    }
+  }, [clearSeekLock, scheduleSeek, scrollYProgress])
+
   useMotionValueEvent(scrollYProgress, 'change', (progress) => {
     if (!durationRef.current) return
     targetTimeRef.current = progress * durationRef.current
-    // If idle, seek now; if mid-seek, seeked handler will catch up
+    if (!unlockedRef.current) {
+      // First scroll gesture is a user gesture — unlock then seek
+      void unlockVideo()
+      return
+    }
     if (!seekingRef.current) scheduleSeek()
   })
 
@@ -75,56 +134,76 @@ export function Hero() {
     const video = videoRef.current
     if (!video) return
 
-    const onLoadedMetadata = () => {
+    let cancelled = false
+
+    const onReady = () => {
+      if (cancelled) return
       const d = video.duration
-      if (!d || Number.isNaN(d)) return
+      if (!d || Number.isNaN(d) || !Number.isFinite(d)) return
       durationRef.current = d
       readyRef.current = true
-      video.pause()
-      // Sync to current scroll immediately
       targetTimeRef.current = scrollYProgress.get() * d
-      seekingRef.current = false
-      flushSeek()
+      // Try silent unlock (works when browser allows autoplay muted)
+      void unlockVideo()
     }
 
     const onSeeked = () => {
-      seekingRef.current = false
-      // Apply latest target if scroll moved during the seek
+      clearSeekLock()
       const duration = durationRef.current
-      if (!duration) return
-      const target = Math.max(0, Math.min(targetTimeRef.current, duration - 0.04))
+      if (!duration || !video) return
+      const target = Math.max(0, Math.min(targetTimeRef.current, duration - 0.05))
       if (Math.abs(video.currentTime - target) > 0.04) {
         scheduleSeek()
       }
     }
 
-    const onSeeking = () => {
-      seekingRef.current = true
-    }
-
     const onError = () => {
-      // Fall back to original asset if scrub encode missing
-      if (videoSrc !== HERO_VIDEO_FALLBACK) {
-        setVideoSrc(HERO_VIDEO_FALLBACK)
+      if (videoSrc === HERO_VIDEO_FALLBACK) return
+      if (videoSrc === HERO_VIDEO_MOBILE || videoSrc === HERO_VIDEO_DESKTOP) {
+        // Prefer the other encode, then original
+        setVideoSrc((prev) =>
+          prev === HERO_VIDEO_MOBILE ? HERO_VIDEO_DESKTOP : HERO_VIDEO_FALLBACK,
+        )
       }
     }
 
-    video.addEventListener('loadedmetadata', onLoadedMetadata)
+    video.addEventListener('loadedmetadata', onReady)
+    video.addEventListener('loadeddata', onReady)
+    video.addEventListener('canplay', onReady)
     video.addEventListener('seeked', onSeeked)
-    video.addEventListener('seeking', onSeeking)
     video.addEventListener('error', onError)
 
-    // Already buffered (HMR / cache)
-    if (video.readyState >= 1) onLoadedMetadata()
+    // Warm load
+    try {
+      video.load()
+    } catch {
+      /* ignore */
+    }
+    if (video.readyState >= 1) onReady()
+
+    // Unlock on first real user gesture (iOS requirement when autoplay blocked)
+    const gestureEvents = ['touchstart', 'touchend', 'pointerdown', 'click', 'scroll']
+    const onGesture = () => {
+      void unlockVideo()
+    }
+    gestureEvents.forEach((ev) =>
+      window.addEventListener(ev, onGesture, { passive: true, once: false, capture: true }),
+    )
 
     return () => {
-      video.removeEventListener('loadedmetadata', onLoadedMetadata)
+      cancelled = true
+      video.removeEventListener('loadedmetadata', onReady)
+      video.removeEventListener('loadeddata', onReady)
+      video.removeEventListener('canplay', onReady)
       video.removeEventListener('seeked', onSeeked)
-      video.removeEventListener('seeking', onSeeking)
       video.removeEventListener('error', onError)
+      gestureEvents.forEach((ev) => window.removeEventListener(ev, onGesture, true))
       if (rafRef.current != null) cancelAnimationFrame(rafRef.current)
+      if (seekTimeoutRef.current != null) window.clearTimeout(seekTimeoutRef.current)
+      unlockedRef.current = false
+      readyRef.current = false
     }
-  }, [flushSeek, scheduleSeek, scrollYProgress, videoSrc])
+  }, [clearSeekLock, scheduleSeek, scrollYProgress, unlockVideo, videoSrc])
 
   const stats = [
     { value: t('hero.stat1Value'), label: t('hero.stat1Label') },
@@ -141,14 +220,26 @@ export function Hero() {
       <div className="sticky top-0 z-0 h-screen-safe w-full overflow-hidden bg-[#1A1817]">
         <div className="absolute inset-0 z-0 select-none overflow-hidden">
           <video
-            ref={videoRef}
+            ref={(node) => {
+              videoRef.current = node
+              if (node) {
+                node.muted = true
+                node.defaultMuted = true
+                node.setAttribute('muted', '')
+                node.setAttribute('playsinline', '')
+                node.setAttribute('webkit-playsinline', 'true')
+                node.setAttribute('x-webkit-airplay', 'deny')
+              }
+            }}
             key={videoSrc}
             muted
             playsInline
+            autoPlay
             preload="auto"
-            // Helps some mobile browsers keep decode path hot for seeks
             disableRemotePlayback
+            controls={false}
             className="h-full w-full object-cover object-center"
+            style={{ backgroundColor: '#1A1817' }}
           >
             <source src={videoSrc} type="video/mp4" />
           </video>
