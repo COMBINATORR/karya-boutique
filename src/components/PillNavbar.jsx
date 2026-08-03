@@ -38,13 +38,14 @@ export function PillNavbar() {
 
   return (
     <div
-      className="fixed left-1/2 z-[50] w-[min(100%-1.5rem,1600px)] -translate-x-1/2 sm:w-[min(100%-2rem,1600px)]"
+      // pointer-events-none on shell: closed mobile menu must NOT steal taps below
+      className="pointer-events-none fixed left-1/2 z-[50] w-[min(100%-1.5rem,1600px)] -translate-x-1/2 sm:w-[min(100%-2rem,1600px)]"
       style={{ top: 'max(0.75rem, calc(var(--safe-top) + 0.5rem))' }}
     >
       {/* Pill */}
       <div
         className={cn(
-          'liquid-glass-light flex items-center justify-between gap-2 rounded-[8px] px-3 py-2 transition-all duration-300 sm:gap-3 sm:px-4 sm:py-2.5',
+          'pointer-events-auto liquid-glass-light flex items-center justify-between gap-2 rounded-[8px] px-3 py-2 transition-all duration-300 sm:gap-3 sm:px-4 sm:py-2.5',
           scrolled ? 'shadow-lg' : 'shadow-md',
         )}
       >
@@ -123,14 +124,15 @@ export function PillNavbar() {
         </div>
       </div>
 
-      {/* Mobile dropdown under pill */}
+      {/* Mobile dropdown under pill — collapse fully when closed so it never covers the page */}
       <div
         className={cn(
-          'mt-2 overflow-hidden rounded-[8px] border border-[var(--border-color)] bg-white/98 shadow-xl backdrop-blur-md transition-all duration-300 md:hidden',
+          'overflow-hidden rounded-[8px] border bg-white/98 shadow-xl backdrop-blur-md transition-all duration-300 md:hidden',
           open
-            ? 'pointer-events-auto translate-y-0 scale-100 opacity-100'
-            : 'pointer-events-none -translate-y-2 scale-95 opacity-0',
+            ? 'pointer-events-auto mt-2 max-h-[min(80dvh,32rem)] translate-y-0 scale-100 border-[var(--border-color)] opacity-100'
+            : 'pointer-events-none mt-0 max-h-0 translate-y-0 scale-100 border-transparent opacity-0',
         )}
+        aria-hidden={!open}
       >
         <nav className="flex flex-col p-2">
           {NAV.map((item) => (

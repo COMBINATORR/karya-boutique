@@ -210,7 +210,7 @@ export function Collections() {
           </h2>
         </div>
 
-        <div className="mt-8 flex justify-center sm:mt-10">
+        <div className="relative z-20 mt-8 flex justify-center sm:mt-10">
           <div
             className="inline-flex rounded-[8px] border border-[var(--border-color)] bg-[#FAFAFA] p-1"
             role="group"
@@ -224,7 +224,7 @@ export function Collections() {
                   type="button"
                   onClick={() => setLine(key)}
                   className={[
-                    'min-h-11 min-w-[7.5rem] rounded-[6px] px-6 text-[11px] font-display font-bold uppercase tracking-[0.14em] transition-all sm:min-w-[9rem] sm:px-8',
+                    'relative z-20 min-h-11 min-w-[7.5rem] touch-manipulation rounded-[6px] px-6 text-[11px] font-display font-bold uppercase tracking-[0.14em] transition-all sm:min-w-[9rem] sm:px-8',
                     on
                       ? 'bg-[#1A1817] text-[#F8F7F4]'
                       : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]',
