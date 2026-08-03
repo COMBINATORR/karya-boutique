@@ -601,6 +601,19 @@ body.karya-modal-open .scroll-progress {
   visibility: hidden;
 }
 
+/* Assortment mobile strip: allow BOTH horizontal swipe and vertical page scroll.
+   (Tailwind touch-pan-x sets touch-action: pan-x only → vertical scroll dies on cards.) */
+.karya-cat-scroller {
+  touch-action: pan-x pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 768px) {
+  .karya-cat-scroller {
+    touch-action: auto;
+  }
+}
+
 .lang-switch {
   @apply inline-flex items-center gap-0.5 rounded-[8px] border border-[var(--border-color)] p-0.5 bg-white/70;
 }

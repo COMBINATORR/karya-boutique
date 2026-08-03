@@ -430,8 +430,9 @@ export function Collections() {
             <div
               ref={scrollerRef}
               className={[
-                'flex gap-4 overflow-x-auto overscroll-x-contain pb-3',
-                'snap-x snap-mandatory touch-pan-x',
+                // touch-pan-x alone blocks vertical page scroll when gesture starts on a card
+                'karya-cat-scroller flex gap-4 overflow-x-auto overscroll-x-contain pb-3',
+                'snap-x snap-mandatory',
                 'scroll-pl-[max(1rem,var(--safe-left))] scroll-pr-[max(1rem,var(--safe-right))]',
                 'px-[max(1rem,var(--safe-left))]',
                 '[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
