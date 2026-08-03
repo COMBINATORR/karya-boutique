@@ -1,42 +1,67 @@
 import { useTranslation } from 'react-i18next'
+import { MessageCircle } from 'lucide-react'
 import { NAV } from '@/constants/nav'
 import { PHONE_DISPLAY, PHONE_TEL, WHATSAPP_URL } from '@/constants/contact'
 import { BrandMark } from '@/components/BrandMark'
 
 export function Footer() {
   const { t } = useTranslation()
+  const year = new Date().getFullYear()
 
   return (
     <footer
-      className="border-t border-[var(--border-color)] bg-white py-10 text-[var(--text-primary)] sm:py-14"
-      style={{ paddingBottom: 'max(2.5rem, calc(var(--safe-bottom) + 1.5rem))' }}
+      className="border-t border-[var(--border-color)] bg-white text-[var(--text-primary)]"
+      style={{
+        paddingTop: 'clamp(2.5rem, 5vw, 3.5rem)',
+        paddingBottom: 'max(2rem, calc(var(--safe-bottom) + 1.25rem))',
+      }}
     >
       <div className="container-wide">
-        <div className="flex flex-col items-start justify-between gap-8 border-b border-[var(--border-color)] pb-8 sm:pb-10 md:flex-row md:items-center">
-          <div className="min-w-0">
-            <a href="#top" className="mb-3 inline-block">
+        {/* Main grid */}
+        <div className="grid gap-10 border-b border-[var(--border-color)] pb-10 sm:gap-12 sm:pb-12 lg:grid-cols-12 lg:items-start lg:gap-10 lg:pb-14">
+          {/* Brand */}
+          <div className="flex flex-col items-center text-center sm:items-start sm:text-left lg:col-span-5">
+            <a
+              href="#top"
+              className="inline-block outline-none transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-[#1A1817]/25 focus-visible:ring-offset-2"
+            >
               <BrandMark size="lg" />
             </a>
-            <p className="max-w-sm text-xs leading-relaxed text-[var(--text-secondary)]">
+            <p className="mt-4 max-w-sm text-[13px] leading-relaxed text-[var(--text-secondary)] sm:mt-5 sm:text-sm">
               {t('footer.tagline')}
             </p>
           </div>
 
+          {/* Navigation */}
           <nav
-            className="flex flex-wrap gap-x-5 gap-y-3 sm:gap-8"
+            className="lg:col-span-4"
             aria-label="Footer navigation"
           >
-            {NAV.map((item) => (
-              <a key={item.href} href={item.href} className="nav-link">
-                {t(item.key)}
-              </a>
-            ))}
+            <p className="mb-3 text-center font-display text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--text-muted)] sm:text-left">
+              {t('footer.navLabel')}
+            </p>
+            <ul className="mx-auto grid max-w-xs grid-cols-2 gap-x-4 gap-y-1 sm:mx-0 sm:max-w-none sm:gap-x-8">
+              {NAV.map((item) => (
+                <li key={item.href}>
+                  <a
+                    href={item.href}
+                    className="flex min-h-11 items-center justify-center rounded-[8px] px-2 text-[11px] font-display font-bold uppercase tracking-[0.12em] text-[var(--text-secondary)] transition-colors hover:bg-[#F5F5F5] hover:text-[var(--text-primary)] active:bg-[#EFEFEF] sm:justify-start sm:px-0 sm:hover:bg-transparent"
+                  >
+                    {t(item.key)}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </nav>
 
-          <div className="text-sm">
+          {/* Contacts */}
+          <div className="flex flex-col items-center gap-3 text-center sm:items-start sm:text-left lg:col-span-3 lg:items-end lg:text-right">
+            <p className="font-display text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--text-muted)]">
+              {t('footer.contactLabel')}
+            </p>
             <a
               href={PHONE_TEL}
-              className="mb-1 block min-h-11 font-semibold leading-[2.75rem] active:text-[#8C5E3C] sm:leading-normal sm:min-h-0"
+              className="min-h-11 text-base font-semibold leading-[2.75rem] text-[var(--text-primary)] transition-colors hover:text-[#8C5E3C] active:text-[#8C5E3C] sm:min-h-0 sm:leading-snug sm:text-lg"
             >
               {PHONE_DISPLAY}
             </a>
@@ -44,18 +69,22 @@ export function Footer() {
               href={WHATSAPP_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-11 items-center text-xs font-semibold uppercase tracking-wider text-[#8C5E3C] underline-offset-2 active:underline sm:min-h-0"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[8px] border border-[var(--border-color)] bg-[#FAFAFA] px-4 text-[11px] font-display font-bold uppercase tracking-[0.12em] text-[var(--text-primary)] transition-colors hover:border-[#8C5E3C]/40 hover:text-[#8C5E3C] active:bg-white sm:min-h-10"
             >
+              <MessageCircle className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} aria-hidden />
               WhatsApp
             </a>
           </div>
         </div>
 
-        <div className="flex flex-col items-start justify-between gap-3 pt-6 text-xs text-[var(--text-muted)] font-mono sm:flex-row sm:items-center sm:gap-4 sm:pt-8">
-          <p>
-            © {new Date().getFullYear()} KARYA. {t('footer.rights')}
+        {/* Bottom bar */}
+        <div className="flex flex-col items-center gap-2 pt-6 text-center sm:flex-row sm:justify-between sm:gap-4 sm:pt-8 sm:text-left">
+          <p className="text-[11px] leading-relaxed text-[var(--text-muted)] sm:text-xs">
+            © {year} KARYA. {t('footer.rights')}
           </p>
-          <p className="text-[10px] uppercase tracking-widest">{t('footer.city')}</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">
+            {t('footer.city')}
+          </p>
         </div>
       </div>
     </footer>

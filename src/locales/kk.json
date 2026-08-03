@@ -28,8 +28,8 @@
   "hero.meta3": "Фактура мен түстердің үлкен таңдауы",
   "hero.stat1Value": "1980",
   "hero.stat1Label": "Бренд негізі",
-  "hero.stat2Value": "TR",
-  "hero.stat2Label": "Зауыттан жеткізу",
+  "hero.stat2Value": "Түркия",
+  "hero.stat2Label": "Бренд зауыты",
   "hero.stat3Value": "Ә / Е",
   "hero.stat3Label": "Екі желі",
 
@@ -151,6 +151,8 @@
   "footer.rights": "Барлық құқықтар қорғалған.",
   "footer.tagline": "KARYA бутигі · Түркиядағы зауыттан тікелей жеткізу · Атырау, «Насиха» СОО",
   "footer.city": "АТЫРАУ · KARYA SINCE 1980",
+  "footer.navLabel": "Бөлімдер",
+  "footer.contactLabel": "Байланыс",
 
   "lang.ru": "RU",
   "lang.kk": "KK"

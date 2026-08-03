@@ -28,8 +28,8 @@
   "hero.meta3": "Большой выбор фактур и цветов",
   "hero.stat1Value": "1980",
   "hero.stat1Label": "Год основания бренда",
-  "hero.stat2Value": "TR",
-  "hero.stat2Label": "Поставки с завода",
+  "hero.stat2Value": "Турция",
+  "hero.stat2Label": "Завод бренда",
   "hero.stat3Value": "Ж / М",
   "hero.stat3Label": "Две линейки",
 
@@ -151,6 +151,8 @@
   "footer.rights": "Все права защищены.",
   "footer.tagline": "Бутик KARYA · прямые поставки с завода в Турции · Атырау, ТРЦ «Насиха»",
   "footer.city": "АТЫРАУ · KARYA SINCE 1980",
+  "footer.navLabel": "Разделы",
+  "footer.contactLabel": "Связь",
 
   "lang.ru": "RU",
   "lang.kk": "KK"
