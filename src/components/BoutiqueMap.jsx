@@ -52,15 +52,24 @@ export function BoutiqueMap({ title = 'KARYA' }) {
         map = L.map(containerRef.current, {
           center: [lat, lng],
           zoom: isCoarse ? 15 : 16,
+          minZoom: 12,
+          maxZoom: 19,
           zoomControl: false,
           attributionControl: false, // no Leaflet / OSM badge on map
-          scrollWheelZoom: false,
+          scrollWheelZoom: false, // page scroll stays free; use pinch / +/- 
           dragging: true,
-          touchZoom: true,
+          // 'center' keeps pin under fingers while pinching on mobile
+          touchZoom: isCoarse ? 'center' : true,
           doubleClickZoom: true,
           boxZoom: false,
           keyboard: true,
+          bounceAtZoomLimits: true,
         })
+
+        // Explicitly enable (body touch-action can leave handlers half-disabled)
+        map.touchZoom.enable()
+        map.dragging.enable()
+        if (map.tap) map.tap.enable()
 
         L.control.zoom({ position: 'bottomright' }).addTo(map)
 
@@ -69,6 +78,7 @@ export function BoutiqueMap({ title = 'KARYA' }) {
           {
             attribution: '',
             subdomains: 'abc',
+            minZoom: 12,
             maxZoom: 19,
             crossOrigin: true,
           },

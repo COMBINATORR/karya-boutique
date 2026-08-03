@@ -312,12 +312,25 @@ body {
   background: #ffffff;
   z-index: 0;
   font: inherit;
+  /* Override body { touch-action: manipulation } — otherwise mobile
+     pinch-zoom breaks (often only zoom-out works, or not at all). */
+  touch-action: none !important;
+  -ms-touch-action: none !important;
 }
 
 .karya-map .leaflet-pane,
 .karya-map .leaflet-map-pane,
 .karya-map .leaflet-tile-pane {
   z-index: 1;
+}
+
+/* Keep zoom +/- above tiles / marker chrome */
+.karya-map .leaflet-control-container {
+  z-index: 20;
+}
+.karya-map .leaflet-top,
+.karya-map .leaflet-bottom {
+  z-index: 20;
 }
 
 .karya-map .leaflet-tile {
