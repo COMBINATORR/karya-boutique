@@ -9,6 +9,7 @@ import {
   animate,
 } from 'framer-motion'
 import { whatsappRequestUrl, MAPS_DIR_URL } from '@/constants/contact'
+import BlurText from '@/components/BlurText'
 
 /**
  * Photos:
@@ -359,9 +360,17 @@ export function Collections() {
     >
       <div className="container-wide">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="h2-editorial text-[clamp(2rem,7vw,3.75rem)] uppercase tracking-[0.06em] sm:tracking-[0.08em]">
-            {t('categories.heading')}
-          </h2>
+          <BlurText
+            as="h2"
+            text={t('categories.heading')}
+            animateBy="letters"
+            direction="top"
+            delay={80}
+            stepDuration={0.32}
+            threshold={0.2}
+            rootMargin="0px 0px -8% 0px"
+            className="h2-editorial justify-center text-[clamp(2rem,7vw,3.75rem)] uppercase tracking-[0.06em] sm:tracking-[0.08em]"
+          />
         </div>
 
         <div className="relative z-20 mt-8 flex justify-center sm:mt-10">
