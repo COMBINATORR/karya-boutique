@@ -8,7 +8,7 @@ import {
   useDragControls,
   animate,
 } from 'framer-motion'
-import { whatsappRequestUrl } from '@/constants/contact'
+import { whatsappRequestUrl, MAPS_DIR_URL } from '@/constants/contact'
 
 /**
  * Photos:
@@ -319,7 +319,13 @@ function CategoryModal({ line, id, index, onClose }) {
               >
                 {t('categories.request')}
               </a>
-              <a href="#location" className="btn-outline w-full" onClick={onClose}>
+              <a
+                href={MAPS_DIR_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-outline w-full"
+                onClick={onClose}
+              >
                 {t('categories.visit')}
               </a>
             </div>
