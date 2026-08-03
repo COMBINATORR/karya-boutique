@@ -254,7 +254,7 @@ export function Collections() {
     >
       <div className="container-wide">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="h2-editorial text-[clamp(2rem,7vw,3.75rem)] tracking-tight">
+          <h2 className="h2-editorial text-[clamp(2rem,7vw,3.75rem)] uppercase tracking-[0.06em] sm:tracking-[0.08em]">
             {t('categories.heading')}
           </h2>
         </div>
@@ -285,6 +285,19 @@ export function Collections() {
             })}
           </div>
         </div>
+
+        <AnimatePresence mode="wait">
+          <motion.p
+            key={`lead-${line}`}
+            className="mx-auto mt-5 max-w-md text-center text-sm leading-relaxed text-[var(--text-secondary)] sm:mt-6 sm:text-[15px]"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.22 }}
+          >
+            {line === 'women' ? t('categories.womenLead') : t('categories.menLead')}
+          </motion.p>
+        </AnimatePresence>
       </div>
 
       {/*
