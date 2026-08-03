@@ -144,16 +144,16 @@ function CategoryModal({ line, id, index, onClose }) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-[80] flex items-end justify-center overscroll-none p-0 sm:items-center sm:p-6"
+      className="fixed inset-0 z-[80] flex items-stretch justify-center overscroll-none p-0 sm:items-center sm:p-6"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
     >
-      {/* Backdrop */}
+      {/* Backdrop — desktop only; mobile is full-screen sheet */}
       <button
         type="button"
-        className="absolute inset-0 touch-none bg-[#1A1817]/55 backdrop-blur-[2px]"
+        className="absolute inset-0 hidden touch-none bg-[#1A1817]/55 backdrop-blur-[2px] sm:block"
         aria-label={t('categories.close')}
         onClick={onClose}
       />
@@ -162,69 +162,92 @@ function CategoryModal({ line, id, index, onClose }) {
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="relative z-10 flex max-h-[min(92dvh,920px)] w-full max-w-lg flex-col overflow-hidden overscroll-contain rounded-t-[16px] bg-white shadow-2xl sm:max-w-3xl sm:flex-row sm:rounded-[12px]"
-        initial={{ opacity: 0, y: 28 }}
+        className={[
+          'relative z-10 flex w-full flex-col bg-white overscroll-contain',
+          // Mobile: full viewport, one continuous scroll
+          'h-[100dvh] max-h-[100dvh] rounded-none',
+          // Desktop: floating panel, photo | text
+          'sm:h-auto sm:max-h-[min(92dvh,920px)] sm:max-w-3xl sm:flex-row sm:overflow-hidden sm:rounded-[12px] sm:shadow-2xl',
+        ].join(' ')}
+        initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 16 }}
         transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Photo */}
-        <div className="relative w-full shrink-0 border-b border-[var(--border-color)] bg-white sm:w-[46%] sm:border-b-0 sm:border-r">
-          <CategoryPhoto line={line} id={id} index={index} alt={title} />
-        </div>
-
-        {/* Text + actions — only this pane may scroll while modal is open */}
+        {/*
+          Mobile: single scroll column (photo → text → CTAs).
+          Desktop: row; text column scrolls if needed.
+        */}
         <div
           data-modal-scroll
-          className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain p-5 sm:p-7"
+          className={[
+            'flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain',
+            'sm:flex-row sm:overflow-hidden',
+          ].join(' ')}
         >
-          <div className="flex items-start justify-between gap-3">
+          {/* Photo */}
+          <div className="relative w-full shrink-0 bg-white sm:w-[46%] sm:self-stretch sm:border-r sm:border-[var(--border-color)] sm:overflow-y-auto">
+            {/* Close — floats over photo on mobile */}
+            <button
+              ref={closeRef}
+              type="button"
+              onClick={onClose}
+              className={[
+                'absolute right-3 top-3 z-20 flex h-11 w-11 items-center justify-center rounded-full',
+                'border border-black/10 bg-white/95 text-[var(--text-primary)] shadow-md backdrop-blur-sm',
+                'transition-colors active:bg-white sm:right-4 sm:top-4',
+              ].join(' ')}
+              aria-label={t('categories.close')}
+            >
+              <span className="text-xl leading-none" aria-hidden>
+                ×
+              </span>
+            </button>
+            <CategoryPhoto line={line} id={id} index={index} alt={title} />
+          </div>
+
+          {/* Text + actions — same flow on mobile (scroll continues); pane scroll on desktop */}
+          <div
+            className={[
+              'flex flex-1 flex-col px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5',
+              'sm:min-h-0 sm:overflow-y-auto sm:overscroll-contain sm:p-7',
+            ].join(' ')}
+          >
             <div>
               <p className="text-[10px] font-display font-bold uppercase tracking-[0.16em] text-[var(--text-muted)]">
                 {lineLabel}
               </p>
               <h3
                 id={titleId}
-                className="mt-1.5 font-display text-xl font-bold tracking-tight text-[var(--text-primary)] sm:text-2xl"
+                className="mt-1.5 font-display text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-2xl"
               >
                 {title}
               </h3>
               {sub ? (
-                <p className="mt-1 text-sm text-[var(--text-secondary)]">{sub}</p>
+                <p className="mt-1.5 text-sm text-[var(--text-secondary)]">{sub}</p>
               ) : null}
             </div>
-            <button
-              ref={closeRef}
-              type="button"
-              onClick={onClose}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[8px] border border-[var(--border-color)] text-[var(--text-secondary)] transition-colors hover:bg-[#FAFAFA] hover:text-[var(--text-primary)]"
-              aria-label={t('categories.close')}
-            >
-              <span className="text-lg leading-none" aria-hidden>
-                ×
-              </span>
-            </button>
-          </div>
 
-          <p className="mt-4 text-sm leading-relaxed text-[var(--text-secondary)] sm:mt-5 sm:text-[15px] sm:leading-relaxed">
-            {desc}
-          </p>
+            <p className="mt-4 text-[15px] leading-relaxed text-[var(--text-secondary)] sm:mt-5 sm:text-[15px]">
+              {desc}
+            </p>
 
-          <p className="mt-3 text-xs text-[var(--text-muted)]">{t('categories.note')}</p>
+            <p className="mt-3 text-xs text-[var(--text-muted)]">{t('categories.note')}</p>
 
-          <div className="mt-auto flex flex-col gap-2.5 pt-6 sm:pt-8">
-            <a
-              href={waUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-primary w-full"
-            >
-              {t('categories.request')}
-            </a>
-            <a href="#location" className="btn-outline w-full" onClick={onClose}>
-              {t('categories.visit')}
-            </a>
+            <div className="mt-8 flex flex-col gap-2.5 pb-2 sm:mt-auto sm:pt-8">
+              <a
+                href={waUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary w-full"
+              >
+                {t('categories.request')}
+              </a>
+              <a href="#location" className="btn-outline w-full" onClick={onClose}>
+                {t('categories.visit')}
+              </a>
+            </div>
           </div>
         </div>
       </motion.div>
