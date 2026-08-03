@@ -1,6 +1,13 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { motion, AnimatePresence } from 'framer-motion'
+import {
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useTransform,
+  useDragControls,
+  animate,
+} from 'framer-motion'
 import { whatsappRequestUrl } from '@/constants/contact'
 
 /**
@@ -76,11 +83,25 @@ function CategoryModal({ line, id, index, onClose }) {
   const { t } = useTranslation()
   const titleId = useId()
   const closeRef = useRef(null)
+  const scrollRef = useRef(null)
+  const dragControls = useDragControls()
+  const y = useMotionValue(0)
+  const sheetOpacity = useTransform(y, [0, 260], [1, 0.55])
+  const [isMobile, setIsMobile] = useState(true)
+
   const lineLabel = line === 'women' ? t('categories.women') : t('categories.men')
   const title = t(`categories.${id}Title`)
   const sub = t(`categories.${id}Sub`)
   const desc = t(`categories.${id}Desc`)
   const waUrl = whatsappRequestUrl(`${lineLabel}: ${title}`)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 639px)')
+    const sync = () => setIsMobile(mq.matches)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
 
   useEffect(() => {
     // iOS/Android: overflow:hidden alone still scrolls the page behind modals.
@@ -145,6 +166,34 @@ function CategoryModal({ line, id, index, onClose }) {
     }
   }, [onClose])
 
+  const closeWithSwipe = () => {
+    // Slide out then close
+    animate(y, typeof window !== 'undefined' ? window.innerHeight : 600, {
+      type: 'tween',
+      duration: 0.22,
+      ease: [0.32, 0.72, 0, 1],
+    }).then(() => onClose())
+  }
+
+  const onDragEnd = (_e, info) => {
+    const shouldClose = info.offset.y > 110 || info.velocity.y > 700
+    if (shouldClose) {
+      closeWithSwipe()
+    } else {
+      animate(y, 0, { type: 'spring', stiffness: 420, damping: 36 })
+    }
+  }
+
+  /** Start sheet drag: handle always; content only when scrolled to top */
+  const startDragIfAllowed = (e) => {
+    if (!isMobile) return
+    const scroller = scrollRef.current
+    const fromHandle = e.target instanceof Element && e.target.closest('[data-drag-handle]')
+    if (fromHandle || !scroller || scroller.scrollTop <= 2) {
+      dragControls.start(e)
+    }
+  }
+
   return (
     <motion.div
       className="fixed inset-0 z-[100] flex items-stretch justify-center overscroll-none p-0 sm:items-center sm:p-6"
@@ -166,28 +215,51 @@ function CategoryModal({ line, id, index, onClose }) {
         aria-modal="true"
         aria-labelledby={titleId}
         className={[
-          'relative z-10 flex w-full flex-col bg-white overscroll-contain',
+          'relative z-10 flex w-full flex-col bg-white overscroll-contain touch-pan-y',
           // Mobile: full viewport, one continuous scroll
           'h-[100dvh] max-h-[100dvh] rounded-none',
           // Desktop: floating panel, photo | text
-          'sm:h-auto sm:max-h-[min(92dvh,920px)] sm:max-w-3xl sm:flex-row sm:overflow-hidden sm:rounded-[12px] sm:shadow-2xl',
+          'sm:h-auto sm:max-h-[min(92dvh,920px)] sm:max-w-3xl sm:flex-row sm:overflow-hidden sm:rounded-[12px] sm:shadow-2xl sm:touch-auto',
         ].join(' ')}
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 16 }}
+        style={isMobile ? { y, opacity: sheetOpacity } : undefined}
+        initial={isMobile ? { opacity: 1, y: 40 } : { opacity: 0, y: 24 }}
+        animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
+        exit={isMobile ? { opacity: 1, y: 80 } : { opacity: 0, y: 16 }}
         transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
         onClick={(e) => e.stopPropagation()}
+        drag={isMobile ? 'y' : false}
+        dragControls={dragControls}
+        dragListener={false}
+        dragConstraints={{ top: 0, bottom: 0 }}
+        dragElastic={{ top: 0, bottom: 0.55 }}
+        dragMomentum={false}
+        onDragEnd={onDragEnd}
       >
+        {/* Drag handle — mobile only */}
+        <div
+          data-drag-handle
+          className="flex shrink-0 cursor-grab items-center justify-center pb-1 pt-[max(0.5rem,env(safe-area-inset-top))] active:cursor-grabbing sm:hidden"
+          onPointerDown={(e) => {
+            e.preventDefault()
+            dragControls.start(e)
+          }}
+          aria-hidden
+        >
+          <span className="h-1 w-10 rounded-full bg-[var(--border-color)]" />
+        </div>
+
         {/*
           Mobile: single scroll column (photo → text → CTAs).
           Desktop: row; text column scrolls if needed.
         */}
         <div
+          ref={scrollRef}
           data-modal-scroll
           className={[
             'flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain',
             'sm:flex-row sm:overflow-hidden',
           ].join(' ')}
+          onPointerDown={startDragIfAllowed}
         >
           {/* Photo */}
           <div className="relative w-full shrink-0 bg-white sm:w-[46%] sm:self-stretch sm:border-r sm:border-[var(--border-color)] sm:overflow-y-auto">
@@ -210,7 +282,7 @@ function CategoryModal({ line, id, index, onClose }) {
             <CategoryPhoto line={line} id={id} index={index} alt={title} />
           </div>
 
-          {/* Text + actions — same flow on mobile (scroll continues); pane scroll on desktop */}
+          {/* Text + actions */}
           <div
             className={[
               'flex flex-1 flex-col px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5',
