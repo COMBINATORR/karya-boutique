@@ -12,13 +12,23 @@ export function Hero() {
 
   const heroVideoUrl = '/videos/Hero_BG_scroll.mp4'
 
+  // Progress 0 → sticky pin starts; 1 → hero track fully scrolled past.
+  // Fade must finish while text is still visible (before white section covers it).
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ['start start', 'end end'],
+    offset: ['start start', 'end start'],
   })
 
-  const textOpacity = useTransform(scrollYProgress, [0, 0.7, 0.95], [1, 1, 0])
-  const textY = useTransform(scrollYProgress, [0, 1], [0, -32])
+  // Hold, then dissolve smoothly as we leave the hero
+  const textOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.12, 0.38, 0.62, 0.78],
+    [1, 1, 0.72, 0.18, 0],
+  )
+  const textY = useTransform(scrollYProgress, [0, 0.2, 0.55, 0.78], [0, 0, -28, -56])
+  const textScale = useTransform(scrollYProgress, [0, 0.35, 0.78], [1, 0.985, 0.96])
+  // Soft darken of the whole sticky frame so exit feels continuous
+  const veilOpacity = useTransform(scrollYProgress, [0.15, 0.55, 0.82], [0, 0.35, 0.72])
 
   const scrubVideo = useCallback(() => {
     const video = videoRef.current
@@ -75,7 +85,7 @@ export function Hero() {
       id="top"
       className="relative mb-[-25px] h-[160vh] w-full bg-[#1A1817] min-[400px]:h-[175vh] sm:h-[190vh] lg:h-[210vh]"
     >
-      <div className="sticky top-0 h-screen-safe w-full overflow-hidden bg-[#1A1817]">
+      <div className="sticky top-0 z-0 h-screen-safe w-full overflow-hidden bg-[#1A1817]">
         <div className="absolute inset-0 z-0 select-none overflow-hidden">
           <video
             ref={videoRef}
@@ -91,13 +101,20 @@ export function Hero() {
           <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-[#1A1817]/90 via-[#1A1817]/40 to-[#1A1817]/45" />
           <div className="pointer-events-none absolute inset-0 z-10 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(26,24,23,0.35)_70%,rgba(26,24,23,0.65)_100%)]" />
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-36 bg-gradient-to-t from-[#1A1817] via-[#1A1817]/45 to-transparent sm:h-48 md:h-56" />
+          {/* Scroll veil — deepens as we leave hero so text can dissolve cleanly */}
+          <motion.div
+            className="pointer-events-none absolute inset-0 z-[15] bg-[#1A1817]"
+            style={{ opacity: veilOpacity }}
+            aria-hidden
+          />
         </div>
 
         <motion.div
-          className="container-wide relative z-20 flex h-full flex-col text-center"
+          className="container-wide relative z-20 flex h-full flex-col text-center will-change-transform"
           style={{
             opacity: textOpacity,
             y: textY,
+            scale: textScale,
             paddingTop: 'calc(4.5rem + var(--safe-top))',
             paddingBottom: 'max(1.25rem, calc(var(--safe-bottom) + 1.25rem))',
           }}
