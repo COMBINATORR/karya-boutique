@@ -109,6 +109,8 @@ function CategoryModal({ line, id, index, onClose }) {
     body.style.width = '100%'
     if (scrollbarGap > 0) body.style.paddingRight = `${scrollbarGap}px`
     body.dataset.modalScrollY = String(scrollY)
+    // Hide floating nav / chrome while category sheet is open
+    body.classList.add('karya-modal-open')
 
     closeRef.current?.focus()
 
@@ -136,6 +138,7 @@ function CategoryModal({ line, id, index, onClose }) {
       body.style.width = prev.bodyWidth
       body.style.paddingRight = prev.bodyPaddingRight
       delete body.dataset.modalScrollY
+      body.classList.remove('karya-modal-open')
       window.scrollTo(0, scrollY)
       window.removeEventListener('keydown', onKey)
       document.removeEventListener('touchmove', onTouchMove)
@@ -144,7 +147,7 @@ function CategoryModal({ line, id, index, onClose }) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-[80] flex items-stretch justify-center overscroll-none p-0 sm:items-center sm:p-6"
+      className="fixed inset-0 z-[100] flex items-stretch justify-center overscroll-none p-0 sm:items-center sm:p-6"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}

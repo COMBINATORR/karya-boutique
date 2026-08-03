@@ -36,10 +36,21 @@ export function PillNavbar() {
 
   const close = () => setOpen(false)
 
+  // Close hamburger menu if a full-screen category modal opens
+  useEffect(() => {
+    const sync = () => {
+      if (document.body.classList.contains('karya-modal-open')) setOpen(false)
+    }
+    const obs = new MutationObserver(sync)
+    obs.observe(document.body, { attributes: true, attributeFilter: ['class'] })
+    sync()
+    return () => obs.disconnect()
+  }, [])
+
   return (
     <div
       // pointer-events-none on shell: closed mobile menu must NOT steal taps below
-      className="pointer-events-none fixed left-1/2 z-[50] w-[min(100%-1.5rem,1600px)] -translate-x-1/2 sm:w-[min(100%-2rem,1600px)]"
+      className="karya-pill-nav pointer-events-none fixed left-1/2 z-[50] w-[min(100%-1.5rem,1600px)] -translate-x-1/2 transition-[opacity,visibility] duration-200 sm:w-[min(100%-2rem,1600px)]"
       style={{ top: 'max(0.75rem, calc(var(--safe-top) + 0.5rem))' }}
     >
       {/* Pill */}

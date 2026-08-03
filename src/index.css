@@ -589,6 +589,18 @@ body {
   pointer-events: none;
 }
 
+/* Category modal open: hide floating chrome (nav sits under / is unused) */
+body.karya-modal-open .karya-pill-nav {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+body.karya-modal-open .scroll-progress {
+  opacity: 0;
+  visibility: hidden;
+}
+
 .lang-switch {
   @apply inline-flex items-center gap-0.5 rounded-[8px] border border-[var(--border-color)] p-0.5 bg-white/70;
 }
