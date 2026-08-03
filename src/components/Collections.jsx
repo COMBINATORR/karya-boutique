@@ -269,13 +269,14 @@ function CategoryModal({ line, id, index, onClose }) {
               type="button"
               onClick={onClose}
               className={[
-                'absolute right-3 top-3 z-20 flex h-11 w-11 items-center justify-center rounded-full',
-                'border border-black/10 bg-white/95 text-[var(--text-primary)] shadow-md backdrop-blur-sm',
+                // Match pill-nav hamburger: square, 8px corners
+                'absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-[8px]',
+                'border border-[var(--border-color)] bg-white/90 text-[var(--text-primary)] backdrop-blur-sm',
                 'transition-colors active:bg-white sm:right-4 sm:top-4',
               ].join(' ')}
               aria-label={t('categories.close')}
             >
-              <span className="text-xl leading-none" aria-hidden>
+              <span className="text-lg leading-none" aria-hidden>
                 ×
               </span>
             </button>
