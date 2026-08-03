@@ -99,8 +99,8 @@
   "categories.c7Count": "Әйелдер мен ерлер желісі",
 
   "categories.c8Title": "Портпледтер",
-  "categories.c8Sub": "Құжаттар мен кездесулер",
-  "categories.c8Desc": "Құжаттарға арналған былғары портпледтер мен бумалар.",
+  "categories.c8Sub": "Костюм мен киім",
+  "categories.c8Desc": "Костюм мен киімге арналған портпледтер — абайлап сақтау және тасымалдау, қатпарсыз және шаңсыз.",
   "categories.c8Count": "Әйелдер мен ерлер желісі",
 
   "categories.c9Title": "Мұқабалар",
@@ -136,7 +136,7 @@
   "location.addressExtra": "111-бутик, 1-қабат",
   "location.hoursLabel": "Жұмыс кестесі",
   "location.hoursValue": "Күнделікті 10:00–20:00",
-  "location.phoneLabel": "Телефон және WhatsApp",
+  "location.phoneLabel": "Телефон",
   "location.whatsappLabel": "WhatsApp-қа жазу",
   "location.mapBadge": "Картадағы бутик",
   "location.mapTitle": "«Насиха» СОО",

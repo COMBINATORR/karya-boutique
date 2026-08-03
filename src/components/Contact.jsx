@@ -7,7 +7,6 @@ import {
   MAPS_URL,
   MAPS_DIR_URL,
   TWOGIS_URL,
-  whatsappRequestUrl,
 } from '@/constants/contact'
 import { BoutiqueMap } from '@/components/BoutiqueMap'
 
@@ -74,27 +73,17 @@ export function Contact() {
                     <span className="mb-1 block text-[10px] font-display font-bold uppercase tracking-widest text-[var(--text-muted)] sm:text-xs">
                       {t('location.phoneLabel')}
                     </span>
-                    <div className="flex flex-col gap-2 min-[400px]:flex-row min-[400px]:flex-wrap min-[400px]:items-center min-[400px]:gap-4">
-                      <a
-                        href={PHONE_TEL}
-                        className="text-base font-semibold text-[var(--text-primary)] transition-colors active:text-[#8C5E3C] sm:text-lg"
-                      >
-                        {PHONE_DISPLAY}
-                      </a>
-                      <a
-                        href={whatsappRequestUrl()}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#8C5E3C] underline-offset-2 active:underline sm:text-base"
-                      >
-                        <MessageCircle className="h-5 w-5" strokeWidth={1.5} />
-                        <span>{t('location.whatsappLabel')}</span>
-                      </a>
-                    </div>
+                    <a
+                      href={PHONE_TEL}
+                      className="text-base font-semibold text-[var(--text-primary)] transition-colors active:text-[#8C5E3C] sm:text-lg"
+                    >
+                      {PHONE_DISPLAY}
+                    </a>
                   </div>
                 </div>
               </div>
 
+              {/* One primary action for the section + one WhatsApp */}
               <div className="flex flex-col gap-2.5 sm:flex-row sm:gap-3">
                 <a
                   href={MAPS_DIR_URL}
