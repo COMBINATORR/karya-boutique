@@ -107,7 +107,7 @@ export function PillNavbar() {
             <span className="lg:hidden">WA</span>
           </a>
 
-          {/* Animated hamburger → X */}
+          {/* Animated hamburger → X — bars centered in the square */}
           <button
             type="button"
             className="relative flex h-10 w-10 items-center justify-center rounded-[8px] border border-[var(--border-color)] bg-white/80 md:hidden"
@@ -115,18 +115,21 @@ export function PillNavbar() {
             aria-label={open ? t('nav.closeMenu') : t('nav.openMenu')}
             aria-expanded={open}
           >
-            <span className="relative block h-3.5 w-4">
+            <span
+              className="flex w-4 flex-col items-center justify-center gap-[5px]"
+              aria-hidden
+            >
               <span
                 className={cn(
-                  'absolute left-0 top-0 block h-0.5 w-4 bg-[var(--text-primary)] transition-transform duration-300',
-                  open && 'top-1.5 rotate-45',
+                  'block h-0.5 w-4 origin-center bg-[var(--text-primary)] transition-transform duration-300',
+                  open && 'translate-y-[3.5px] rotate-45',
                 )}
                 style={{ transitionTimingFunction: 'cubic-bezier(0.77, 0, 0.175, 1)' }}
               />
               <span
                 className={cn(
-                  'absolute left-0 top-[6px] block h-0.5 w-4 bg-[var(--text-primary)] transition-transform duration-300',
-                  open && 'top-1.5 -rotate-45',
+                  'block h-0.5 w-4 origin-center bg-[var(--text-primary)] transition-transform duration-300',
+                  open && '-translate-y-[3.5px] -rotate-45',
                 )}
                 style={{ transitionTimingFunction: 'cubic-bezier(0.77, 0, 0.175, 1)' }}
               />
