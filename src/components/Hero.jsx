@@ -94,55 +94,61 @@ export function Hero() {
         </div>
 
         <motion.div
-          className="container-wide relative z-20 flex h-full flex-col items-center justify-center text-center"
+          className="container-wide relative z-20 flex h-full flex-col text-center"
           style={{
             opacity: textOpacity,
             y: textY,
             paddingTop: 'calc(4.5rem + var(--safe-top))',
-            paddingBottom: 'max(1.5rem, calc(var(--safe-bottom) + 1.5rem))',
+            paddingBottom: 'max(1.25rem, calc(var(--safe-bottom) + 1.25rem))',
           }}
         >
-          <div className="flex w-full max-w-3xl flex-col items-center">
-            <p className="animate-fade-up mb-4 flex items-center justify-center gap-2.5 text-[10px] font-medium uppercase tracking-[0.28em] min-[400px]:mb-5 min-[400px]:text-[11px] sm:tracking-[0.32em] sm:text-xs">
-              <span className="inline-block h-px w-6 bg-[#8C5E3C] sm:w-8" aria-hidden />
-              <ShinyText
-                text={t('hero.overtitle')}
-                speed={2.5}
-                delay={1.2}
-                color="#c4b5a5"
-                shineColor="#ffffff"
-                spread={100}
-                direction="left"
-                className="uppercase tracking-[0.28em] sm:tracking-[0.32em]"
+          {/* Brand — middle of remaining space above stats */}
+          <div className="flex min-h-0 flex-1 flex-col items-center justify-center">
+            <div className="flex w-full max-w-3xl flex-col items-center">
+              <p className="animate-fade-up mb-4 flex items-center justify-center gap-2.5 text-[10px] font-medium uppercase tracking-[0.28em] min-[400px]:mb-5 min-[400px]:text-[11px] sm:tracking-[0.32em] sm:text-xs">
+                <span className="inline-block h-px w-6 bg-[#8C5E3C] sm:w-8" aria-hidden />
+                <ShinyText
+                  text={t('hero.overtitle')}
+                  speed={2.5}
+                  delay={1.2}
+                  color="#c4b5a5"
+                  shineColor="#ffffff"
+                  spread={100}
+                  direction="left"
+                  className="uppercase tracking-[0.28em] sm:tracking-[0.32em]"
+                />
+                <span className="inline-block h-px w-6 bg-[#8C5E3C] sm:w-8" aria-hidden />
+              </p>
+
+              <h1 className="animate-fade-up-delay-1 font-display font-bold leading-[0.96] tracking-[-0.035em] text-[#F8F7F4] text-[clamp(2.75rem,12vw,6rem)]">
+                <ShinyText
+                  text={t('hero.titleAccent')}
+                  speed={3}
+                  delay={1.5}
+                  color="#e8e0d6"
+                  shineColor="#ffffff"
+                  spread={110}
+                  direction="left"
+                  className="font-display font-bold text-[clamp(2.75rem,12vw,6rem)] tracking-[-0.035em]"
+                />
+              </h1>
+
+              <div
+                className="animate-fade-up-delay-2 mt-5 h-px w-12 bg-[#8C5E3C]/90 sm:mt-6 sm:w-16"
+                aria-hidden
               />
-              <span className="inline-block h-px w-6 bg-[#8C5E3C] sm:w-8" aria-hidden />
-            </p>
+            </div>
+          </div>
 
-            <h1 className="animate-fade-up-delay-1 font-display font-bold leading-[0.96] tracking-[-0.035em] text-[#F8F7F4] text-[clamp(2.75rem,12vw,6rem)]">
-              <ShinyText
-                text={t('hero.titleAccent')}
-                speed={3}
-                delay={1.5}
-                color="#e8e0d6"
-                shineColor="#ffffff"
-                spread={110}
-                direction="left"
-                className="font-display font-bold text-[clamp(2.75rem,12vw,6rem)] tracking-[-0.035em]"
-              />
-            </h1>
-
-            <div
-              className="animate-fade-up-delay-2 mt-5 h-px w-12 bg-[#8C5E3C]/90 sm:mt-6 sm:w-16"
-              aria-hidden
-            />
-
-            <div className="animate-fade-up-delay-3 mt-8 grid w-full max-w-xl grid-cols-3 gap-3 border-t border-[#F8F7F4]/12 pt-6 min-[400px]:mt-10 min-[400px]:gap-6 sm:mt-12 sm:gap-8 sm:pt-8">
+          {/* Stats — almost at the bottom for clean mobile layout */}
+          <div className="animate-fade-up-delay-3 w-full shrink-0 pb-1 pt-2 sm:pb-2 sm:pt-3">
+            <div className="mx-auto grid w-full max-w-xl grid-cols-3 gap-2 border-t border-[#F8F7F4]/15 pt-4 min-[400px]:gap-4 min-[400px]:pt-5 sm:gap-8 sm:pt-6">
               {stats.map((stat) => (
                 <div key={stat.label} className="min-w-0 text-center">
-                  <p className="font-display text-xl font-bold tracking-tight text-[#F8F7F4] min-[400px]:text-2xl sm:text-3xl">
+                  <p className="font-display text-lg font-bold tracking-tight text-[#F8F7F4] min-[400px]:text-xl sm:text-3xl">
                     {stat.value}
                   </p>
-                  <p className="mx-auto mt-1 max-w-[9rem] text-[8px] font-medium uppercase leading-snug tracking-[0.12em] text-[#F8F7F4]/50 min-[400px]:text-[9px] sm:text-[10px]">
+                  <p className="mx-auto mt-0.5 max-w-[9rem] text-[8px] font-medium uppercase leading-snug tracking-[0.12em] text-[#F8F7F4]/50 min-[400px]:text-[9px] sm:mt-1 sm:text-[10px]">
                     {stat.label}
                   </p>
                 </div>
