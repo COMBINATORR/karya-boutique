@@ -479,12 +479,11 @@ function CategoryModal({ line, id, index, onClose }) {
               </span>
             </div>
 
-            {/* Primary CTA — black pill like reference */}
             <a
               href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-7 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1A1817] px-6 text-[11px] font-display font-bold uppercase tracking-[0.16em] text-[#F8F7F4] transition-colors hover:bg-[#8C5E3C] active:scale-[0.99]"
+              className="btn-pill btn-block mt-7"
             >
               <MessageCircle className="h-4 w-4" strokeWidth={1.7} />
               {t('categories.request')}
@@ -495,9 +494,9 @@ function CategoryModal({ line, id, index, onClose }) {
               target="_blank"
               rel="noopener noreferrer"
               onClick={onClose}
-              className="mt-2.5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[var(--border-color)] px-6 text-[11px] font-display font-bold uppercase tracking-[0.14em] text-[var(--text-primary)] transition-colors hover:border-[#1A1817]/25 hover:bg-[#FAFAFA]"
+              className="btn-pill-outline btn-block mt-2.5"
             >
-              <MapPin className="h-3.5 w-3.5 text-[#8C5E3C]" strokeWidth={1.7} />
+              <MapPin className="h-3.5 w-3.5 text-[var(--accent-cognac)]" strokeWidth={1.7} />
               {t('categories.visit')}
             </a>
 
@@ -551,7 +550,7 @@ export function Collections() {
   return (
     <section
       id="categories"
-      className="section-pad relative z-10 rounded-t-[1.5rem] bg-white pt-16 sm:rounded-t-[2rem] sm:pt-20 md:rounded-t-[2.5rem]"
+      className="section-pad section-sheet surface-white pt-16 sm:pt-20"
     >
       <div className="container-wide">
         <div className="mx-auto max-w-3xl text-center">

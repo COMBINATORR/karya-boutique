@@ -14,10 +14,7 @@ export function About() {
   const { t } = useTranslation()
 
   return (
-    <section
-      id="about"
-      className="section-pad relative z-10 -mt-6 rounded-t-[1.5rem] bg-white sm:-mt-8 sm:rounded-t-[2rem] md:-mt-10 md:rounded-t-[2.5rem]"
-    >
+    <section id="about" className="section-pad section-sheet surface-white">
       <div className="container-wide">
         <div className="grid items-start gap-10 lg:grid-cols-12 lg:gap-14 xl:gap-16">
           {/* Left — visit pitch */}
@@ -42,19 +39,16 @@ export function About() {
             </p>
 
             <div className="mt-8 flex flex-col gap-2.5 sm:mt-10 sm:flex-row sm:flex-wrap">
-              <a
-                href="#location"
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#1A1817] px-6 text-[11px] font-display font-bold uppercase tracking-[0.14em] text-[#F8F7F4] transition-colors hover:bg-[#8C5E3C]"
-              >
+              <a href="#location" className="btn-pill">
                 {t('about.ctaContacts')}
               </a>
               <a
                 href={MAPS_DIR_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--border-color)] px-6 text-[11px] font-display font-bold uppercase tracking-[0.14em] text-[var(--text-primary)] transition-colors hover:border-[#1A1817]/25 hover:bg-[#FAFAFA]"
+                className="btn-pill-outline"
               >
-                <MapPin className="h-3.5 w-3.5 text-[#8C5E3C]" strokeWidth={1.7} />
+                <MapPin className="h-3.5 w-3.5 text-[var(--accent-cognac)]" strokeWidth={1.7} />
                 {t('about.ctaRoute')}
               </a>
             </div>
@@ -71,14 +65,14 @@ export function About() {
               return (
                 <motion.div
                   key={item.titleKey}
-                  className="flex gap-4 rounded-[12px] border border-[var(--border-color)] bg-[#FAFAFA] p-4 min-[400px]:gap-5 min-[400px]:p-5 sm:p-6"
+                  className="flex gap-4 rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--bg-muted)] p-4 min-[400px]:gap-5 min-[400px]:p-5 sm:p-6"
                   {...fadeUp(0.06 * (idx + 1))}
                 >
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] border border-[var(--border-color)] bg-white text-[#8C5E3C] sm:h-12 sm:w-12">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--border-color)] bg-white text-[var(--accent-cognac)] sm:h-12 sm:w-12">
                     <Icon className="h-5 w-5" strokeWidth={1.5} />
                   </div>
                   <div className="min-w-0 pt-0.5">
-                    <span className="mb-1 block font-mono text-[10px] font-bold uppercase tracking-widest text-[#8C5E3C]">
+                    <span className="mb-1 block font-mono text-[10px] font-bold uppercase tracking-widest text-[var(--accent-cognac)]">
                       {t(item.labelKey)}
                     </span>
                     <h3 className="font-display text-lg font-bold tracking-tight text-[var(--text-primary)] sm:text-xl">

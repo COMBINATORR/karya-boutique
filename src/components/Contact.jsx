@@ -34,7 +34,7 @@ function PhotoCarousel() {
   }, [n])
 
   return (
-    <div className="relative h-full min-h-[280px] w-full overflow-hidden rounded-[20px] bg-[#F0EBE4] sm:min-h-[360px] lg:min-h-full lg:rounded-[24px]">
+    <div className="relative h-full min-h-[280px] w-full overflow-hidden rounded-[var(--radius-lg)] bg-[#F0EBE4] shadow-soft sm:min-h-[360px] lg:min-h-full lg:rounded-[var(--radius-xl)]">
       <AnimatePresence mode="wait">
         <motion.img
           key={SLIDES[index]}
@@ -83,10 +83,7 @@ export function Contact() {
   return (
     <>
       {/* —— Contact + photo —— */}
-      <section
-        id="location"
-        className="section-pad relative z-10 rounded-t-[1.5rem] bg-white sm:rounded-t-[2rem] md:rounded-t-[2.5rem]"
-      >
+      <section id="location" className="section-pad section-sheet surface-white">
         <div className="container-wide">
           <div className="grid items-stretch gap-10 lg:grid-cols-12 lg:gap-12 xl:gap-16">
             {/* Left */}
@@ -132,41 +129,20 @@ export function Contact() {
                 </div>
               </div>
 
-              {/* One primary WA + map — no duplicate phone */}
-              <div className="mt-10 flex flex-col gap-3 sm:mt-auto sm:pt-10 sm:flex-row">
+              {/* Primary marketing CTAs — pill family */}
+              <div className="mt-10 flex flex-col gap-3 sm:mt-auto sm:flex-row sm:pt-10">
                 <a
                   href={WHATSAPP_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex min-h-[4.25rem] flex-1 items-center justify-between gap-3 rounded-[16px] bg-[#1A1817] px-5 py-4 text-[#F8F7F4] transition-colors hover:bg-[#8C5E3C]"
+                  className="btn-pill btn-block sm:flex-1"
                 >
-                  <span>
-                    <span className="block text-[10px] font-medium uppercase tracking-[0.12em] text-white/55">
-                      {t('location.ctaVisitEyebrow')}
-                    </span>
-                    <span className="mt-0.5 block text-sm font-semibold sm:text-[15px]">
-                      {t('location.ctaVisit')}
-                    </span>
-                  </span>
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 transition-transform group-hover:translate-x-0.5">
-                    <MessageCircle className="h-4 w-4" strokeWidth={1.7} />
-                  </span>
+                  <MessageCircle className="h-4 w-4" strokeWidth={1.7} />
+                  {t('location.ctaVisit')}
                 </a>
-                <a
-                  href="#map"
-                  className="group flex min-h-[4.25rem] flex-1 items-center justify-between gap-3 rounded-[16px] border border-[var(--border-color)] bg-white px-5 py-4 text-[var(--text-primary)] transition-colors hover:border-[#1A1817]/25 hover:bg-[#FAFAFA]"
-                >
-                  <span>
-                    <span className="block text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)]">
-                      {t('location.ctaMapEyebrow')}
-                    </span>
-                    <span className="mt-0.5 block text-sm font-semibold sm:text-[15px]">
-                      {t('location.ctaMap')}
-                    </span>
-                  </span>
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--border-color)] transition-transform group-hover:translate-x-0.5">
-                    <ArrowRight className="h-4 w-4" strokeWidth={1.7} />
-                  </span>
+                <a href="#map" className="btn-pill-outline btn-block sm:flex-1">
+                  <ArrowRight className="h-4 w-4" strokeWidth={1.7} />
+                  {t('location.ctaMap')}
                 </a>
               </div>
             </div>
@@ -180,16 +156,12 @@ export function Contact() {
       </section>
 
       {/* —— Map separate block —— */}
-      <section id="map" className="bg-[#FAFAFA] pb-16 pt-4 sm:pb-20 sm:pt-6 lg:pb-24">
+      <section id="map" className="surface-muted pb-16 pt-4 sm:pb-20 sm:pt-6 lg:pb-24">
         <div className="container-wide">
           <div className="mb-6 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <span className="eyebrow mb-2 block text-[10px] tracking-[0.18em] sm:text-xs">
-                {t('location.mapBadge')}
-              </span>
-              <h3 className="font-display text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-3xl">
-                {t('location.mapTitle')}
-              </h3>
+              <span className="eyebrow mb-2 block">{t('location.mapBadge')}</span>
+              <h3 className="h2-editorial text-2xl sm:text-3xl">{t('location.mapTitle')}</h3>
               <p className="mt-2 max-w-xl text-sm leading-relaxed text-[var(--text-secondary)] sm:text-base">
                 {t('location.mapSubtitle')}
               </p>
@@ -198,14 +170,14 @@ export function Contact() {
               href={MAPS_DIR_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-[#1A1817] px-5 text-[11px] font-display font-bold uppercase tracking-[0.14em] text-[#F8F7F4] transition-colors hover:bg-[#8C5E3C]"
+              className="btn-pill shrink-0"
             >
               <MapPin className="h-3.5 w-3.5" strokeWidth={1.7} />
               {t('location.routeBtn')}
             </a>
           </div>
 
-          <div className="overflow-hidden rounded-[16px] border border-[var(--border-color)] bg-white sm:rounded-[20px]">
+          <div className="overflow-hidden rounded-[var(--radius-md)] border border-[var(--border-color)] bg-white shadow-soft sm:rounded-[var(--radius-lg)]">
             {/* Explicit height required — Leaflet cannot size with min-height alone */}
             <div className="relative h-[300px] w-full sm:h-[380px] lg:h-[440px]">
               <BoutiqueMap title="KARYA" />
@@ -215,7 +187,7 @@ export function Contact() {
                 href={MAPS_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-[10px] border border-[var(--border-color)] bg-[#FAFAFA] px-4 text-[11px] font-bold uppercase tracking-wider text-[var(--text-primary)] transition-colors hover:bg-white"
+                className="btn-outline btn-block flex-1"
               >
                 <ExternalLink className="h-3.5 w-3.5" strokeWidth={1.8} />
                 Google Maps
@@ -224,7 +196,7 @@ export function Contact() {
                 href={TWOGIS_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-[10px] border border-[var(--border-color)] bg-[#FAFAFA] px-4 text-[11px] font-bold uppercase tracking-wider text-[var(--text-primary)] transition-colors hover:bg-white"
+                className="btn-outline btn-block flex-1"
               >
                 <ExternalLink className="h-3.5 w-3.5" strokeWidth={1.8} />
                 2GIS

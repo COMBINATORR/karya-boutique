@@ -24,25 +24,67 @@
 }
 
 :root {
+  /*
+   * KARYA design language — single source of truth
+   * Subject: leather boutique (Atyrau) · urban quiet luxury · factory origin Istanbul
+   * Surfaces: white paper vs ink charcoal · accent = cognac leather
+   */
   --bg-primary: #ffffff;
   --bg-secondary: #f5f5f5;
+  --bg-muted: #fafafa;
   --bg-dark: #1a1817;
+  --bg-dark-elevated: #141312;
   --bg-white: #ffffff;
-  --text-primary: #1d1c1a;
+  --text-primary: #1a1817;
   --text-secondary: #5c5852;
   --text-muted: #8c867e;
   --text-light: #f8f7f4;
-  --border-color: rgba(29, 28, 26, 0.08);
+  --border-color: rgba(26, 24, 23, 0.08);
   --border-color-dark: rgba(248, 247, 244, 0.12);
   --accent-cognac: #8c5e3c;
   --accent-cognac-hover: #754d30;
+  --accent-cognac-soft: #9e6b4c;
   --accent-soft: rgba(140, 94, 60, 0.1);
+
+  /* Radius scale: control / card / media / section sheet */
+  --radius-sm: 8px; /* chips, inputs, square buttons, lang switch */
+  --radius-md: 16px; /* content cards, photo frames, CTA cards */
+  --radius-lg: 20px; /* large media, modals desktop */
+  --radius-xl: 24px; /* hero photo panels */
+  --radius-pill: 9999px; /* marketing CTAs */
+  --radius-sheet: 1.5rem; /* section top curve mobile */
+  --radius-sheet-sm: 2rem;
+  --radius-sheet-md: 2.5rem;
+
+  /* Elevation — leather boutique: soft, never neon glow */
+  --shadow-none: none;
+  --shadow-soft: 0 1px 2px rgba(26, 24, 23, 0.04), 0 8px 24px rgba(26, 24, 23, 0.06);
+  --shadow-elevated: 0 4px 12px rgba(26, 24, 23, 0.08), 0 24px 64px rgba(26, 24, 23, 0.14);
+  --shadow-focus: 0 0 0 3px rgba(140, 94, 60, 0.28);
+
+  /* Section rhythm */
+  --section-y: clamp(4rem, 8vw, 9rem);
+  --section-gap: clamp(2rem, 4vw, 3.5rem);
+  --sheet-underlap: 1.5rem;
+
   /* iPhone notch / home indicator / Android cutouts */
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
   --header-h: 4.25rem;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --sheet-underlap: 2rem;
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --sheet-underlap: 2.5rem;
+  }
 }
 
 html {
@@ -279,7 +321,82 @@ body {
 
 .eyebrow {
   font-family: var(--font-display);
-  @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8C5E3C];
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-cognac);
+}
+
+@media (min-width: 640px) {
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.2em;
+  }
+}
+
+/* ——— Surfaces ——— */
+.surface-white {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.surface-muted {
+  background: var(--bg-muted);
+  color: var(--text-primary);
+}
+
+.surface-dark {
+  background: var(--bg-dark);
+  color: var(--text-light);
+}
+
+/* ——— Radius utilities ——— */
+.radius-sm {
+  border-radius: var(--radius-sm);
+}
+.radius-md {
+  border-radius: var(--radius-md);
+}
+.radius-lg {
+  border-radius: var(--radius-lg);
+}
+.radius-xl {
+  border-radius: var(--radius-xl);
+}
+.radius-pill {
+  border-radius: var(--radius-pill);
+}
+
+/* Section “sheet” — white/dark panels overlapping previous block */
+.section-sheet {
+  position: relative;
+  z-index: 10;
+  margin-top: calc(var(--sheet-underlap) * -1);
+  border-top-left-radius: var(--radius-sheet);
+  border-top-right-radius: var(--radius-sheet);
+}
+
+@media (min-width: 640px) {
+  .section-sheet {
+    border-top-left-radius: var(--radius-sheet-sm);
+    border-top-right-radius: var(--radius-sheet-sm);
+  }
+}
+
+@media (min-width: 768px) {
+  .section-sheet {
+    border-top-left-radius: var(--radius-sheet-md);
+    border-top-right-radius: var(--radius-sheet-md);
+  }
+}
+
+.shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+
+.shadow-elevated {
+  box-shadow: var(--shadow-elevated);
 }
 
 /* Logo: SINCE 1980 under KARYA — width locked to title */
@@ -536,12 +653,88 @@ body {
   }
 }
 
-/* Buttons & CTAs — fluid padding for phones */
+/*
+ * Buttons — two families only
+ * 1) Square (radius-sm 8px): utility, forms, map links, dense toolbars
+ * 2) Pill (radius-pill): primary marketing CTAs, nav WhatsApp, modal request
+ */
+.btn-base {
+  font-family: var(--font-display);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  padding: 0.875rem 1.25rem;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.2s ease,
+    box-shadow 0.25s ease;
+}
+
+@media (min-width: 640px) {
+  .btn-base {
+    gap: 0.625rem;
+    padding: 1rem 2rem;
+    font-size: 12px;
+  }
+}
+
+.btn-base:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+/* —— Square 8px —— */
+.btn-primary,
+.btn-secondary-dark,
+.btn-outline,
+.btn-ghost {
+  font-family: var(--font-display);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  padding: 0.875rem 1.25rem;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.2s ease,
+    box-shadow 0.25s ease;
+}
+
+@media (min-width: 640px) {
+  .btn-primary,
+  .btn-secondary-dark,
+  .btn-outline,
+  .btn-ghost {
+    gap: 0.625rem;
+    padding: 1rem 2rem;
+    font-size: 12px;
+  }
+}
+
 .btn-primary {
-  @apply inline-flex items-center justify-center gap-2 rounded-[8px] px-5 py-3.5 text-[11px] font-semibold uppercase tracking-[0.14em] transition-all duration-300 cursor-pointer sm:gap-2.5 sm:px-8 sm:py-4 sm:text-[12px] lg:px-9 lg:py-4.5;
   background: var(--accent-cognac);
   color: #ffffff;
-  min-height: 48px;
+  border: none;
 }
 
 .btn-primary:hover {
@@ -549,29 +742,124 @@ body {
   transform: translateY(-1px);
 }
 
+.btn-primary:focus-visible,
+.btn-secondary-dark:focus-visible,
+.btn-outline:focus-visible,
+.btn-ghost:focus-visible,
+.btn-pill:focus-visible,
+.btn-pill-outline:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
 .btn-secondary-dark {
-  @apply inline-flex items-center justify-center gap-2 rounded-[8px] px-5 py-3.5 text-[11px] font-semibold uppercase tracking-[0.14em] transition-all duration-300 cursor-pointer sm:gap-2.5 sm:px-8 sm:py-4 sm:text-[12px] lg:px-9 lg:py-4.5;
-  background: var(--text-primary);
-  color: var(--bg-primary);
-  min-height: 48px;
+  background: var(--bg-dark);
+  color: var(--text-light);
+  border: none;
 }
 
 .btn-secondary-dark:hover {
-  background: #33302c;
+  background: #2b2826;
   transform: translateY(-1px);
 }
 
 .btn-outline {
-  @apply inline-flex items-center justify-center gap-2 rounded-[8px] px-5 py-3.5 text-[11px] font-semibold uppercase tracking-[0.14em] transition-all duration-300 cursor-pointer sm:gap-2.5 sm:px-8 sm:py-4 sm:text-[12px] lg:px-9 lg:py-4.5;
-  border: 1px solid var(--text-primary);
+  border: 1px solid var(--border-color);
   color: var(--text-primary);
   background: transparent;
-  min-height: 48px;
 }
 
 .btn-outline:hover {
-  background: var(--text-primary);
-  color: var(--bg-primary);
+  border-color: rgba(26, 24, 23, 0.22);
+  background: var(--bg-muted);
+}
+
+.btn-ghost {
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  min-height: 44px;
+}
+
+.btn-ghost:hover {
+  color: var(--text-primary);
+  background: var(--bg-muted);
+}
+
+/* —— Pill (marketing) —— */
+.btn-pill,
+.btn-pill-outline {
+  font-family: var(--font-display);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  padding: 0.875rem 1.5rem;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: var(--radius-pill);
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.2s ease,
+    box-shadow 0.25s ease;
+}
+
+.btn-pill {
+  background: var(--bg-dark);
+  color: var(--text-light);
+  border: none;
+}
+
+.btn-pill:hover {
+  background: var(--accent-cognac);
+}
+
+.btn-pill-outline {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-pill-outline:hover {
+  border-color: rgba(26, 24, 23, 0.22);
+  background: var(--bg-muted);
+}
+
+.btn-pill-cognac {
+  font-family: var(--font-display);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  padding: 0.875rem 1.5rem;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: var(--radius-pill);
+  background: var(--accent-cognac);
+  color: #ffffff;
+  border: none;
+  transition: background-color 0.25s ease, transform 0.2s ease;
+}
+
+.btn-pill-cognac:hover {
+  background: var(--accent-cognac-hover);
+}
+
+/* Wide full-width helpers */
+.btn-block {
+  width: 100%;
 }
 
 .nav-link {
@@ -670,7 +958,15 @@ body.karya-modal-open .hero-pin {
 }
 
 .section-pad {
-  @apply py-16 sm:py-24 md:py-28 lg:py-32 xl:py-36;
+  padding-top: var(--section-y);
+  padding-bottom: var(--section-y);
+}
+
+/* Underlap spacer between dark→white or white→dark sheets */
+.section-underlap {
+  height: var(--sheet-underlap);
+  background: var(--bg-dark);
+  pointer-events: none;
 }
 
 /* Full viewport helpers (mobile browser chrome) */
