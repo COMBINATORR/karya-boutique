@@ -163,6 +163,34 @@ body {
   font-weight: 400;
 }
 
+/* Hero film grain — fine Gaussian-like noise over video (hides compression) */
+.hero-film-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  pointer-events: none;
+  opacity: 0.28;
+  mix-blend-mode: overlay;
+  /* Fractal noise tiled; high baseFrequency ≈ fine grain */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.9'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 160px 160px;
+}
+
+@media (pointer: coarse) {
+  /* Slightly stronger on mobile where video is more compressed */
+  .hero-film-grain {
+    opacity: 0.34;
+    background-size: 140px 140px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-film-grain {
+    opacity: 0.18;
+  }
+}
+
 /* Liquid glass — dark (on hero / charcoal) */
 .liquid-glass {
   background: rgba(255, 255, 255, 0.04);

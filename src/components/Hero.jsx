@@ -246,6 +246,8 @@ export function Hero() {
           <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-[#1A1817]/90 via-[#1A1817]/40 to-[#1A1817]/45" />
           <div className="pointer-events-none absolute inset-0 z-10 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(26,24,23,0.35)_70%,rgba(26,24,23,0.65)_100%)]" />
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-36 bg-gradient-to-t from-[#1A1817] via-[#1A1817]/45 to-transparent sm:h-48 md:h-56" />
+          {/* Fine film grain — softens low-res / compression artifacts */}
+          <div className="hero-film-grain" aria-hidden />
           <motion.div
             className="pointer-events-none absolute inset-0 z-[15] bg-[#1A1817]"
             style={{ opacity: veilOpacity }}
