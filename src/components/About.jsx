@@ -24,7 +24,7 @@ export function About() {
             </span>
             <h2 className="h2-editorial mb-5 text-[clamp(1.85rem,5.5vw,3.25rem)] tracking-tight sm:mb-6">
               {t('about.titleBefore')}{' '}
-              <em className="font-serif-italic font-normal text-[#8C5E3C]">
+              <em className="font-serif-italic font-normal text-[var(--accent-cognac)]">
                 {t('about.titleAccent')}
               </em>
               {t('about.titleAfter') ? (

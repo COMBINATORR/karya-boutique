@@ -864,11 +864,17 @@ body {
 
 .nav-link {
   font-family: var(--font-display);
-  @apply text-[12px] font-semibold uppercase tracking-[0.14em] text-[var(--text-secondary)] transition-colors duration-200;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  transition: color 0.2s ease, background-color 0.2s ease;
 }
 
 .nav-link:hover {
   color: var(--text-primary);
+  background: rgba(26, 24, 23, 0.04);
 }
 
 /* Architectural Card & Hover Transitions */
@@ -943,18 +949,32 @@ body.karya-modal-open .hero-pin {
 }
 
 .lang-switch {
-  @apply inline-flex items-center gap-0.5 rounded-[8px] border border-[var(--border-color)] p-0.5 bg-white/70;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  padding: 2px;
+  background: rgba(255, 255, 255, 0.7);
 }
 
 .lang-switch button {
   font-family: var(--font-display);
-  @apply px-3 py-1 text-[11px] font-bold tracking-wider transition-colors cursor-pointer;
+  padding: 0.25rem 0.75rem;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
   color: var(--text-muted);
 }
 
 .lang-switch button.is-on {
-  background: var(--text-primary);
-  color: var(--bg-primary);
+  background: var(--bg-dark);
+  color: var(--text-light);
 }
 
 .section-pad {

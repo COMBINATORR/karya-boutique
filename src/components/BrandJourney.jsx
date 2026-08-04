@@ -165,10 +165,10 @@ export function BrandJourney() {
     >
       <div className="container-wide">
         <header className="mb-8 sm:mb-10 lg:mb-12">
-          <span className="mb-2 block font-display text-[10px] font-bold uppercase tracking-[0.2em] text-[#9E6B4C] sm:text-xs">
+          <span className="eyebrow mb-2 block text-[var(--accent-cognac-soft)]">
             {t('journey.eyebrow')}
           </span>
-          <h2 className="font-display text-[clamp(1.75rem,5.5vw,3.25rem)] font-bold tracking-tight text-white">
+          <h2 className="font-display text-[clamp(1.75rem,5.5vw,3.25rem)] font-bold tracking-tight text-[var(--text-light)]">
             {t('journey.title')}
           </h2>
         </header>
@@ -208,7 +208,7 @@ export function BrandJourney() {
             </div>
 
             {/* Desktop photo */}
-            <div className="relative hidden min-h-[300px] overflow-hidden rounded-[16px] bg-[#0A0909] lg:block">
+            <div className="relative hidden min-h-[300px] overflow-hidden rounded-[var(--radius-md)] bg-[var(--bg-dark-elevated)] lg:block">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={step.image}
@@ -232,7 +232,7 @@ export function BrandJourney() {
 
           {/* Mobile photo */}
           <div className="mt-6 lg:hidden">
-            <div className="relative aspect-[16/10] overflow-hidden rounded-[14px] bg-[#0A0909]">
+            <div className="relative aspect-[16/10] overflow-hidden rounded-[var(--radius-md)] bg-[var(--bg-dark-elevated)]">
               <AnimatePresence mode="wait">
                 <motion.img
                   key={step.image}
@@ -334,26 +334,24 @@ export function BrandJourney() {
                         ? 'h-3.5 w-3.5 bg-white shadow-[0_0_0_5px_rgba(255,255,255,0.14)]'
                         : passed
                           ? 'h-2.5 w-2.5 bg-white'
-                          : 'h-2.5 w-2.5 border-2 border-white/35 bg-[#1A1817]',
+                          : 'h-2.5 w-2.5 border-2 border-white/35 bg-[var(--bg-dark)]',
                     ].join(' ')}
                   />
                 </button>
               )
             })}
 
-            {/* Active thumb */}
             <div
               className="pointer-events-none absolute top-1/2 z-[2] h-5 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-white shadow-[0_0_12px_rgba(255,255,255,0.25)] transition-[left] duration-300 ease-out sm:h-[22px] sm:w-9"
               style={{ left: `calc(0.75rem + (100% - 1.5rem) * ${progress})` }}
               aria-hidden
             />
 
-            {/* Date chip under thumb */}
             <div
               className="pointer-events-none absolute top-[calc(50%+18px)] z-[2] -translate-x-1/2 transition-[left] duration-300 ease-out"
               style={{ left: `calc(0.75rem + (100% - 1.5rem) * ${progress})` }}
             >
-              <span className="whitespace-nowrap rounded-full border border-white/25 bg-[#1A1817] px-2.5 py-0.5 text-[10px] font-medium text-white/95">
+              <span className="whitespace-nowrap rounded-full border border-white/25 bg-[var(--bg-dark)] px-2.5 py-0.5 text-[10px] font-medium text-white/95">
                 {t(step.dateKey)}
               </span>
             </div>
@@ -393,7 +391,7 @@ export function BrandJourney() {
                 type="button"
                 onClick={prev}
                 disabled={active === 0}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white transition-colors hover:border-white/35 hover:bg-white/[0.06] active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
+                className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border border-white/15 text-white transition-colors hover:border-white/35 hover:bg-white/[0.06] active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
                 aria-label={t('journey.prev')}
               >
                 <ChevronLeft className="h-4 w-4" strokeWidth={1.8} />
@@ -402,7 +400,7 @@ export function BrandJourney() {
                 type="button"
                 onClick={next}
                 disabled={active === n - 1}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white transition-colors hover:border-white/35 hover:bg-white/[0.06] active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
+                className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border border-white/15 text-white transition-colors hover:border-white/35 hover:bg-white/[0.06] active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
                 aria-label={t('journey.next')}
               >
                 <ChevronRight className="h-4 w-4" strokeWidth={1.8} />

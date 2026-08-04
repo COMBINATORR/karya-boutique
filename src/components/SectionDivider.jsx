@@ -1,6 +1,6 @@
 /** Decorative divider: dot — line — dot (Drift-inspired, KARYA cognac) */
 export function SectionDivider({ className = '', light = false }) {
-  const color = light ? 'bg-[#9E6B4C]/50' : 'bg-[#D9C4AA]'
+  const color = light ? 'bg-[var(--accent-cognac-soft)]/50' : 'bg-[var(--accent-cognac)]/25'
 
   return (
     <div

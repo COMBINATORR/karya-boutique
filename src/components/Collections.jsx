@@ -399,15 +399,15 @@ function CategoryModal({ line, id, index, onClose }) {
           onPointerDown={startDragIfAllowed}
         >
           {/* —— Photo (left) —— */}
-          <div className="relative w-full shrink-0 bg-[#FAFAFA] sm:w-[48%] sm:self-stretch sm:p-5 lg:p-6">
+          <div className="relative w-full shrink-0 bg-[var(--bg-muted)] sm:w-[48%] sm:self-stretch sm:p-5 lg:p-6">
             <button
               ref={closeRef}
               type="button"
               onClick={onClose}
               className={[
                 'absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full',
-                'border border-[var(--border-color)] bg-white/95 text-[var(--text-primary)] shadow-sm backdrop-blur-sm',
-                'transition-colors hover:bg-white active:bg-[#F5F5F5]',
+                'border border-[var(--border-color)] bg-white/95 text-[var(--text-primary)] shadow-soft backdrop-blur-sm',
+                'transition-colors hover:bg-white active:bg-[var(--bg-secondary)]',
                 'sm:right-7 sm:top-7',
               ].join(' ')}
               aria-label={t('categories.close')}
@@ -416,7 +416,7 @@ function CategoryModal({ line, id, index, onClose }) {
                 ×
               </span>
             </button>
-            <div className="relative overflow-hidden rounded-[16px] bg-white sm:h-full sm:min-h-[420px] sm:rounded-[18px]">
+            <div className="relative overflow-hidden rounded-[var(--radius-md)] bg-white sm:h-full sm:min-h-[420px] sm:rounded-[var(--radius-md)]">
               <CategoryPhoto
                 line={line}
                 id={id}
@@ -463,7 +463,7 @@ function CategoryModal({ line, id, index, onClose }) {
                       className={[
                         'h-7 w-7 rounded-full border-2 transition-all',
                         on
-                          ? 'border-[#1A1817] scale-110 shadow-sm'
+                          ? 'border-[var(--bg-dark)] scale-110 shadow-soft'
                           : 'border-transparent ring-1 ring-black/10 hover:scale-105',
                       ].join(' ')}
                       style={{ backgroundColor: sw.hex }}
@@ -500,7 +500,6 @@ function CategoryModal({ line, id, index, onClose }) {
               {t('categories.visit')}
             </a>
 
-            {/* Highlights */}
             <div className="mt-8">
               <p className="text-sm font-medium text-[var(--text-primary)]">
                 {t('categories.highlights')}
@@ -509,7 +508,7 @@ function CategoryModal({ line, id, index, onClose }) {
                 {HIGHLIGHT_KEYS.map((key) => (
                   <span
                     key={key}
-                    className="rounded-full border border-[var(--border-color)] bg-[#FAFAFA] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--text-secondary)]"
+                    className="rounded-full border border-[var(--border-color)] bg-[var(--bg-muted)] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--text-secondary)]"
                   >
                     {t(key)}
                   </span>
@@ -572,7 +571,7 @@ export function Collections() {
 
         <div className="relative z-20 mt-8 flex justify-center sm:mt-10">
           <div
-            className="inline-flex rounded-[8px] border border-[var(--border-color)] bg-[#FAFAFA] p-1"
+            className="inline-flex rounded-[var(--radius-sm)] border border-[var(--border-color)] bg-[var(--bg-muted)] p-1"
             role="group"
             aria-label={t('categories.filterLabel')}
           >
@@ -586,14 +585,14 @@ export function Collections() {
                   className={[
                     'relative z-20 min-h-11 min-w-[7.5rem] touch-manipulation rounded-[6px] px-6 text-[11px] font-display font-bold uppercase tracking-[0.14em] transition-colors sm:min-w-[9rem] sm:px-8',
                     on
-                      ? 'text-[#F8F7F4]'
+                      ? 'text-[var(--text-light)]'
                       : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]',
                   ].join(' ')}
                 >
                   {on ? (
                     <motion.span
                       layoutId="category-line-pill"
-                      className="absolute inset-0 z-0 rounded-[6px] bg-[#1A1817]"
+                      className="absolute inset-0 z-0 rounded-[6px] bg-[var(--bg-dark)]"
                       transition={{ type: 'spring', stiffness: 420, damping: 34 }}
                     />
                   ) : null}
@@ -668,7 +667,7 @@ export function Collections() {
                     'group block snap-start text-center outline-none',
                     'w-[calc((100%-1rem)/1.2)] shrink-0 grow-0 basis-[calc((100%-1rem)/1.2)]',
                     'md:w-auto md:basis-auto md:shrink md:snap-align-none',
-                    'cursor-pointer rounded-[4px] focus-visible:ring-2 focus-visible:ring-[#1A1817]/30 focus-visible:ring-offset-2',
+                    'cursor-pointer rounded-[var(--radius-sm)] focus-visible:shadow-[var(--shadow-focus)]',
                   ].join(' ')}
                 >
                   <div className="overflow-hidden bg-white">
@@ -680,7 +679,7 @@ export function Collections() {
                       <CategoryPhoto line={line} id={id} index={idx} alt={title} />
                     </motion.div>
                   </div>
-                  <p className="mt-3 font-display text-xs font-bold uppercase tracking-[0.14em] text-[var(--text-primary)] transition-colors duration-200 group-hover:text-[#8C5E3C] sm:mt-4 sm:text-sm">
+                  <p className="mt-3 font-display text-xs font-bold uppercase tracking-[0.14em] text-[var(--text-primary)] transition-colors duration-200 group-hover:text-[var(--accent-cognac)] sm:mt-4 sm:text-sm">
                     {title}
                   </p>
                 </motion.button>

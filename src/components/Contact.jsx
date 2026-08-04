@@ -122,7 +122,7 @@ export function Contact() {
                   </p>
                   <a
                     href={PHONE_TEL}
-                    className="text-[15px] font-medium text-[var(--text-primary)] transition-colors hover:text-[#8C5E3C] sm:text-base"
+                    className="text-[15px] font-medium text-[var(--text-primary)] transition-colors hover:text-[var(--accent-cognac)] sm:text-base"
                   >
                     {PHONE_DISPLAY}
                   </a>
