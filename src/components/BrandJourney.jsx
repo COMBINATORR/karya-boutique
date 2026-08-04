@@ -11,7 +11,7 @@ const STEPS = [
     dateKey: 'journey.s1Date',
     titleKey: 'journey.s1Title',
     descKey: 'journey.s1Desc',
-    image: '/images/assortment/men/c5.webp',
+    image: '/images/journey/01-founding.jpg',
   },
   {
     id: 'modernization',
@@ -20,7 +20,7 @@ const STEPS = [
     dateKey: 'journey.s2Date',
     titleKey: 'journey.s2Title',
     descKey: 'journey.s2Desc',
-    image: '/images/assortment/women/c1.webp',
+    image: '/images/journey/02-modernization.jpg',
   },
   {
     id: 'expansion',
@@ -29,7 +29,7 @@ const STEPS = [
     dateKey: 'journey.s3Date',
     titleKey: 'journey.s3Title',
     descKey: 'journey.s3Desc',
-    image: '/images/assortment/women/c2.webp',
+    image: '/images/journey/03-expansion.jpg',
   },
   {
     id: 'materials',
@@ -38,7 +38,7 @@ const STEPS = [
     dateKey: 'journey.s4Date',
     titleKey: 'journey.s4Title',
     descKey: 'journey.s4Desc',
-    image: '/images/assortment/women/c3.webp',
+    image: '/images/journey/04-materials.jpg',
   },
   {
     id: 'modern',
@@ -47,7 +47,7 @@ const STEPS = [
     dateKey: 'journey.s5Date',
     titleKey: 'journey.s5Title',
     descKey: 'journey.s5Desc',
-    image: '/images/assortment/women/c7.webp',
+    image: '/images/journey/05-modern.jpg',
   },
   {
     id: 'atyrau',
@@ -56,7 +56,7 @@ const STEPS = [
     dateKey: 'journey.s6Date',
     titleKey: 'journey.s6Title',
     descKey: 'journey.s6Desc',
-    image: '/images/assortment/men/c1.webp',
+    image: '/images/journey/06-boutique.jpg',
   },
 ]
 
@@ -221,7 +221,7 @@ export function BrandJourney() {
                     className="absolute inset-3 overflow-hidden rounded-[12px] sm:inset-4"
                   >
                     <img
-                      src={`${step.image}?v=16`}
+                      src={`${step.image}?v=17`}
                       alt=""
                       className="h-full w-full object-cover object-center"
                       draggable={false}
@@ -238,7 +238,7 @@ export function BrandJourney() {
                 <AnimatePresence mode="wait">
                   <motion.img
                     key={step.image}
-                    src={`${step.image}?v=16`}
+                    src={`${step.image}?v=17`}
                     alt=""
                     initial={{ opacity: 0, scale: 1.03 }}
                     animate={{ opacity: 1, scale: 1 }}
