@@ -215,9 +215,9 @@ export function Hero() {
     <div
       ref={containerRef}
       id="top"
-      className="relative mb-[-25px] h-[160vh] w-full bg-[#1A1817] min-[400px]:h-[175vh] sm:h-[190vh] lg:h-[210vh]"
+      className="relative mb-[-1.75rem] h-[160vh] w-full bg-[#1A1817] min-[400px]:h-[175vh] sm:mb-[-2.25rem] sm:h-[190vh] lg:mb-[-2.75rem] lg:h-[210vh]"
     >
-      <div className="sticky top-0 z-0 h-screen-safe w-full overflow-hidden bg-[#1A1817]">
+      <div className="hero-pin sticky top-0 z-0 h-screen-safe w-full overflow-hidden bg-[#1A1817]">
         <div className="absolute inset-0 z-0 select-none overflow-hidden">
           <video
             ref={(node) => {

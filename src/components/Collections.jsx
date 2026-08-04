@@ -105,9 +105,14 @@ function CategoryModal({ line, id, index, onClose }) {
   }, [])
 
   useEffect(() => {
-    // iOS/Android: overflow:hidden alone still scrolls the page behind modals.
-    // Lock with position:fixed + restore scrollY on close.
-    const scrollY = window.scrollY || window.pageYOffset || 0
+    // Lock page scroll without jumping: capture Y first, freeze body, disable
+    // sticky hero (see .hero-pin CSS) so it cannot re-stick to the viewport.
+    const scrollY =
+      window.scrollY ||
+      window.pageYOffset ||
+      document.documentElement.scrollTop ||
+      document.body.scrollTop ||
+      0
     const html = document.documentElement
     const body = document.body
     const prev = {
@@ -120,8 +125,10 @@ function CategoryModal({ line, id, index, onClose }) {
       bodyWidth: body.style.width,
       bodyPaddingRight: body.style.paddingRight,
     }
-    const scrollbarGap = window.innerWidth - html.clientWidth
+    const scrollbarGap = Math.max(0, window.innerWidth - html.clientWidth)
 
+    // Class first so sticky is disabled in the same frame as position:fixed
+    body.classList.add('karya-modal-open')
     html.style.overflow = 'hidden'
     body.style.overflow = 'hidden'
     body.style.position = 'fixed'
@@ -131,19 +138,16 @@ function CategoryModal({ line, id, index, onClose }) {
     body.style.width = '100%'
     if (scrollbarGap > 0) body.style.paddingRight = `${scrollbarGap}px`
     body.dataset.modalScrollY = String(scrollY)
-    // Hide floating nav / chrome while category sheet is open
-    body.classList.add('karya-modal-open')
 
-    closeRef.current?.focus()
+    // Do not scroll the page when focusing the close control
+    closeRef.current?.focus({ preventScroll: true })
 
     const onKey = (e) => {
       if (e.key === 'Escape') onClose()
     }
-    // Block touch-driven scroll on the page (backdrop / empty areas)
     const onTouchMove = (e) => {
       const target = e.target
       if (!(target instanceof Element)) return
-      // Allow scrolling only inside the dialog panel content
       if (target.closest('[data-modal-scroll]')) return
       e.preventDefault()
     }
@@ -161,7 +165,12 @@ function CategoryModal({ line, id, index, onClose }) {
       body.style.paddingRight = prev.bodyPaddingRight
       delete body.dataset.modalScrollY
       body.classList.remove('karya-modal-open')
-      window.scrollTo(0, scrollY)
+      // Restore after sticky is re-enabled (class removed)
+      const y = scrollY
+      requestAnimationFrame(() => {
+        window.scrollTo(0, y)
+        requestAnimationFrame(() => window.scrollTo(0, y))
+      })
       window.removeEventListener('keydown', onKey)
       document.removeEventListener('touchmove', onTouchMove)
     }
@@ -356,7 +365,7 @@ export function Collections() {
   return (
     <section
       id="categories"
-      className="section-pad relative z-10 rounded-t-[8px] bg-white pt-16 sm:pt-20"
+      className="section-pad relative z-10 rounded-t-[1.5rem] bg-white pt-16 sm:rounded-t-[2rem] sm:pt-20 md:rounded-t-[2.5rem]"
     >
       <div className="container-wide">
         <div className="mx-auto max-w-2xl text-center">

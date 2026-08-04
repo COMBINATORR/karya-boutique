@@ -629,6 +629,15 @@ body.karya-modal-open .scroll-progress {
   visibility: hidden;
 }
 
+/*
+  Body is position:fixed while the modal is open. Sticky hero would re-stick to
+  the viewport and look like a jump back to the main screen — freeze it in place.
+*/
+body.karya-modal-open .hero-pin {
+  position: relative !important;
+  top: auto !important;
+}
+
 /* Assortment mobile strip: allow BOTH horizontal swipe and vertical page scroll.
    (Tailwind touch-pan-x sets touch-action: pan-x only → vertical scroll dies on cards.) */
 .karya-cat-scroller {
