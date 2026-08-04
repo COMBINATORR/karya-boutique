@@ -5,6 +5,10 @@ export const PHONE_DISPLAY = '+7 (702) 312-69-98'
 export const PHONE_TEL = `tel:+${PHONE_E164}`
 export const WHATSAPP_URL = `https://wa.me/${PHONE_E164}`
 
+/** Instagram boutique */
+export const INSTAGRAM_URL = 'https://www.instagram.com/symki_i_portmane_karya/'
+export const INSTAGRAM_HANDLE = '@symki_i_portmane_karya'
+
 export const PLACE_QUERY =
   'ТРЦ Насиха, Махамбета Утемисова 116д, Атырау'
 

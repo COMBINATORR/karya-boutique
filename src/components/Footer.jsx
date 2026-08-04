@@ -1,6 +1,12 @@
 import { useTranslation } from 'react-i18next'
+import { Instagram } from 'lucide-react'
 import { NAV } from '@/constants/nav'
-import { PHONE_DISPLAY, PHONE_TEL } from '@/constants/contact'
+import {
+  PHONE_DISPLAY,
+  PHONE_TEL,
+  INSTAGRAM_URL,
+  INSTAGRAM_HANDLE,
+} from '@/constants/contact'
 import { BrandMark } from '@/components/BrandMark'
 
 export function Footer() {
@@ -54,6 +60,15 @@ export function Footer() {
               className="min-h-11 text-base font-semibold leading-[2.75rem] text-[var(--text-primary)] transition-colors hover:text-[var(--accent-cognac)] sm:min-h-0 sm:leading-snug sm:text-lg"
             >
               {PHONE_DISPLAY}
+            </a>
+            <a
+              href={INSTAGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--accent-cognac)]"
+            >
+              <Instagram className="h-3.5 w-3.5" strokeWidth={1.6} />
+              {INSTAGRAM_HANDLE}
             </a>
             <a
               href="#location"

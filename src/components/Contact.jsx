@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowRight, ExternalLink, MapPin, MessageCircle } from 'lucide-react'
+import { ArrowRight, ExternalLink, Instagram, MapPin, MessageCircle } from 'lucide-react'
 import {
   PHONE_DISPLAY,
   PHONE_TEL,
   WHATSAPP_URL,
+  INSTAGRAM_URL,
+  INSTAGRAM_HANDLE,
   MAPS_URL,
   MAPS_DIR_URL,
   TWOGIS_URL,
@@ -125,6 +127,18 @@ export function Contact() {
                     className="text-[15px] font-medium text-[var(--text-primary)] transition-colors hover:text-[var(--accent-cognac)] sm:text-base"
                   >
                     {PHONE_DISPLAY}
+                  </a>
+                  <p className="mt-4 mb-2 text-[10px] font-display font-bold uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                    Instagram
+                  </p>
+                  <a
+                    href={INSTAGRAM_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-[15px] font-medium text-[var(--text-primary)] transition-colors hover:text-[var(--accent-cognac)] sm:text-base"
+                  >
+                    <Instagram className="h-4 w-4 shrink-0" strokeWidth={1.6} />
+                    {INSTAGRAM_HANDLE}
                   </a>
                 </div>
               </div>
