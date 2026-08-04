@@ -55,11 +55,13 @@ function photoSrc(line, id) {
 
 function CategoryPhoto({ line, id, index, alt, className = '' }) {
   const [mainFailed, setMainFailed] = useState(false)
+  const [loaded, setLoaded] = useState(false)
   const bg = PLACEHOLDER[line][index % PLACEHOLDER[line].length]
   const key = `${line}-${id}`
 
   useEffect(() => {
     setMainFailed(false)
+    setLoaded(false)
   }, [key])
 
   return (
@@ -67,18 +69,59 @@ function CategoryPhoto({ line, id, index, alt, className = '' }) {
       {mainFailed ? (
         <div className="absolute inset-0" style={{ background: bg }} aria-hidden />
       ) : (
-        <img
+        <motion.img
           key={`${key}-main`}
           src={photoSrc(line, id)}
           alt={alt}
-          className="absolute inset-0 h-full w-full object-contain"
+          className="absolute inset-0 h-full w-full object-contain will-change-transform"
           loading="lazy"
           draggable={false}
+          initial={{ opacity: 0, scale: 1.04 }}
+          animate={{
+            opacity: loaded ? 1 : 0,
+            scale: loaded ? 1 : 1.04,
+          }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          onLoad={() => setLoaded(true)}
           onError={() => setMainFailed(true)}
         />
       )}
     </div>
   )
+}
+
+const cardEase = [0.22, 1, 0.36, 1]
+
+const listVariants = {
+  hidden: { opacity: 1 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.03,
+    },
+  },
+  exit: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.025,
+      staggerDirection: -1,
+    },
+  },
+}
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 16 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: cardEase },
+  },
+  exit: {
+    opacity: 0,
+    y: 8,
+    transition: { duration: 0.16, ease: 'easeIn' },
+  },
 }
 
 function CategoryModal({ line, id, index, onClose }) {
@@ -405,13 +448,22 @@ export function Collections() {
                   type="button"
                   onClick={() => setLine(key)}
                   className={[
-                    'relative z-20 min-h-11 min-w-[7.5rem] touch-manipulation rounded-[6px] px-6 text-[11px] font-display font-bold uppercase tracking-[0.14em] transition-all sm:min-w-[9rem] sm:px-8',
+                    'relative z-20 min-h-11 min-w-[7.5rem] touch-manipulation rounded-[6px] px-6 text-[11px] font-display font-bold uppercase tracking-[0.14em] transition-colors sm:min-w-[9rem] sm:px-8',
                     on
-                      ? 'bg-[#1A1817] text-[#F8F7F4]'
+                      ? 'text-[#F8F7F4]'
                       : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]',
                   ].join(' ')}
                 >
-                  {key === 'women' ? t('categories.women') : t('categories.men')}
+                  {on ? (
+                    <motion.span
+                      layoutId="category-line-pill"
+                      className="absolute inset-0 z-0 rounded-[6px] bg-[#1A1817]"
+                      transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                    />
+                  ) : null}
+                  <span className="relative z-[1]">
+                    {key === 'women' ? t('categories.women') : t('categories.men')}
+                  </span>
                 </button>
               )
             })}
@@ -440,63 +492,68 @@ export function Collections() {
         <AnimatePresence mode="wait">
           <motion.div
             key={line}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.28 }}
+            ref={scrollerRef}
+            variants={listVariants}
+            initial="hidden"
+            animate="show"
+            exit="exit"
+            className={[
+              // touch-pan-x alone blocks vertical page scroll when gesture starts on a card
+              'karya-cat-scroller flex gap-4 overflow-x-auto overscroll-x-contain pb-3',
+              'snap-x snap-mandatory',
+              'scroll-pl-[max(1rem,var(--safe-left))] scroll-pr-[max(1rem,var(--safe-right))]',
+              'px-[max(1rem,var(--safe-left))]',
+              '[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+              'md:container-wide md:grid md:w-full md:grid-cols-5 md:gap-x-8 md:gap-y-12',
+              'md:overflow-visible md:px-[max(2rem,var(--safe-left))] md:pb-0 md:snap-none',
+              'lg:gap-x-10 lg:gap-y-14 xl:gap-x-12',
+            ].join(' ')}
           >
-            <div
-              ref={scrollerRef}
-              className={[
-                // touch-pan-x alone blocks vertical page scroll when gesture starts on a card
-                'karya-cat-scroller flex gap-4 overflow-x-auto overscroll-x-contain pb-3',
-                'snap-x snap-mandatory',
-                'scroll-pl-[max(1rem,var(--safe-left))] scroll-pr-[max(1rem,var(--safe-right))]',
-                'px-[max(1rem,var(--safe-left))]',
-                '[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
-                'md:container-wide md:grid md:w-full md:grid-cols-5 md:gap-x-8 md:gap-y-12',
-                'md:overflow-visible md:px-[max(2rem,var(--safe-left))] md:pb-0 md:snap-none',
-                'lg:gap-x-10 lg:gap-y-14 xl:gap-x-12',
-              ].join(' ')}
-            >
-              {CATEGORY_IDS.map((id, idx) => {
-                const title = t(`categories.${id}Title`)
-                return (
-                  <button
-                    key={`${line}-${id}`}
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      // Capture scroll before React re-render / focus quirks
-                      const y =
-                        window.scrollY ||
-                        document.documentElement.scrollTop ||
-                        0
-                      setOpenId(id)
-                      requestAnimationFrame(() => window.scrollTo(0, y))
-                    }}
-                    className={[
-                      'group block snap-start text-center outline-none',
-                      'w-[calc((100%-1rem)/1.2)] shrink-0 grow-0 basis-[calc((100%-1rem)/1.2)]',
-                      'md:w-auto md:basis-auto md:shrink md:snap-align-none',
-                      'cursor-pointer rounded-[4px] focus-visible:ring-2 focus-visible:ring-[#1A1817]/30 focus-visible:ring-offset-2',
-                    ].join(' ')}
-                  >
-                    <div className="overflow-hidden bg-white">
+            {CATEGORY_IDS.map((id, idx) => {
+              const title = t(`categories.${id}Title`)
+              return (
+                <motion.button
+                  key={`${line}-${id}`}
+                  type="button"
+                  variants={cardVariants}
+                  whileTap={{ scale: 0.985 }}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    // Capture scroll before React re-render / focus quirks
+                    const y =
+                      window.scrollY ||
+                      document.documentElement.scrollTop ||
+                      0
+                    setOpenId(id)
+                    requestAnimationFrame(() => window.scrollTo(0, y))
+                  }}
+                  className={[
+                    'group block snap-start text-center outline-none',
+                    'w-[calc((100%-1rem)/1.2)] shrink-0 grow-0 basis-[calc((100%-1rem)/1.2)]',
+                    'md:w-auto md:basis-auto md:shrink md:snap-align-none',
+                    'cursor-pointer rounded-[4px] focus-visible:ring-2 focus-visible:ring-[#1A1817]/30 focus-visible:ring-offset-2',
+                  ].join(' ')}
+                >
+                  <div className="overflow-hidden bg-white">
+                    <motion.div
+                      className="origin-center"
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ duration: 0.5, ease: cardEase }}
+                    >
                       <CategoryPhoto line={line} id={id} index={idx} alt={title} />
-                    </div>
-                    <p className="mt-3 font-display text-xs font-bold uppercase tracking-[0.14em] text-[var(--text-primary)] transition-colors group-hover:text-[#8C5E3C] sm:mt-4 sm:text-sm">
-                      {title}
-                    </p>
-                  </button>
-                )
-              })}
-              <div
-                className="w-[max(0.5rem,var(--safe-right))] shrink-0 grow-0 basis-[max(0.5rem,var(--safe-right))] md:hidden"
-                aria-hidden
-              />
-            </div>
+                    </motion.div>
+                  </div>
+                  <p className="mt-3 font-display text-xs font-bold uppercase tracking-[0.14em] text-[var(--text-primary)] transition-colors duration-200 group-hover:text-[#8C5E3C] sm:mt-4 sm:text-sm">
+                    {title}
+                  </p>
+                </motion.button>
+              )
+            })}
+            <div
+              className="w-[max(0.5rem,var(--safe-right))] shrink-0 grow-0 basis-[max(0.5rem,var(--safe-right))] md:hidden"
+              aria-hidden
+            />
           </motion.div>
         </AnimatePresence>
       </div>
