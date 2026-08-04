@@ -203,11 +203,12 @@ function CategoryModal({ line, id, index, onClose }) {
   const [activeSwatch, setActiveSwatch] = useState(PALETTE[0].id)
 
   const lineLabel = line === 'women' ? t('categories.women') : t('categories.men')
-  const title = t(`categories.${id}Title`)
-  const sub = t(`categories.${id}Sub`)
-  const desc = t(`categories.${id}Desc`)
-  const count = t(`categories.${id}Count`)
+  const title = t(`categories.${line}.${id}Title`)
+  const sub = t(`categories.${line}.${id}Sub`)
+  const desc = t(`categories.${line}.${id}Desc`)
+  const count = t(`categories.${line}.${id}Count`)
   const waUrl = whatsappRequestUrl(`${lineLabel}: ${title}`)
+
   const activePalette = PALETTE.find((p) => p.id === activeSwatch) || PALETTE[0]
 
   const accordionItems = [
@@ -646,7 +647,7 @@ export function Collections() {
             ].join(' ')}
           >
             {CATEGORY_IDS.map((id, idx) => {
-              const title = t(`categories.${id}Title`)
+              const title = t(`categories.${line}.${id}Title`)
               return (
                 <motion.button
                   key={`${line}-${id}`}
