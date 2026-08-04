@@ -13,7 +13,7 @@ export function About() {
   const { t } = useTranslation()
 
   return (
-    <section id="about" className="section-pad section-sheet surface-white">
+    <section id="about" className="section-pad surface-white">
       <div className="container-wide">
         <div className="grid items-start gap-10 lg:grid-cols-12 lg:gap-14 xl:gap-16">
           {/* Left — visit pitch */}

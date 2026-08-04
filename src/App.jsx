@@ -5,6 +5,7 @@ import { Hero } from './components/Hero'
 import { About } from './components/About'
 import { Collections } from './components/Collections'
 import { BrandJourney } from './components/BrandJourney'
+import { Features } from './components/Features'
 import { Contact } from './components/Contact'
 import { Footer } from './components/Footer'
 import { ScrollProgressBar } from './components/ScrollProgressBar'
@@ -31,6 +32,10 @@ export default function App() {
         <Collections />
         <BrandJourney />
         <div className="section-underlap" aria-hidden />
+        <Features />
+        <div className="bg-white px-6 sm:px-12 lg:px-16">
+          <SectionDivider className="max-w-[1920px] mx-auto py-2" />
+        </div>
         <About />
         <div className="bg-white px-6 sm:px-12 lg:px-16">
           <SectionDivider className="max-w-[1920px] mx-auto py-2" />
