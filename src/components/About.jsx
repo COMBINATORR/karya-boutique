@@ -12,7 +12,10 @@ export function About() {
   ]
 
   return (
-    <section id="about" className="section-pad border-t border-[var(--border-color)] bg-white">
+    <section
+      id="about"
+      className="section-pad relative z-10 -mt-6 rounded-t-[1.5rem] bg-white sm:-mt-8 sm:rounded-t-[2rem] md:-mt-10 md:rounded-t-[2.5rem]"
+    >
       <div className="container-wide">
         <motion.div className="mb-12 max-w-6xl sm:mb-16 lg:mb-20" {...fadeUp(0)}>
           <span className="eyebrow mb-2 block text-[10px] tracking-[0.18em] sm:mb-3 sm:text-xs sm:tracking-[0.2em]">

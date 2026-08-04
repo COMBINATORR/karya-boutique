@@ -159,7 +159,7 @@ export function BrandJourney() {
   return (
     <section
       id="details"
-      className="bg-[#1A1817] py-16 text-[#F8F7F4] sm:py-24 lg:py-28"
+      className="relative z-10 -mt-6 rounded-t-[1.5rem] bg-[#1A1817] py-16 text-[#F8F7F4] sm:-mt-8 sm:rounded-t-[2rem] sm:py-24 md:-mt-10 md:rounded-t-[2.5rem] lg:py-28"
       aria-roledescription="carousel"
       aria-label={t('journey.title')}
     >

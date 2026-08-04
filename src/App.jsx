@@ -30,9 +30,8 @@ export default function App() {
         <Hero />
         <Collections />
         <BrandJourney />
-        <div className="bg-[#1A1817] px-6 sm:px-12 lg:px-16">
-          <SectionDivider light className="max-w-[1920px] mx-auto py-6 sm:py-8" />
-        </div>
+        {/* Dark underlap so white About sheet can round over it */}
+        <div className="h-6 bg-[#1A1817] sm:h-8 md:h-10" aria-hidden />
         <About />
         <div className="bg-white px-6 sm:px-12 lg:px-16">
           <SectionDivider className="max-w-[1920px] mx-auto py-2" />

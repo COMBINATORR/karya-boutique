@@ -14,7 +14,10 @@ export function Contact() {
   const { t } = useTranslation()
 
   return (
-    <section id="location" className="section-pad bg-white">
+    <section
+      id="location"
+      className="section-pad relative z-10 rounded-t-[1.5rem] bg-white sm:rounded-t-[2rem] md:rounded-t-[2.5rem]"
+    >
       <div className="container-wide">
         {/* Equal-height columns on lg+ */}
         <div className="grid items-stretch gap-10 lg:grid-cols-12 lg:gap-12 xl:gap-16">
