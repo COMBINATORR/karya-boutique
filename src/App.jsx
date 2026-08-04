@@ -4,7 +4,7 @@ import { PillNavbar } from './components/PillNavbar'
 import { Hero } from './components/Hero'
 import { About } from './components/About'
 import { Collections } from './components/Collections'
-import { Craft } from './components/Craft'
+import { BrandJourney } from './components/BrandJourney'
 import { Contact } from './components/Contact'
 import { Footer } from './components/Footer'
 import { ScrollProgressBar } from './components/ScrollProgressBar'
@@ -29,7 +29,7 @@ export default function App() {
       <main>
         <Hero />
         <Collections />
-        <Craft />
+        <BrandJourney />
         <div className="bg-[#1A1817] px-6 sm:px-12 lg:px-16">
           <SectionDivider light className="max-w-[1920px] mx-auto py-6 sm:py-8" />
         </div>

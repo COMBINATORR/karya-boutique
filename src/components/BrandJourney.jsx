@@ -1,0 +1,419 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+
+const STEPS = [
+  {
+    id: 'founding',
+    yearKey: 'journey.s1Year',
+    labelKey: 'journey.s1Label',
+    dateKey: 'journey.s1Date',
+    titleKey: 'journey.s1Title',
+    descKey: 'journey.s1Desc',
+    image: '/images/assortment/men/c5.webp',
+  },
+  {
+    id: 'modernization',
+    yearKey: 'journey.s2Year',
+    labelKey: 'journey.s2Label',
+    dateKey: 'journey.s2Date',
+    titleKey: 'journey.s2Title',
+    descKey: 'journey.s2Desc',
+    image: '/images/assortment/women/c1.webp',
+  },
+  {
+    id: 'expansion',
+    yearKey: 'journey.s3Year',
+    labelKey: 'journey.s3Label',
+    dateKey: 'journey.s3Date',
+    titleKey: 'journey.s3Title',
+    descKey: 'journey.s3Desc',
+    image: '/images/assortment/women/c2.webp',
+  },
+  {
+    id: 'materials',
+    yearKey: 'journey.s4Year',
+    labelKey: 'journey.s4Label',
+    dateKey: 'journey.s4Date',
+    titleKey: 'journey.s4Title',
+    descKey: 'journey.s4Desc',
+    image: '/images/assortment/women/c3.webp',
+  },
+  {
+    id: 'modern',
+    yearKey: 'journey.s5Year',
+    labelKey: 'journey.s5Label',
+    dateKey: 'journey.s5Date',
+    titleKey: 'journey.s5Title',
+    descKey: 'journey.s5Desc',
+    image: '/images/assortment/women/c7.webp',
+  },
+  {
+    id: 'atyrau',
+    yearKey: 'journey.s6Year',
+    labelKey: 'journey.s6Label',
+    dateKey: 'journey.s6Date',
+    titleKey: 'journey.s6Title',
+    descKey: 'journey.s6Desc',
+    image: '/images/assortment/men/c1.webp',
+  },
+]
+
+/**
+ * Interactive brand journey — timeline + story card + photo
+ * Layout inspired by progressive timeline UI (screenshot reference).
+ */
+export function BrandJourney() {
+  const { t } = useTranslation()
+  const [active, setActive] = useState(0)
+  const [direction, setDirection] = useState(0)
+  const trackRef = useRef(null)
+  const dragging = useRef(false)
+  const touchStart = useRef({ x: 0, y: 0 })
+
+  const n = STEPS.length
+  const step = STEPS[active]
+  const progress = n <= 1 ? 0 : active / (n - 1)
+
+  const goTo = useCallback(
+    (index) => {
+      const next = Math.max(0, Math.min(n - 1, index))
+      if (next === active) return
+      setDirection(next > active ? 1 : -1)
+      setActive(next)
+    },
+    [active, n],
+  )
+
+  const prev = useCallback(() => goTo(active - 1), [active, goTo])
+  const next = useCallback(() => goTo(active + 1), [active, goTo])
+
+  // Keyboard when section is in view / focused
+  useEffect(() => {
+    const onKey = (e) => {
+      const tag = e.target?.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target?.isContentEditable) return
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        prev()
+      }
+      if (e.key === 'ArrowRight') {
+        e.preventDefault()
+        next()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [prev, next])
+
+  const indexFromClientX = useCallback(
+    (clientX) => {
+      const el = trackRef.current
+      if (!el) return active
+      const rect = el.getBoundingClientRect()
+      const pad = 12
+      const w = Math.max(1, rect.width - pad * 2)
+      const ratio = Math.max(0, Math.min(1, (clientX - rect.left - pad) / w))
+      return Math.round(ratio * (n - 1))
+    },
+    [active, n],
+  )
+
+  const onPointerDown = (e) => {
+    dragging.current = true
+    e.currentTarget.setPointerCapture?.(e.pointerId)
+    goTo(indexFromClientX(e.clientX))
+  }
+  const onPointerMove = (e) => {
+    if (!dragging.current) return
+    goTo(indexFromClientX(e.clientX))
+  }
+  const onPointerUp = () => {
+    dragging.current = false
+  }
+
+  // Horizontal swipe on story card
+  const onTouchStart = (e) => {
+    const t0 = e.touches[0]
+    touchStart.current = { x: t0.clientX, y: t0.clientY }
+  }
+  const onTouchEnd = (e) => {
+    const t0 = e.changedTouches[0]
+    const dx = t0.clientX - touchStart.current.x
+    const dy = t0.clientY - touchStart.current.y
+    if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.2) return
+    if (dx < 0) next()
+    else prev()
+  }
+
+  const slideVariants = useMemo(
+    () => ({
+      enter: (dir) => ({ opacity: 0, x: dir > 0 ? 32 : -32, filter: 'blur(8px)' }),
+      center: { opacity: 1, x: 0, filter: 'blur(0px)' },
+      exit: (dir) => ({ opacity: 0, x: dir > 0 ? -32 : 32, filter: 'blur(8px)' }),
+    }),
+    [],
+  )
+
+  return (
+    <section
+      id="details"
+      className="bg-[#1A1817] py-16 text-[#F8F7F4] sm:py-24 lg:py-28"
+      aria-roledescription="carousel"
+      aria-label={t('journey.title')}
+    >
+      <div className="container-wide">
+        {/* Outer shell — matches screenshot card */}
+        <div className="rounded-[20px] border border-white/[0.08] bg-[#141312] p-5 sm:rounded-[24px] sm:p-8 lg:p-10">
+          <header className="mb-6 sm:mb-8 lg:mb-10">
+            <span className="mb-2 block font-display text-[10px] font-bold uppercase tracking-[0.2em] text-[#9E6B4C] sm:text-xs">
+              {t('journey.eyebrow')}
+            </span>
+            <h2 className="font-display text-[clamp(1.75rem,5.5vw,3.25rem)] font-bold tracking-tight text-white">
+              {t('journey.title')}
+            </h2>
+          </header>
+
+          {/* Story + photo panel */}
+          <div
+            className="relative overflow-hidden rounded-[14px] border border-white/[0.07] bg-[#0F0E0D] sm:rounded-[16px]"
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
+          >
+            <div className="grid lg:grid-cols-[1.2fr_0.8fr]">
+              <div className="relative flex min-h-[240px] flex-col justify-between p-5 sm:min-h-[280px] sm:p-8 lg:min-h-[320px] lg:p-9">
+                <AnimatePresence mode="wait" custom={direction}>
+                  <motion.div
+                    key={step.id}
+                    custom={direction}
+                    variants={slideVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+                    className="flex min-h-[200px] flex-1 flex-col sm:min-h-[230px]"
+                  >
+                    <p className="font-display text-xs font-bold uppercase tracking-[0.18em] text-[#C4A07A] sm:text-sm">
+                      {t(step.yearKey)}
+                    </p>
+                    <div className="mt-auto pt-12 sm:pt-16">
+                      <h3 className="font-display text-[1.65rem] font-bold leading-tight tracking-tight text-white sm:text-3xl lg:text-[2.05rem]">
+                        {t(step.titleKey)}
+                      </h3>
+                      <p className="mt-3 max-w-2xl text-sm leading-relaxed text-white/60 sm:mt-4 sm:text-[0.95rem] sm:leading-[1.65]">
+                        {t(step.descKey)}
+                      </p>
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              {/* Desktop photo */}
+              <div className="relative hidden min-h-[280px] border-l border-white/[0.07] bg-[#0A0909] lg:block">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={step.image}
+                    initial={{ opacity: 0, scale: 1.05 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                    className="absolute inset-3 overflow-hidden rounded-[12px] sm:inset-4"
+                  >
+                    <img
+                      src={`${step.image}?v=16`}
+                      alt=""
+                      className="h-full w-full object-cover object-center"
+                      draggable={false}
+                    />
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/10" />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </div>
+
+            {/* Mobile photo */}
+            <div className="border-t border-white/[0.07] p-4 lg:hidden">
+              <div className="relative aspect-[16/10] overflow-hidden rounded-[12px] bg-[#0A0909]">
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={step.image}
+                    src={`${step.image}?v=16`}
+                    alt=""
+                    initial={{ opacity: 0, scale: 1.03 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="absolute inset-0 h-full w-full object-cover"
+                    draggable={false}
+                  />
+                </AnimatePresence>
+              </div>
+            </div>
+          </div>
+
+          {/* Timeline */}
+          <div className="mt-7 sm:mt-9 lg:mt-10">
+            {/* Labels above track (desktop / tablet) */}
+            <div className="relative mb-4 hidden px-1 sm:block sm:px-2">
+              <div className="flex justify-between">
+                {STEPS.map((s, i) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => goTo(i)}
+                    className={[
+                      'max-w-[5.2rem] text-left text-[10px] font-semibold uppercase tracking-[0.06em] transition-colors duration-200 lg:max-w-[6.5rem] lg:text-[11px]',
+                      i === active
+                        ? 'text-white'
+                        : 'text-white/30 hover:text-white/55',
+                    ].join(' ')}
+                  >
+                    {t(s.labelKey)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Track */}
+            <div
+              ref={trackRef}
+              className="relative mx-0 h-10 cursor-pointer touch-none select-none px-3 sm:mx-1 sm:px-2"
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={onPointerUp}
+              onPointerCancel={onPointerUp}
+              role="slider"
+              aria-valuemin={0}
+              aria-valuemax={n - 1}
+              aria-valuenow={active}
+              aria-valuetext={`${t(step.labelKey)} — ${t(step.dateKey)}`}
+              aria-label={t('journey.timelineLabel')}
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'ArrowLeft' || e.key === 'Home') {
+                  e.preventDefault()
+                  e.key === 'Home' ? goTo(0) : prev()
+                }
+                if (e.key === 'ArrowRight' || e.key === 'End') {
+                  e.preventDefault()
+                  e.key === 'End' ? goTo(n - 1) : next()
+                }
+              }}
+            >
+              {/* Base line */}
+              <div className="pointer-events-none absolute left-3 right-3 top-1/2 h-[2px] -translate-y-1/2 rounded-full bg-white/15 sm:left-2 sm:right-2" />
+              {/* Progress line */}
+              <div
+                className="pointer-events-none absolute left-3 top-1/2 h-[2px] -translate-y-1/2 rounded-full bg-white transition-[width] duration-300 ease-out sm:left-2"
+                style={{
+                  width: `calc((100% - 1.5rem) * ${progress})`,
+                }}
+              />
+
+              {/* Dots */}
+              {STEPS.map((s, i) => {
+                const left = n <= 1 ? 0 : (i / (n - 1)) * 100
+                const on = i === active
+                const passed = i <= active
+                return (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      goTo(i)
+                    }}
+                    className="absolute top-1/2 z-[1] flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center"
+                    style={{ left: `calc(0.75rem + (100% - 1.5rem) * ${left / 100})` }}
+                    aria-label={t(s.labelKey)}
+                    aria-current={on ? 'step' : undefined}
+                  >
+                    <span
+                      className={[
+                        'block rounded-full transition-all duration-300',
+                        on
+                          ? 'h-3.5 w-3.5 bg-white shadow-[0_0_0_5px_rgba(255,255,255,0.14)]'
+                          : passed
+                            ? 'h-2.5 w-2.5 bg-white'
+                            : 'h-2.5 w-2.5 border-2 border-white/35 bg-[#141312]',
+                      ].join(' ')}
+                    />
+                  </button>
+                )
+              })}
+
+              {/* Active thumb (pill like screenshot) */}
+              <div
+                className="pointer-events-none absolute top-1/2 z-[2] h-5 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-white shadow-[0_0_12px_rgba(255,255,255,0.25)] transition-[left] duration-300 ease-out sm:h-[22px] sm:w-9"
+                style={{ left: `calc(0.75rem + (100% - 1.5rem) * ${progress})` }}
+                aria-hidden
+              />
+
+              {/* Date chip under thumb */}
+              <div
+                className="pointer-events-none absolute top-[calc(50%+18px)] z-[2] -translate-x-1/2 transition-[left] duration-300 ease-out"
+                style={{ left: `calc(0.75rem + (100% - 1.5rem) * ${progress})` }}
+              >
+                <span className="whitespace-nowrap rounded-full border border-white/30 bg-[#1A1817] px-2.5 py-0.5 text-[10px] font-medium text-white/95 shadow-sm">
+                  {t(step.dateKey)}
+                </span>
+              </div>
+            </div>
+
+            {/* Static date row (desktop) */}
+            <div className="mt-9 hidden justify-between px-1 sm:flex sm:px-2">
+              {STEPS.map((s, i) => (
+                <button
+                  key={`${s.id}-date`}
+                  type="button"
+                  onClick={() => goTo(i)}
+                  className={[
+                    'text-[10px] transition-colors duration-200 lg:text-[11px]',
+                    i === active ? 'text-white/75' : 'text-white/25 hover:text-white/45',
+                  ].join(' ')}
+                >
+                  {t(s.dateKey)}
+                </button>
+              ))}
+            </div>
+
+            {/* Mobile label + nav buttons */}
+            <div className="mt-10 flex items-center justify-between gap-3 sm:mt-7">
+              <div className="min-w-0 sm:hidden">
+                <p className="truncate text-xs font-semibold uppercase tracking-[0.12em] text-white">
+                  {t(step.labelKey)}
+                </p>
+                <p className="mt-0.5 text-[11px] text-white/40">{t(step.dateKey)}</p>
+              </div>
+
+              <div className="ml-auto flex items-center gap-2">
+                <span className="mr-1 hidden text-[11px] tabular-nums text-white/35 sm:inline">
+                  {active + 1} / {n}
+                </span>
+                <button
+                  type="button"
+                  onClick={prev}
+                  disabled={active === 0}
+                  className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-white/15 text-white transition-colors hover:border-white/35 hover:bg-white/[0.06] active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
+                  aria-label={t('journey.prev')}
+                >
+                  <ChevronLeft className="h-4 w-4" strokeWidth={1.8} />
+                </button>
+                <button
+                  type="button"
+                  onClick={next}
+                  disabled={active === n - 1}
+                  className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-white/15 text-white transition-colors hover:border-white/35 hover:bg-white/[0.06] active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
+                  aria-label={t('journey.next')}
+                >
+                  <ChevronRight className="h-4 w-4" strokeWidth={1.8} />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
