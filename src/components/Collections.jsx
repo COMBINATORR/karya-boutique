@@ -9,8 +9,75 @@ import {
   useDragControls,
   animate,
 } from 'framer-motion'
+import { ChevronDown, MessageCircle, MapPin } from 'lucide-react'
 import { whatsappRequestUrl, MAPS_DIR_URL } from '@/constants/contact'
 import BlurText from '@/components/BlurText'
+
+/** Boutique leather palette chips (visual only — full range in store) */
+const PALETTE = [
+  { id: 'cognac', hex: '#8C5E3C', labelKey: 'categories.swatchCognac' },
+  { id: 'black', hex: '#1A1817', labelKey: 'categories.swatchBlack' },
+  { id: 'cream', hex: '#E8DFD4', labelKey: 'categories.swatchCream' },
+  { id: 'burgundy', hex: '#5C2E2E', labelKey: 'categories.swatchBurgundy' },
+]
+
+const HIGHLIGHT_KEYS = [
+  'categories.tagLeather',
+  'categories.tagFloater',
+  'categories.tagPatent',
+  'categories.tagPalette',
+  'categories.tagHardware',
+  'categories.tagDaily',
+]
+
+function ModalAccordion({ items }) {
+  const [open, setOpen] = useState(null)
+
+  return (
+    <div className="mt-6 border-t border-[var(--border-color)]">
+      {items.map((item) => {
+        const isOpen = open === item.id
+        return (
+          <div key={item.id} className="border-b border-[var(--border-color)]">
+            <button
+              type="button"
+              onClick={() => setOpen(isOpen ? null : item.id)}
+              className="flex w-full items-center justify-between gap-3 py-3.5 text-left"
+              aria-expanded={isOpen}
+            >
+              <span className="text-sm font-medium text-[var(--text-primary)]">
+                {item.title}
+              </span>
+              <ChevronDown
+                className={[
+                  'h-4 w-4 shrink-0 text-[var(--text-muted)] transition-transform duration-250',
+                  isOpen ? 'rotate-180' : '',
+                ].join(' ')}
+                strokeWidth={1.6}
+              />
+            </button>
+            <AnimatePresence initial={false}>
+              {isOpen ? (
+                <motion.div
+                  key="body"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                  className="overflow-hidden"
+                >
+                  <p className="pb-4 text-sm leading-relaxed text-[var(--text-secondary)]">
+                    {item.body}
+                  </p>
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
 
 /**
  * Photos:
@@ -133,12 +200,33 @@ function CategoryModal({ line, id, index, onClose }) {
   const y = useMotionValue(0)
   const sheetOpacity = useTransform(y, [0, 260], [1, 0.55])
   const [isMobile, setIsMobile] = useState(true)
+  const [activeSwatch, setActiveSwatch] = useState(PALETTE[0].id)
 
   const lineLabel = line === 'women' ? t('categories.women') : t('categories.men')
   const title = t(`categories.${id}Title`)
   const sub = t(`categories.${id}Sub`)
   const desc = t(`categories.${id}Desc`)
+  const count = t(`categories.${id}Count`)
   const waUrl = whatsappRequestUrl(`${lineLabel}: ${title}`)
+  const activePalette = PALETTE.find((p) => p.id === activeSwatch) || PALETTE[0]
+
+  const accordionItems = [
+    {
+      id: 'desc',
+      title: t('categories.accDesc'),
+      body: desc,
+    },
+    {
+      id: 'details',
+      title: t('categories.accDetails'),
+      body: `${sub}. ${count}. ${t('categories.accDetailsBody')}`,
+    },
+    {
+      id: 'visit',
+      title: t('categories.accVisit'),
+      body: t('categories.accVisitBody'),
+    },
+  ]
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 639px)')
@@ -190,7 +278,6 @@ function CategoryModal({ line, id, index, onClose }) {
       if (allowInsideModal(e.target) && e.target.closest('[data-modal-scroll]')) return
       e.preventDefault()
     }
-    // If anything tries to scroll the page (focus, browser quirks) — snap back
     const onScroll = () => {
       if (window.scrollY !== scrollY) {
         window.scrollTo(0, scrollY)
@@ -202,7 +289,6 @@ function CategoryModal({ line, id, index, onClose }) {
     window.addEventListener('wheel', onWheel, { passive: false })
     document.addEventListener('touchmove', onTouchMove, { passive: false })
 
-    // Focus after lock; never scroll the page
     requestAnimationFrame(() => {
       closeRef.current?.focus({ preventScroll: true })
       window.scrollTo(0, scrollY)
@@ -224,7 +310,6 @@ function CategoryModal({ line, id, index, onClose }) {
   }, [onClose])
 
   const closeWithSwipe = () => {
-    // Slide out then close
     animate(y, typeof window !== 'undefined' ? window.innerHeight : 600, {
       type: 'tween',
       duration: 0.22,
@@ -241,7 +326,6 @@ function CategoryModal({ line, id, index, onClose }) {
     }
   }
 
-  /** Start sheet drag: handle always; content only when scrolled to top */
   const startDragIfAllowed = (e) => {
     if (!isMobile) return
     const scroller = scrollRef.current
@@ -254,16 +338,15 @@ function CategoryModal({ line, id, index, onClose }) {
   const sheet = (
     <motion.div
       data-modal-root
-      className="fixed inset-0 z-[100] flex items-stretch justify-center overscroll-none p-0 sm:items-center sm:p-6"
+      className="fixed inset-0 z-[100] flex items-stretch justify-center overscroll-none p-0 sm:items-center sm:p-5 lg:p-8"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
     >
-      {/* Backdrop — desktop only; mobile is full-screen sheet */}
       <button
         type="button"
-        className="absolute inset-0 hidden touch-none bg-[#1A1817]/55 backdrop-blur-[2px] sm:block"
+        className="absolute inset-0 hidden touch-none bg-[#1A1817]/50 backdrop-blur-[3px] sm:block"
         aria-label={t('categories.close')}
         onClick={onClose}
       />
@@ -274,16 +357,15 @@ function CategoryModal({ line, id, index, onClose }) {
         aria-labelledby={titleId}
         className={[
           'relative z-10 flex w-full flex-col bg-white overscroll-contain touch-pan-y',
-          // Mobile: full viewport, one continuous scroll
           'h-[100dvh] max-h-[100dvh] rounded-none',
-          // Desktop: floating panel, photo | text
-          'sm:h-auto sm:max-h-[min(92dvh,920px)] sm:max-w-3xl sm:flex-row sm:overflow-hidden sm:rounded-[12px] sm:shadow-2xl sm:touch-auto',
+          'sm:h-auto sm:max-h-[min(90dvh,860px)] sm:max-w-[920px] sm:flex-row sm:overflow-hidden sm:rounded-[20px] sm:shadow-2xl sm:touch-auto',
+          'lg:max-w-[980px]',
         ].join(' ')}
         style={isMobile ? { y, opacity: sheetOpacity } : undefined}
-        initial={isMobile ? { opacity: 1, y: 40 } : { opacity: 0, y: 24 }}
-        animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
-        exit={isMobile ? { opacity: 1, y: 80 } : { opacity: 0, y: 16 }}
-        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+        initial={isMobile ? { opacity: 1, y: 40 } : { opacity: 0, y: 20, scale: 0.98 }}
+        animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, y: 0, scale: 1 }}
+        exit={isMobile ? { opacity: 1, y: 80 } : { opacity: 0, y: 12, scale: 0.98 }}
+        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
         onClick={(e) => e.stopPropagation()}
         drag={isMobile ? 'y' : false}
         dragControls={dragControls}
@@ -293,7 +375,7 @@ function CategoryModal({ line, id, index, onClose }) {
         dragMomentum={false}
         onDragEnd={onDragEnd}
       >
-        {/* Drag handle — mobile only */}
+        {/* Drag handle — mobile */}
         <div
           data-drag-handle
           className="flex shrink-0 cursor-grab items-center justify-center pb-1 pt-[max(0.5rem,env(safe-area-inset-top))] active:cursor-grabbing sm:hidden"
@@ -306,10 +388,6 @@ function CategoryModal({ line, id, index, onClose }) {
           <span className="h-1 w-10 rounded-full bg-[var(--border-color)]" />
         </div>
 
-        {/*
-          Mobile: single scroll column (photo → text → CTAs).
-          Desktop: row; text column scrolls if needed.
-        */}
         <div
           ref={scrollRef}
           data-modal-scroll
@@ -319,18 +397,17 @@ function CategoryModal({ line, id, index, onClose }) {
           ].join(' ')}
           onPointerDown={startDragIfAllowed}
         >
-          {/* Photo */}
-          <div className="relative w-full shrink-0 bg-white sm:w-[46%] sm:self-stretch sm:border-r sm:border-[var(--border-color)] sm:overflow-y-auto">
-            {/* Close — floats over photo on mobile */}
+          {/* —— Photo (left) —— */}
+          <div className="relative w-full shrink-0 bg-[#FAFAFA] sm:w-[48%] sm:self-stretch sm:p-5 lg:p-6">
             <button
               ref={closeRef}
               type="button"
               onClick={onClose}
               className={[
-                // Match pill-nav hamburger: square, 8px corners
-                'absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-[8px]',
-                'border border-[var(--border-color)] bg-white/90 text-[var(--text-primary)] backdrop-blur-sm',
-                'transition-colors active:bg-white sm:right-4 sm:top-4',
+                'absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full',
+                'border border-[var(--border-color)] bg-white/95 text-[var(--text-primary)] shadow-sm backdrop-blur-sm',
+                'transition-colors hover:bg-white active:bg-[#F5F5F5]',
+                'sm:right-7 sm:top-7',
               ].join(' ')}
               aria-label={t('categories.close')}
             >
@@ -338,63 +415,119 @@ function CategoryModal({ line, id, index, onClose }) {
                 ×
               </span>
             </button>
-            <CategoryPhoto line={line} id={id} index={index} alt={title} />
+            <div className="relative overflow-hidden rounded-[16px] bg-white sm:h-full sm:min-h-[420px] sm:rounded-[18px]">
+              <CategoryPhoto
+                line={line}
+                id={id}
+                index={index}
+                alt={title}
+                className="sm:absolute sm:inset-0 sm:aspect-auto sm:h-full"
+              />
+            </div>
           </div>
 
-          {/* Text + actions */}
+          {/* —— Content (right) —— */}
           <div
             className={[
               'flex flex-1 flex-col px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5',
-              'sm:min-h-0 sm:overflow-y-auto sm:overscroll-contain sm:p-7',
+              'sm:min-h-0 sm:overflow-y-auto sm:overscroll-contain sm:px-8 sm:py-7 lg:px-10 lg:py-8',
             ].join(' ')}
           >
-            <div>
-              <p className="text-[10px] font-display font-bold uppercase tracking-[0.16em] text-[var(--text-muted)]">
-                {lineLabel}
-              </p>
-              <h3
-                id={titleId}
-                className="mt-1.5 font-display text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-2xl"
-              >
-                {title}
-              </h3>
-              {sub ? (
-                <p className="mt-1.5 text-sm text-[var(--text-secondary)]">{sub}</p>
-              ) : null}
-            </div>
-
-            <p className="mt-4 text-[15px] leading-relaxed text-[var(--text-secondary)] sm:mt-5 sm:text-[15px]">
-              {desc}
+            <p className="text-[10px] font-display font-bold uppercase tracking-[0.2em] text-[var(--text-muted)]">
+              {t('categories.modalEyebrow')} · {lineLabel}
             </p>
 
-            <p className="mt-3 text-xs text-[var(--text-muted)]">{t('categories.note')}</p>
+            <h3
+              id={titleId}
+              className="mt-2 font-display text-[1.85rem] font-bold leading-[1.12] tracking-tight text-[var(--text-primary)] sm:text-[2.15rem] lg:text-[2.35rem]"
+            >
+              {title}
+            </h3>
 
-            <div className="mt-8 flex flex-col gap-2.5 pb-2 sm:mt-auto sm:pt-8">
-              <a
-                href={waUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary w-full"
-              >
-                {t('categories.request')}
-              </a>
-              <a
-                href={MAPS_DIR_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-outline w-full"
-                onClick={onClose}
-              >
-                {t('categories.visit')}
-              </a>
+            <p className="mt-3 text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--text-muted)] sm:text-xs">
+              {t('categories.metaLine')}
+            </p>
+
+            {/* Palette chips — like color swatches in reference */}
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2" role="list" aria-label={t('categories.paletteLabel')}>
+                {PALETTE.map((sw) => {
+                  const on = activeSwatch === sw.id
+                  return (
+                    <button
+                      key={sw.id}
+                      type="button"
+                      role="listitem"
+                      onClick={() => setActiveSwatch(sw.id)}
+                      className={[
+                        'h-7 w-7 rounded-full border-2 transition-all',
+                        on
+                          ? 'border-[#1A1817] scale-110 shadow-sm'
+                          : 'border-transparent ring-1 ring-black/10 hover:scale-105',
+                      ].join(' ')}
+                      style={{ backgroundColor: sw.hex }}
+                      aria-label={t(sw.labelKey)}
+                      aria-pressed={on}
+                    />
+                  )
+                })}
+              </div>
+              <span className="text-sm text-[var(--text-secondary)]">
+                {t(activePalette.labelKey)}
+                <span className="text-[var(--text-muted)]"> · {t('categories.paletteHint')}</span>
+              </span>
             </div>
+
+            {/* Primary CTA — black pill like reference */}
+            <a
+              href={waUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-7 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1A1817] px-6 text-[11px] font-display font-bold uppercase tracking-[0.16em] text-[#F8F7F4] transition-colors hover:bg-[#8C5E3C] active:scale-[0.99]"
+            >
+              <MessageCircle className="h-4 w-4" strokeWidth={1.7} />
+              {t('categories.request')}
+            </a>
+
+            <a
+              href={MAPS_DIR_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={onClose}
+              className="mt-2.5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[var(--border-color)] px-6 text-[11px] font-display font-bold uppercase tracking-[0.14em] text-[var(--text-primary)] transition-colors hover:border-[#1A1817]/25 hover:bg-[#FAFAFA]"
+            >
+              <MapPin className="h-3.5 w-3.5 text-[#8C5E3C]" strokeWidth={1.7} />
+              {t('categories.visit')}
+            </a>
+
+            {/* Highlights */}
+            <div className="mt-8">
+              <p className="text-sm font-medium text-[var(--text-primary)]">
+                {t('categories.highlights')}
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {HIGHLIGHT_KEYS.map((key) => (
+                  <span
+                    key={key}
+                    className="rounded-full border border-[var(--border-color)] bg-[#FAFAFA] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--text-secondary)]"
+                  >
+                    {t(key)}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <ModalAccordion items={accordionItems} />
+
+            <p className="mt-5 text-xs leading-relaxed text-[var(--text-muted)]">
+              {t('categories.note')}
+            </p>
           </div>
         </div>
       </motion.div>
     </motion.div>
   )
 
-  // Portal to body so layout/sticky ancestors cannot affect the page under the sheet
   if (typeof document === 'undefined') return null
   return createPortal(sheet, document.body)
 }
