@@ -6,8 +6,14 @@ import { NAV } from '@/constants/nav'
 import { whatsappRequestUrl } from '@/constants/contact'
 import { BrandMark } from '@/components/BrandMark'
 
+/** Shared control size in the top bar (desktop) */
+const BAR_CTRL =
+  'inline-flex h-9 items-center justify-center rounded-[var(--radius-sm)] text-[10px] font-bold uppercase tracking-[0.12em]'
+
 /**
- * Floating pill navbar — uses KARYA tokens (radius-sm, ink, cognac).
+ * Floating navbar — mobile: logo + hamburger only.
+ * Lang + WA live inside the panel (CSS display on .btn-* / .lang-switch
+ * overrides Tailwind `hidden`, so we hide via wrappers).
  */
 export function PillNavbar() {
   const { t, i18n } = useTranslation()
@@ -57,7 +63,7 @@ export function PillNavbar() {
           scrolled ? 'shadow-elevated' : 'shadow-soft',
         )}
       >
-        <a href="#top" onClick={close} className="relative z-[1] shrink-0 pl-1">
+        <a href="#top" onClick={close} className="relative z-[1] min-w-0 shrink pl-1">
           <BrandMark size="sm" shiny />
         </a>
 
@@ -73,35 +79,46 @@ export function PillNavbar() {
           ))}
         </nav>
 
-        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-          {/* Desktop only — on mobile these live inside the hamburger panel */}
-          <div className="lang-switch hidden md:inline-flex">
-            {['ru', 'kk'].map((code) => (
-              <button
-                key={code}
-                type="button"
-                onClick={() => setLang(code)}
-                className={cn(lang === code && 'is-on')}
-              >
-                {code.toUpperCase()}
-              </button>
-            ))}
-          </div>
+        <div className="flex shrink-0 items-center gap-1.5">
+          {/* Wrapper so CSS display:inline-flex on children cannot un-hide on mobile */}
+          <div className="hidden items-center gap-1.5 md:flex">
+            <div className="lang-switch !h-9 !p-0.5">
+              {['ru', 'kk'].map((code) => (
+                <button
+                  key={code}
+                  type="button"
+                  onClick={() => setLang(code)}
+                  className={cn(
+                    '!h-8 !min-h-0 !px-2.5 !text-[10px]',
+                    lang === code && 'is-on',
+                  )}
+                >
+                  {code.toUpperCase()}
+                </button>
+              ))}
+            </div>
 
-          <a
-            href={whatsappRequestUrl()}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-secondary-dark hidden !min-h-9 !gap-1.5 !px-3 !py-2 !text-[10px] md:inline-flex lg:!px-4"
-          >
-            <MessageCircle className="h-3.5 w-3.5" strokeWidth={1.8} />
-            <span className="hidden lg:inline">{t('nav.whatsapp')}</span>
-            <span className="lg:hidden">WA</span>
-          </a>
+            <a
+              href={whatsappRequestUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                BAR_CTRL,
+                'gap-1.5 bg-[var(--bg-dark)] px-3 text-[var(--text-light)] transition-colors hover:bg-[var(--accent-cognac)]',
+              )}
+            >
+              <MessageCircle className="h-3.5 w-3.5" strokeWidth={1.8} />
+              <span className="hidden lg:inline">{t('nav.whatsapp')}</span>
+              <span className="lg:hidden">WA</span>
+            </a>
+          </div>
 
           <button
             type="button"
-            className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--border-color)] bg-white/80 md:hidden"
+            className={cn(
+              BAR_CTRL,
+              'h-9 w-9 border border-[var(--border-color)] bg-white/80 p-0 md:hidden',
+            )}
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? t('nav.closeMenu') : t('nav.openMenu')}
             aria-expanded={open}
@@ -126,6 +143,7 @@ export function PillNavbar() {
         </div>
       </div>
 
+      {/* Mobile panel */}
       <div
         className={cn(
           'overflow-hidden border bg-white/98 shadow-elevated backdrop-blur-md transition-all duration-300 md:hidden',
@@ -147,29 +165,37 @@ export function PillNavbar() {
               {t(item.key)}
             </a>
           ))}
-          <div className="my-1 border-t border-[var(--border-color)]" />
-          <div className="lang-switch m-2 flex w-full min-w-0">
+
+          <div className="my-2 border-t border-[var(--border-color)]" />
+
+          {/* Equal-size row: RU | KK | WhatsApp */}
+          <div className="grid grid-cols-3 gap-2 p-2">
             {['ru', 'kk'].map((code) => (
               <button
                 key={code}
                 type="button"
                 onClick={() => setLang(code)}
-                className={cn('min-h-10 min-w-0 flex-1', lang === code && 'is-on')}
+                className={cn(
+                  'flex h-11 items-center justify-center rounded-[var(--radius-sm)] text-xs font-bold uppercase tracking-wider transition-colors',
+                  lang === code
+                    ? 'bg-[var(--bg-dark)] text-[var(--text-light)]'
+                    : 'border border-[var(--border-color)] text-[var(--text-muted)]',
+                )}
               >
                 {code.toUpperCase()}
               </button>
             ))}
+            <a
+              href={whatsappRequestUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={close}
+              className="flex h-11 items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--bg-dark)] text-xs font-bold uppercase tracking-wider text-[var(--text-light)] transition-colors hover:bg-[var(--accent-cognac)]"
+            >
+              <MessageCircle className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
+              WA
+            </a>
           </div>
-          <a
-            href={whatsappRequestUrl()}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={close}
-            className="btn-secondary-dark btn-block m-2 max-w-full"
-          >
-            <MessageCircle className="h-4 w-4 shrink-0" strokeWidth={1.8} />
-            {t('nav.whatsapp')}
-          </a>
         </nav>
       </div>
     </div>
