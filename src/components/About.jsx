@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
-import { MessageCircle, MapPin, Hand, MessageSquare, Sparkles } from 'lucide-react'
+import { MapPin, Hand, MessageSquare, Sparkles } from 'lucide-react'
 import { fadeUp } from '@/lib/motion'
-import { WHATSAPP_URL, MAPS_DIR_URL } from '@/constants/contact'
+import { MAPS_DIR_URL } from '@/constants/contact'
 
 const STEPS = [
   { icon: Hand, labelKey: 'about.l1', titleKey: 'about.v1Title', descKey: 'about.v1Desc' },
@@ -43,13 +43,10 @@ export function About() {
 
             <div className="mt-8 flex flex-col gap-2.5 sm:mt-10 sm:flex-row sm:flex-wrap">
               <a
-                href={WHATSAPP_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+                href="#location"
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#1A1817] px-6 text-[11px] font-display font-bold uppercase tracking-[0.14em] text-[#F8F7F4] transition-colors hover:bg-[#8C5E3C]"
               >
-                <MessageCircle className="h-4 w-4" strokeWidth={1.7} />
-                {t('about.ctaWhatsapp')}
+                {t('about.ctaContacts')}
               </a>
               <a
                 href={MAPS_DIR_URL}

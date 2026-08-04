@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowRight, ExternalLink, MapPin, MessageCircle, Phone } from 'lucide-react'
+import { ArrowRight, ExternalLink, MapPin, MessageCircle } from 'lucide-react'
 import {
   PHONE_DISPLAY,
   PHONE_TEL,
@@ -103,7 +103,7 @@ export function Contact() {
                 {t('location.lead')}
               </p>
 
-              {/* Info columns like reference */}
+              {/* Address + phone once */}
               <div className="mt-10 grid gap-8 border-t border-[var(--border-color)] pt-8 sm:mt-12 sm:grid-cols-2 sm:gap-6 sm:pt-10">
                 <div>
                   <p className="mb-2 text-[10px] font-display font-bold uppercase tracking-[0.16em] text-[var(--text-muted)]">
@@ -129,21 +129,10 @@ export function Contact() {
                   >
                     {PHONE_DISPLAY}
                   </a>
-                  <p className="mt-4 mb-2 text-[10px] font-display font-bold uppercase tracking-[0.16em] text-[var(--text-muted)]">
-                    WhatsApp
-                  </p>
-                  <a
-                    href={WHATSAPP_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[15px] font-medium text-[var(--text-primary)] transition-colors hover:text-[#8C5E3C] sm:text-base"
-                  >
-                    {PHONE_DISPLAY}
-                  </a>
                 </div>
               </div>
 
-              {/* CTAs — pill cards like reference */}
+              {/* One primary WA + map — no duplicate phone */}
               <div className="mt-10 flex flex-col gap-3 sm:mt-auto sm:pt-10 sm:flex-row">
                 <a
                   href={WHATSAPP_URL}
@@ -239,13 +228,6 @@ export function Contact() {
               >
                 <ExternalLink className="h-3.5 w-3.5" strokeWidth={1.8} />
                 2GIS
-              </a>
-              <a
-                href={PHONE_TEL}
-                className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-[10px] border border-[var(--border-color)] bg-[#FAFAFA] px-4 text-[11px] font-bold uppercase tracking-wider text-[var(--text-primary)] transition-colors hover:bg-white sm:hidden"
-              >
-                <Phone className="h-3.5 w-3.5" strokeWidth={1.8} />
-                {PHONE_DISPLAY}
               </a>
             </div>
           </div>

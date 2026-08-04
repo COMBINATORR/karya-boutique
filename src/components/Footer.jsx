@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { MessageCircle } from 'lucide-react'
 import { NAV } from '@/constants/nav'
-import { PHONE_DISPLAY, PHONE_TEL, WHATSAPP_URL } from '@/constants/contact'
+import { PHONE_DISPLAY, PHONE_TEL } from '@/constants/contact'
 import { BrandMark } from '@/components/BrandMark'
 
 export function Footer() {
@@ -66,13 +65,10 @@ export function Footer() {
               {PHONE_DISPLAY}
             </a>
             <a
-              href={WHATSAPP_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[8px] border border-[var(--border-color)] bg-[#FAFAFA] px-4 text-[11px] font-display font-bold uppercase tracking-[0.12em] text-[var(--text-primary)] transition-colors hover:border-[#8C5E3C]/40 hover:text-[#8C5E3C] active:bg-white sm:min-h-10"
+              href="#location"
+              className="text-[11px] font-display font-bold uppercase tracking-[0.12em] text-[var(--text-muted)] transition-colors hover:text-[#8C5E3C]"
             >
-              <MessageCircle className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} aria-hidden />
-              WhatsApp
+              {t('footer.toContacts')}
             </a>
           </div>
         </div>

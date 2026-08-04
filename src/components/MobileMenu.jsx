@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { X, MessageCircle, Phone } from 'lucide-react'
+import { X, MessageCircle } from 'lucide-react'
 import { NAV } from '@/constants/nav'
-import { PHONE_DISPLAY, PHONE_TEL, whatsappRequestUrl } from '@/constants/contact'
+import { whatsappRequestUrl } from '@/constants/contact'
 import { cn } from '@/lib/utils'
 
 export function MobileMenu({ open, onClose }) {
@@ -85,19 +85,6 @@ export function MobileMenu({ open, onClose }) {
         >
           <MessageCircle className="h-4 w-4" strokeWidth={1.8} />
           <span>{t('nav.whatsapp')}</span>
-        </a>
-
-        <a
-          href={PHONE_TEL}
-          onClick={onClose}
-          className={cn(
-            'mt-4 inline-flex min-h-11 items-center gap-2 text-sm text-[#F8F7F4]/60 transition-all duration-500 active:text-[#F8F7F4]',
-            open ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0',
-          )}
-          style={{ transitionDelay: open ? `${NAV.length * 80 + 180}ms` : '0ms' }}
-        >
-          <Phone className="h-3.5 w-3.5" strokeWidth={1.8} />
-          <span>{PHONE_DISPLAY}</span>
         </a>
       </nav>
 
