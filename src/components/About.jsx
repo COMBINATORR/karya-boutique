@@ -1,15 +1,17 @@
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
+import { MessageCircle, MapPin, Hand, MessageSquare, Sparkles } from 'lucide-react'
 import { fadeUp } from '@/lib/motion'
+import { WHATSAPP_URL, MAPS_DIR_URL } from '@/constants/contact'
+
+const STEPS = [
+  { icon: Hand, labelKey: 'about.l1', titleKey: 'about.v1Title', descKey: 'about.v1Desc' },
+  { icon: MessageSquare, labelKey: 'about.l2', titleKey: 'about.v2Title', descKey: 'about.v2Desc' },
+  { icon: Sparkles, labelKey: 'about.l3', titleKey: 'about.v3Title', descKey: 'about.v3Desc' },
+]
 
 export function About() {
   const { t } = useTranslation()
-
-  const values = [
-    { labelKey: 'about.l1', titleKey: 'about.v1Title', descKey: 'about.v1Desc' },
-    { labelKey: 'about.l2', titleKey: 'about.v2Title', descKey: 'about.v2Desc' },
-    { labelKey: 'about.l3', titleKey: 'about.v3Title', descKey: 'about.v3Desc' },
-  ]
 
   return (
     <section
@@ -17,42 +19,82 @@ export function About() {
       className="section-pad relative z-10 -mt-6 rounded-t-[1.5rem] bg-white sm:-mt-8 sm:rounded-t-[2rem] md:-mt-10 md:rounded-t-[2.5rem]"
     >
       <div className="container-wide">
-        <motion.div className="mb-12 max-w-6xl sm:mb-16 lg:mb-20" {...fadeUp(0)}>
-          <span className="eyebrow mb-2 block text-[10px] tracking-[0.18em] sm:mb-3 sm:text-xs sm:tracking-[0.2em]">
-            {t('about.eyebrow')}
-          </span>
-          <h2 className="h2-editorial mb-6 text-[clamp(1.85rem,6vw,4.5rem)] tracking-tight sm:mb-10">
-            {t('about.titleBefore')}{' '}
-            <em className="font-serif-italic font-normal text-[#8C5E3C]">
-              {t('about.titleAccent')}
-            </em>{' '}
-            {t('about.titleAfter')}
-          </h2>
-          <p className="border-l-2 border-[#8C5E3C] pl-4 text-base font-normal leading-relaxed text-[var(--text-primary)] min-[400px]:pl-6 min-[400px]:text-lg sm:pl-8 sm:text-xl lg:pl-10 lg:text-2xl xl:text-3xl">
-            {t('about.lead')}
-          </p>
-        </motion.div>
+        <div className="grid items-start gap-10 lg:grid-cols-12 lg:gap-14 xl:gap-16">
+          {/* Left — visit pitch */}
+          <motion.div className="lg:col-span-5" {...fadeUp(0)}>
+            <span className="eyebrow mb-2 block text-[10px] tracking-[0.18em] sm:mb-3 sm:text-xs sm:tracking-[0.2em]">
+              {t('about.eyebrow')}
+            </span>
+            <h2 className="h2-editorial mb-5 text-[clamp(1.85rem,5.5vw,3.25rem)] tracking-tight sm:mb-6">
+              {t('about.titleBefore')}{' '}
+              <em className="font-serif-italic font-normal text-[#8C5E3C]">
+                {t('about.titleAccent')}
+              </em>
+              {t('about.titleAfter') ? (
+                <>
+                  {' '}
+                  {t('about.titleAfter')}
+                </>
+              ) : null}
+            </h2>
+            <p className="max-w-md text-base leading-relaxed text-[var(--text-secondary)] sm:text-lg">
+              {t('about.lead')}
+            </p>
 
-        <div className="grid gap-4 border-t border-[var(--border-color)] pt-8 sm:gap-6 sm:pt-10 md:grid-cols-3 md:gap-8 lg:gap-10">
-          {values.map((item, idx) => (
-            <motion.div
-              key={item.titleKey}
-              className="liquid-glass-light flex flex-col justify-between rounded-[8px] p-5 min-[400px]:p-6 sm:p-8 lg:p-10"
-              {...fadeUp(0.08 * idx)}
-            >
-              <div className="relative z-[1]">
-                <span className="mb-4 block font-mono text-[10px] font-bold uppercase tracking-widest text-[#8C5E3C] sm:mb-5 sm:text-xs">
-                  {t(item.labelKey)}
-                </span>
-                <h3 className="mb-3 font-display text-xl font-bold uppercase tracking-tight text-[var(--text-primary)] sm:mb-4 sm:text-2xl">
-                  {t(item.titleKey)}
-                </h3>
-                <p className="text-sm leading-relaxed text-[var(--text-secondary)] sm:text-base">
-                  {t(item.descKey)}
-                </p>
-              </div>
-            </motion.div>
-          ))}
+            <div className="mt-8 flex flex-col gap-2.5 sm:mt-10 sm:flex-row sm:flex-wrap">
+              <a
+                href={WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#1A1817] px-6 text-[11px] font-display font-bold uppercase tracking-[0.14em] text-[#F8F7F4] transition-colors hover:bg-[#8C5E3C]"
+              >
+                <MessageCircle className="h-4 w-4" strokeWidth={1.7} />
+                {t('about.ctaWhatsapp')}
+              </a>
+              <a
+                href={MAPS_DIR_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--border-color)] px-6 text-[11px] font-display font-bold uppercase tracking-[0.14em] text-[var(--text-primary)] transition-colors hover:border-[#1A1817]/25 hover:bg-[#FAFAFA]"
+              >
+                <MapPin className="h-3.5 w-3.5 text-[#8C5E3C]" strokeWidth={1.7} />
+                {t('about.ctaRoute')}
+              </a>
+            </div>
+
+            <p className="mt-5 text-xs text-[var(--text-muted)] sm:mt-6">
+              {t('about.placeLine')}
+            </p>
+          </motion.div>
+
+          {/* Right — visit steps */}
+          <div className="grid gap-3 sm:gap-4 lg:col-span-7">
+            {STEPS.map((item, idx) => {
+              const Icon = item.icon
+              return (
+                <motion.div
+                  key={item.titleKey}
+                  className="flex gap-4 rounded-[12px] border border-[var(--border-color)] bg-[#FAFAFA] p-4 min-[400px]:gap-5 min-[400px]:p-5 sm:p-6"
+                  {...fadeUp(0.06 * (idx + 1))}
+                >
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] border border-[var(--border-color)] bg-white text-[#8C5E3C] sm:h-12 sm:w-12">
+                    <Icon className="h-5 w-5" strokeWidth={1.5} />
+                  </div>
+                  <div className="min-w-0 pt-0.5">
+                    <span className="mb-1 block font-mono text-[10px] font-bold uppercase tracking-widest text-[#8C5E3C]">
+                      {t(item.labelKey)}
+                    </span>
+                    <h3 className="font-display text-lg font-bold tracking-tight text-[var(--text-primary)] sm:text-xl">
+                      {t(item.titleKey)}
+                    </h3>
+                    <p className="mt-1.5 text-sm leading-relaxed text-[var(--text-secondary)] sm:text-[15px]">
+                      {t(item.descKey)}
+                    </p>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
         </div>
       </div>
     </section>
