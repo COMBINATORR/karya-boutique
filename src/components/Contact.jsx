@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowRight, ExternalLink, Instagram, MapPin, MessageCircle } from 'lucide-react'
+import { ArrowRight, ExternalLink, MapPin, MessageCircle } from 'lucide-react'
 import {
   PHONE_DISPLAY,
   PHONE_TEL,
@@ -12,6 +12,7 @@ import {
   MAPS_DIR_URL,
   TWOGIS_URL,
 } from '@/constants/contact'
+import { InstagramIcon } from '@/components/InstagramIcon'
 import { BoutiqueMap } from '@/components/BoutiqueMap'
 
 const SLIDES = [
@@ -137,7 +138,7 @@ export function Contact() {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 text-[15px] font-medium text-[var(--text-primary)] transition-colors hover:text-[var(--accent-cognac)] sm:text-base"
                   >
-                    <Instagram className="h-4 w-4 shrink-0" strokeWidth={1.6} />
+                    <InstagramIcon className="h-4 w-4 shrink-0" strokeWidth={1.6} />
                     {INSTAGRAM_HANDLE}
                   </a>
                 </div>
