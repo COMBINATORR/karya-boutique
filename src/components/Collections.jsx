@@ -359,7 +359,7 @@ function CategoryModal({ line, id, index, onClose }) {
         className={[
           'relative z-10 flex w-full flex-col bg-white overscroll-contain touch-pan-y',
           'h-[100dvh] max-h-[100dvh] rounded-none',
-          'sm:h-auto sm:max-h-[min(90dvh,860px)] sm:max-w-[920px] sm:flex-row sm:overflow-hidden sm:rounded-[20px] sm:shadow-2xl sm:touch-auto',
+          'sm:h-auto sm:max-h-[min(90dvh,860px)] sm:max-w-[920px] sm:flex-row sm:overflow-hidden sm:rounded-[var(--radius-lg)] sm:shadow-elevated sm:touch-auto',
           'lg:max-w-[980px]',
         ].join(' ')}
         style={isMobile ? { y, opacity: sheetOpacity } : undefined}
