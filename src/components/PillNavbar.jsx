@@ -73,8 +73,9 @@ export function PillNavbar() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          <div className="lang-switch hidden sm:inline-flex">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+          {/* Desktop only — on mobile these live inside the hamburger panel */}
+          <div className="lang-switch hidden md:inline-flex">
             {['ru', 'kk'].map((code) => (
               <button
                 key={code}
@@ -91,7 +92,7 @@ export function PillNavbar() {
             href={whatsappRequestUrl()}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-secondary-dark hidden !min-h-9 !px-3 !py-2 !text-[10px] sm:inline-flex lg:!px-4"
+            className="btn-secondary-dark hidden !min-h-9 !gap-1.5 !px-3 !py-2 !text-[10px] md:inline-flex lg:!px-4"
           >
             <MessageCircle className="h-3.5 w-3.5" strokeWidth={1.8} />
             <span className="hidden lg:inline">{t('nav.whatsapp')}</span>
@@ -100,7 +101,7 @@ export function PillNavbar() {
 
           <button
             type="button"
-            className="relative flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--border-color)] bg-white/80 md:hidden"
+            className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--border-color)] bg-white/80 md:hidden"
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? t('nav.closeMenu') : t('nav.openMenu')}
             aria-expanded={open}
@@ -135,7 +136,7 @@ export function PillNavbar() {
         )}
         aria-hidden={!open}
       >
-        <nav className="flex flex-col p-2">
+        <nav className="flex min-w-0 flex-col p-2">
           {NAV.map((item) => (
             <a
               key={item.href}
@@ -147,13 +148,13 @@ export function PillNavbar() {
             </a>
           ))}
           <div className="my-1 border-t border-[var(--border-color)]" />
-          <div className="lang-switch m-2 w-auto">
+          <div className="lang-switch m-2 flex w-full min-w-0">
             {['ru', 'kk'].map((code) => (
               <button
                 key={code}
                 type="button"
                 onClick={() => setLang(code)}
-                className={cn('min-h-10 flex-1', lang === code && 'is-on')}
+                className={cn('min-h-10 min-w-0 flex-1', lang === code && 'is-on')}
               >
                 {code.toUpperCase()}
               </button>
@@ -164,9 +165,9 @@ export function PillNavbar() {
             target="_blank"
             rel="noopener noreferrer"
             onClick={close}
-            className="btn-secondary-dark btn-block m-2"
+            className="btn-secondary-dark btn-block m-2 max-w-full"
           >
-            <MessageCircle className="h-4 w-4" strokeWidth={1.8} />
+            <MessageCircle className="h-4 w-4 shrink-0" strokeWidth={1.8} />
             {t('nav.whatsapp')}
           </a>
         </nav>

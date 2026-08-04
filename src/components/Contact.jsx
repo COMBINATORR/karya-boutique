@@ -129,18 +129,18 @@ export function Contact() {
                 </div>
               </div>
 
-              {/* Primary marketing CTAs — pill family */}
+              {/* Square 8px CTAs — match site utility language */}
               <div className="mt-10 flex flex-col gap-3 sm:mt-auto sm:flex-row sm:pt-10">
                 <a
                   href={WHATSAPP_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-pill btn-block sm:flex-1"
+                  className="btn-secondary-dark btn-block sm:flex-1"
                 >
                   <MessageCircle className="h-4 w-4" strokeWidth={1.7} />
                   {t('location.ctaVisit')}
                 </a>
-                <a href="#map" className="btn-pill-outline btn-block sm:flex-1">
+                <a href="#map" className="btn-outline btn-block sm:flex-1">
                   <ArrowRight className="h-4 w-4" strokeWidth={1.7} />
                   {t('location.ctaMap')}
                 </a>
@@ -170,7 +170,7 @@ export function Contact() {
               href={MAPS_DIR_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-pill shrink-0"
+              className="btn-secondary-dark shrink-0"
             >
               <MapPin className="h-3.5 w-3.5" strokeWidth={1.7} />
               {t('location.routeBtn')}
