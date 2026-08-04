@@ -17,7 +17,7 @@ const FEATURES = [
       { key: 'features.f1t1', tone: 'ok' },
       { key: 'features.f1t2', tone: 'soft' },
     ],
-    image: '/images/journey/04-materials.jpg',
+    image: '/images/features/01-floater.jpg',
   },
   {
     id: 'patent',
@@ -30,7 +30,7 @@ const FEATURES = [
       { key: 'features.f2t1', tone: 'soft' },
       { key: 'features.f2t2', tone: 'ok' },
     ],
-    image: '/images/assortment/women/c3.webp',
+    image: '/images/features/02-patent.jpg',
   },
   {
     id: 'palette',
@@ -43,7 +43,7 @@ const FEATURES = [
       { key: 'features.f3t1', tone: 'soft' },
       { key: 'features.f3t2', tone: 'ok' },
     ],
-    image: '/images/assortment/women/c1.webp',
+    image: '/images/features/03-palette.jpg',
   },
   {
     id: 'craft',
@@ -56,7 +56,7 @@ const FEATURES = [
       { key: 'features.f4t1', tone: 'ok' },
       { key: 'features.f4t2', tone: 'soft' },
     ],
-    image: '/images/assortment/men/c5.webp',
+    image: '/images/features/04-hardware.jpg',
   },
 ]
 
@@ -160,7 +160,7 @@ export function Features() {
               <AnimatePresence mode="wait">
                 <motion.img
                   key={feature.image}
-                  src={`${feature.image}?v=1`}
+                  src={`${feature.image}?v=2`}
                   alt=""
                   initial={{ opacity: 0, scale: 1.06 }}
                   animate={{ opacity: 1, scale: 1 }}
