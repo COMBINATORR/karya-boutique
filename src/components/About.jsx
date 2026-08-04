@@ -1,8 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
-import { MapPin, Hand, MessageSquare, Sparkles } from 'lucide-react'
+import { Hand, MessageSquare, Sparkles } from 'lucide-react'
 import { fadeUp } from '@/lib/motion'
-import { MAPS_DIR_URL } from '@/constants/contact'
 
 const STEPS = [
   { icon: Hand, labelKey: 'about.l1', titleKey: 'about.v1Title', descKey: 'about.v1Desc' },
@@ -38,18 +37,9 @@ export function About() {
               {t('about.lead')}
             </p>
 
-            <div className="mt-8 flex flex-col gap-2.5 sm:mt-10 sm:flex-row sm:flex-wrap">
-              <a href="#location" className="btn-pill">
+            <div className="mt-8 sm:mt-10">
+              <a href="#location" className="btn-secondary-dark">
                 {t('about.ctaContacts')}
-              </a>
-              <a
-                href={MAPS_DIR_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-pill-outline"
-              >
-                <MapPin className="h-3.5 w-3.5 text-[var(--accent-cognac)]" strokeWidth={1.7} />
-                {t('about.ctaRoute')}
               </a>
             </div>
 
