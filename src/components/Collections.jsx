@@ -553,17 +553,20 @@ export function Collections() {
       className="section-pad relative z-10 rounded-t-[1.5rem] bg-white pt-16 sm:rounded-t-[2rem] sm:pt-20 md:rounded-t-[2.5rem]"
     >
       <div className="container-wide">
-        <div className="mx-auto max-w-2xl text-center">
+        <div className="mx-auto max-w-3xl text-center">
+          <span className="eyebrow mb-3 block text-[10px] tracking-[0.18em] sm:mb-4 sm:text-xs sm:tracking-[0.2em]">
+            {t('categories.eyebrow')}
+          </span>
           <BlurText
             as="h2"
             text={t('categories.heading')}
-            animateBy="letters"
+            animateBy="words"
             direction="top"
-            delay={80}
-            stepDuration={0.32}
+            delay={60}
+            stepDuration={0.28}
             threshold={0.2}
             rootMargin="0px 0px -8% 0px"
-            className="h2-editorial justify-center text-[clamp(2rem,7vw,3.75rem)] uppercase tracking-[0.06em] sm:tracking-[0.08em]"
+            className="h2-editorial justify-center text-[clamp(1.65rem,5.5vw,3.25rem)] tracking-tight normal-case"
           />
         </div>
 
