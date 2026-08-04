@@ -31,14 +31,15 @@ export function BoutiqueMap({ title = 'KARYA' }) {
     let cancelled = false
     let map
     let ro
+    let io
     let timers = []
 
     const init = () => {
       if (cancelled || !containerRef.current) return
 
-      // Wait until container has real size (aspect-ratio layout)
+      // Wait until container has real pixel size (parent must set explicit height)
       const { clientWidth: w, clientHeight: h } = containerRef.current
-      if (w < 40 || h < 40) {
+      if (w < 40 || h < 80) {
         timers.push(window.setTimeout(init, 80))
         return
       }
@@ -55,10 +56,9 @@ export function BoutiqueMap({ title = 'KARYA' }) {
           minZoom: 12,
           maxZoom: 19,
           zoomControl: false,
-          attributionControl: false, // no Leaflet / OSM badge on map
-          scrollWheelZoom: false, // page scroll stays free; use pinch / +/- 
+          attributionControl: false,
+          scrollWheelZoom: false,
           dragging: true,
-          // 'center' keeps pin under fingers while pinching on mobile
           touchZoom: isCoarse ? 'center' : true,
           doubleClickZoom: true,
           boxZoom: false,
@@ -66,7 +66,6 @@ export function BoutiqueMap({ title = 'KARYA' }) {
           bounceAtZoomLimits: true,
         })
 
-        // Explicitly enable (body touch-action can leave handlers half-disabled)
         map.touchZoom.enable()
         map.dragging.enable()
         if (map.tap) map.tap.enable()
@@ -84,22 +83,13 @@ export function BoutiqueMap({ title = 'KARYA' }) {
           },
         )
 
-        tiles.on('tileerror', () => {
-          // keep map chrome; user still sees pin + can open Google
-        })
-
         tiles.on('load', () => {
           if (!cancelled) setStatus('ready')
+          if (map) map.invalidateSize({ animate: false })
         })
 
         tiles.addTo(map)
 
-        /**
-         * Geographic point = center of the RED DOT only.
-         * iconAnchor must match that pixel in the icon, otherwise the pin
-         * "swims" when zooming (pixel offset ≠ fixed meters).
-         * Layout: [20×52 dot column | 72px card+label], red center at (10, 26).
-         */
         const icon = L.divIcon({
           className: 'karya-map-marker',
           html: `
@@ -135,12 +125,15 @@ export function BoutiqueMap({ title = 'KARYA' }) {
         mapRef.current = map
 
         const invalidate = () => {
-          if (map) map.invalidateSize({ animate: false })
+          if (!map) return
+          map.invalidateSize({ animate: false })
+          map.setView([lat, lng], map.getZoom(), { animate: false })
         }
 
         timers.push(window.setTimeout(invalidate, 50))
-        timers.push(window.setTimeout(invalidate, 250))
-        timers.push(window.setTimeout(invalidate, 600))
+        timers.push(window.setTimeout(invalidate, 200))
+        timers.push(window.setTimeout(invalidate, 500))
+        timers.push(window.setTimeout(invalidate, 1000))
         timers.push(
           window.setTimeout(() => {
             if (!cancelled) setStatus((s) => (s === 'loading' ? 'ready' : s))
@@ -148,18 +141,37 @@ export function BoutiqueMap({ title = 'KARYA' }) {
         )
 
         if (typeof ResizeObserver !== 'undefined') {
-          ro = new ResizeObserver(() => invalidate())
+          ro = new ResizeObserver(() => {
+            invalidate()
+          })
+          // Observe outer shell so parent height changes are caught
+          const shell = containerRef.current?.parentElement
+          if (shell) ro.observe(shell)
           ro.observe(containerRef.current)
+        }
+
+        // When user scrolls to #map, force full resize (common white-gap bug)
+        if (typeof IntersectionObserver !== 'undefined' && containerRef.current) {
+          io = new IntersectionObserver(
+            (entries) => {
+              if (entries.some((e) => e.isIntersecting)) {
+                invalidate()
+                timers.push(window.setTimeout(invalidate, 100))
+              }
+            },
+            { threshold: 0.15 },
+          )
+          io.observe(containerRef.current)
         }
 
         window.addEventListener('resize', invalidate)
         window.addEventListener('orientationchange', invalidate)
 
-        // store cleanup extras on map
         map._karyaCleanup = () => {
           window.removeEventListener('resize', invalidate)
           window.removeEventListener('orientationchange', invalidate)
           if (ro) ro.disconnect()
+          if (io) io.disconnect()
         }
       } catch (err) {
         console.error('[BoutiqueMap]', err)
@@ -167,8 +179,9 @@ export function BoutiqueMap({ title = 'KARYA' }) {
       }
     }
 
-    // Start after paint so aspect-ratio parent has height
-    timers.push(window.requestAnimationFrame(() => init()))
+    timers.push(window.requestAnimationFrame(() => {
+      timers.push(window.requestAnimationFrame(() => init()))
+    }))
 
     return () => {
       cancelled = true
@@ -188,7 +201,7 @@ export function BoutiqueMap({ title = 'KARYA' }) {
   }, [title])
 
   return (
-    <div className="karya-map-shell relative h-full w-full min-h-[inherit]">
+    <div className="karya-map-shell absolute inset-0 h-full w-full min-h-0">
       {status === 'loading' && (
         <div className="pointer-events-none absolute inset-0 z-[5] flex items-center justify-center bg-white">
           <p className="text-xs font-medium uppercase tracking-widest text-[#8c867e]">
@@ -215,8 +228,7 @@ export function BoutiqueMap({ title = 'KARYA' }) {
 
       <div
         ref={containerRef}
-        className="karya-map h-full w-full"
-        style={{ minHeight: '260px', height: '100%', width: '100%' }}
+        className="karya-map absolute inset-0 h-full w-full"
         role="application"
         aria-label={title}
       />

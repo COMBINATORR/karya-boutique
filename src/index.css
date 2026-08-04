@@ -324,19 +324,22 @@ body {
 
 /* ——— Boutique map (Leaflet): clean + pulse pin ——— */
 .karya-map-shell {
-  position: relative;
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  min-height: 260px;
+  min-height: 0;
   background: #ffffff;
   isolation: isolate;
 }
 
 .karya-map,
 .karya-map.leaflet-container {
+  position: absolute !important;
+  inset: 0;
   width: 100% !important;
   height: 100% !important;
-  min-height: 260px;
+  min-height: 0 !important;
   background: #ffffff;
   z-index: 0;
   font: inherit;

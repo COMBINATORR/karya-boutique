@@ -217,7 +217,8 @@ export function Contact() {
           </div>
 
           <div className="overflow-hidden rounded-[16px] border border-[var(--border-color)] bg-white sm:rounded-[20px]">
-            <div className="relative min-h-[280px] w-full sm:min-h-[360px] lg:min-h-[420px]">
+            {/* Explicit height required — Leaflet cannot size with min-height alone */}
+            <div className="relative h-[300px] w-full sm:h-[380px] lg:h-[440px]">
               <BoutiqueMap title="KARYA" />
             </div>
             <div className="flex flex-col gap-2 border-t border-[var(--border-color)] p-3 sm:flex-row sm:gap-3 sm:p-3.5">
