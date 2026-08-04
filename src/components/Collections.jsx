@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import {
   motion,
@@ -105,74 +106,77 @@ function CategoryModal({ line, id, index, onClose }) {
   }, [])
 
   useEffect(() => {
-    // Lock page scroll without jumping: capture Y first, freeze body, disable
-    // sticky hero (see .hero-pin CSS) so it cannot re-stick to the viewport.
+    /*
+      Do NOT use position:fixed on body — sticky hero reflows and the page
+      appears to jump back to the main screen. Keep scrollY, block overflow +
+      gestures, and force-restore if anything tries to move the window.
+    */
     const scrollY =
       window.scrollY ||
       window.pageYOffset ||
       document.documentElement.scrollTop ||
-      document.body.scrollTop ||
       0
     const html = document.documentElement
     const body = document.body
     const prev = {
       htmlOverflow: html.style.overflow,
       bodyOverflow: body.style.overflow,
-      bodyPosition: body.style.position,
-      bodyTop: body.style.top,
-      bodyLeft: body.style.left,
-      bodyRight: body.style.right,
-      bodyWidth: body.style.width,
-      bodyPaddingRight: body.style.paddingRight,
+      htmlOverscroll: html.style.overscrollBehavior,
+      bodyOverscroll: body.style.overscrollBehavior,
+      bodyTouchAction: body.style.touchAction,
     }
-    const scrollbarGap = Math.max(0, window.innerWidth - html.clientWidth)
 
-    // Class first so sticky is disabled in the same frame as position:fixed
     body.classList.add('karya-modal-open')
     html.style.overflow = 'hidden'
     body.style.overflow = 'hidden'
-    body.style.position = 'fixed'
-    body.style.top = `-${scrollY}px`
-    body.style.left = '0'
-    body.style.right = '0'
-    body.style.width = '100%'
-    if (scrollbarGap > 0) body.style.paddingRight = `${scrollbarGap}px`
-    body.dataset.modalScrollY = String(scrollY)
+    html.style.overscrollBehavior = 'none'
+    body.style.overscrollBehavior = 'none'
+    body.style.touchAction = 'none'
 
-    // Do not scroll the page when focusing the close control
-    closeRef.current?.focus({ preventScroll: true })
+    const allowInsideModal = (target) =>
+      target instanceof Element && !!target.closest('[data-modal-root]')
 
     const onKey = (e) => {
       if (e.key === 'Escape') onClose()
     }
     const onTouchMove = (e) => {
-      const target = e.target
-      if (!(target instanceof Element)) return
-      if (target.closest('[data-modal-scroll]')) return
+      if (allowInsideModal(e.target) && e.target.closest('[data-modal-scroll]')) return
       e.preventDefault()
     }
+    const onWheel = (e) => {
+      if (allowInsideModal(e.target) && e.target.closest('[data-modal-scroll]')) return
+      e.preventDefault()
+    }
+    // If anything tries to scroll the page (focus, browser quirks) — snap back
+    const onScroll = () => {
+      if (window.scrollY !== scrollY) {
+        window.scrollTo(0, scrollY)
+      }
+    }
+
     window.addEventListener('keydown', onKey)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('wheel', onWheel, { passive: false })
     document.addEventListener('touchmove', onTouchMove, { passive: false })
+
+    // Focus after lock; never scroll the page
+    requestAnimationFrame(() => {
+      closeRef.current?.focus({ preventScroll: true })
+      window.scrollTo(0, scrollY)
+    })
 
     return () => {
       html.style.overflow = prev.htmlOverflow
       body.style.overflow = prev.bodyOverflow
-      body.style.position = prev.bodyPosition
-      body.style.top = prev.bodyTop
-      body.style.left = prev.bodyLeft
-      body.style.right = prev.bodyRight
-      body.style.width = prev.bodyWidth
-      body.style.paddingRight = prev.bodyPaddingRight
-      delete body.dataset.modalScrollY
+      html.style.overscrollBehavior = prev.htmlOverscroll
+      body.style.overscrollBehavior = prev.bodyOverscroll
+      body.style.touchAction = prev.bodyTouchAction
       body.classList.remove('karya-modal-open')
-      // Restore after sticky is re-enabled (class removed)
-      const y = scrollY
-      requestAnimationFrame(() => {
-        window.scrollTo(0, y)
-        requestAnimationFrame(() => window.scrollTo(0, y))
-      })
       window.removeEventListener('keydown', onKey)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('wheel', onWheel)
       document.removeEventListener('touchmove', onTouchMove)
+      window.scrollTo(0, scrollY)
     }
   }, [onClose])
 
@@ -204,8 +208,9 @@ function CategoryModal({ line, id, index, onClose }) {
     }
   }
 
-  return (
+  const sheet = (
     <motion.div
+      data-modal-root
       className="fixed inset-0 z-[100] flex items-stretch justify-center overscroll-none p-0 sm:items-center sm:p-6"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -345,6 +350,10 @@ function CategoryModal({ line, id, index, onClose }) {
       </motion.div>
     </motion.div>
   )
+
+  // Portal to body so layout/sticky ancestors cannot affect the page under the sheet
+  if (typeof document === 'undefined') return null
+  return createPortal(sheet, document.body)
 }
 
 export function Collections() {
@@ -456,7 +465,17 @@ export function Collections() {
                   <button
                     key={`${line}-${id}`}
                     type="button"
-                    onClick={() => setOpenId(id)}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      // Capture scroll before React re-render / focus quirks
+                      const y =
+                        window.scrollY ||
+                        document.documentElement.scrollTop ||
+                        0
+                      setOpenId(id)
+                      requestAnimationFrame(() => window.scrollTo(0, y))
+                    }}
                     className={[
                       'group block snap-start text-center outline-none',
                       'w-[calc((100%-1rem)/1.2)] shrink-0 grow-0 basis-[calc((100%-1rem)/1.2)]',
