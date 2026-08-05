@@ -164,23 +164,25 @@ export function BrandJourney() {
       aria-label={t('journey.title')}
     >
       <div className="container-wide">
-        <header className="mb-8 sm:mb-10 lg:mb-12">
-          <span className="eyebrow mb-2 block text-[var(--accent-cognac-soft)]">
+        {/* Section header — same rhythm as other sections */}
+        <header className="mb-8 max-w-2xl sm:mb-10 lg:mb-12">
+          <span className="eyebrow mb-3 block text-[var(--accent-cognac-soft)]">
             {t('journey.eyebrow')}
           </span>
-          <h2 className="font-display text-[clamp(1.75rem,5.5vw,3.25rem)] font-bold tracking-tight text-[var(--text-light)]">
+          <h2 className="h2-editorial text-[clamp(1.85rem,5.5vw,3.25rem)] tracking-tight text-[var(--text-light)]">
             {t('journey.title')}
           </h2>
         </header>
 
-        {/* Story + photo panel — no outer frame */}
+        {/* Story + photo */}
         <div
           className="relative"
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
         >
-          <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-stretch lg:gap-8">
-            <div className="relative flex min-h-[220px] flex-col justify-between sm:min-h-[260px] lg:min-h-[320px] lg:py-1">
+          <div className="grid items-start gap-6 lg:grid-cols-12 lg:gap-10 xl:gap-12">
+            {/* Text column — top-aligned stack, fixed hierarchy */}
+            <div className="lg:col-span-6 lg:pt-1 xl:col-span-6">
               <AnimatePresence mode="wait" custom={direction}>
                 <motion.div
                   key={step.id}
@@ -190,25 +192,26 @@ export function BrandJourney() {
                   animate="center"
                   exit="exit"
                   transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
-                  className="flex min-h-[200px] flex-1 flex-col sm:min-h-[230px]"
+                  className="flex flex-col"
                 >
-                  <p className="font-display text-xs font-bold uppercase tracking-[0.18em] text-[var(--accent-cognac-soft)] sm:text-sm">
+                  {/* Meta: year */}
+                  <p className="font-display text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--accent-cognac-soft)] sm:text-xs">
                     {t(step.yearKey)}
                   </p>
-                  <div className="mt-auto pt-10 sm:pt-14">
-                    <h3 className="font-display text-[1.65rem] font-bold leading-tight tracking-tight text-white sm:text-3xl lg:text-[2.05rem]">
-                      {t(step.titleKey)}
-                    </h3>
-                    <p className="mt-3 max-w-2xl text-sm leading-relaxed text-white/60 sm:mt-4 sm:text-[0.95rem] sm:leading-[1.65]">
-                      {t(step.descKey)}
-                    </p>
-                  </div>
+                  {/* Title */}
+                  <h3 className="mt-3 font-display text-[clamp(1.5rem,4vw,2.125rem)] font-bold leading-[1.15] tracking-tight text-[var(--text-light)] sm:mt-4">
+                    {t(step.titleKey)}
+                  </h3>
+                  {/* Body */}
+                  <p className="mt-3 max-w-xl text-[14px] leading-[1.65] text-[var(--text-light)]/65 sm:mt-4 sm:text-[15px] sm:leading-[1.7]">
+                    {t(step.descKey)}
+                  </p>
                 </motion.div>
               </AnimatePresence>
             </div>
 
             {/* Desktop photo */}
-            <div className="relative hidden min-h-[300px] overflow-hidden rounded-[var(--radius-md)] bg-[var(--bg-dark-elevated)] lg:block">
+            <div className="relative hidden min-h-[280px] overflow-hidden rounded-[var(--radius-md)] bg-[var(--bg-dark-elevated)] lg:col-span-6 lg:block lg:min-h-[340px] xl:min-h-[380px]">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={step.image}
@@ -230,7 +233,7 @@ export function BrandJourney() {
             </div>
           </div>
 
-          {/* Mobile photo */}
+          {/* Mobile photo — after text */}
           <div className="mt-6 lg:hidden">
             <div className="relative aspect-[16/10] overflow-hidden rounded-[var(--radius-md)] bg-[var(--bg-dark-elevated)]">
               <AnimatePresence mode="wait">
@@ -251,20 +254,20 @@ export function BrandJourney() {
         </div>
 
         {/* Timeline */}
-        <div className="mt-10 sm:mt-12 lg:mt-14">
-          {/* Labels above track (desktop / tablet) */}
-          <div className="relative mb-4 hidden px-1 sm:block sm:px-2">
-            <div className="flex justify-between">
+        <div className="mt-10 border-t border-white/10 pt-8 sm:mt-12 sm:pt-10 lg:mt-14">
+          {/* Step labels (sm+) — equal columns under dots */}
+          <div className="relative mb-5 hidden sm:block">
+            <div className="grid grid-cols-6 gap-1">
               {STEPS.map((s, i) => (
                 <button
                   key={s.id}
                   type="button"
                   onClick={() => goTo(i)}
                   className={[
-                    'max-w-[5.2rem] text-left text-[10px] font-semibold uppercase tracking-[0.06em] transition-colors duration-200 lg:max-w-[6.5rem] lg:text-[11px]',
+                    'px-0.5 text-center font-display text-[9px] font-semibold uppercase leading-snug tracking-[0.08em] transition-colors duration-200 lg:text-[10px]',
                     i === active
-                      ? 'text-white'
-                      : 'text-white/30 hover:text-white/55',
+                      ? 'text-[var(--text-light)]'
+                      : 'text-[var(--text-light)]/35 hover:text-[var(--text-light)]/60',
                   ].join(' ')}
                 >
                   {t(s.labelKey)}
@@ -276,7 +279,7 @@ export function BrandJourney() {
           {/* Track */}
           <div
             ref={trackRef}
-            className="relative mx-0 h-10 cursor-pointer touch-none select-none px-3 sm:mx-1 sm:px-2"
+            className="relative mx-0 h-9 cursor-pointer touch-none select-none px-2 sm:h-10 sm:px-1"
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
@@ -299,17 +302,14 @@ export function BrandJourney() {
               }
             }}
           >
-            {/* Base line */}
-            <div className="pointer-events-none absolute left-3 right-3 top-1/2 h-[2px] -translate-y-1/2 rounded-full bg-white/15 sm:left-2 sm:right-2" />
-            {/* Progress line */}
+            <div className="pointer-events-none absolute left-2 right-2 top-1/2 h-px -translate-y-1/2 rounded-full bg-white/20 sm:left-1 sm:right-1" />
             <div
-              className="pointer-events-none absolute left-3 top-1/2 h-[2px] -translate-y-1/2 rounded-full bg-white transition-[width] duration-300 ease-out sm:left-2"
+              className="pointer-events-none absolute left-2 top-1/2 h-px -translate-y-1/2 rounded-full bg-white transition-[width] duration-300 ease-out sm:left-1"
               style={{
-                width: `calc((100% - 1.5rem) * ${progress})`,
+                width: `calc((100% - 1rem) * ${progress})`,
               }}
             />
 
-            {/* Dots */}
             {STEPS.map((s, i) => {
               const left = n <= 1 ? 0 : (i / (n - 1)) * 100
               const on = i === active
@@ -322,8 +322,8 @@ export function BrandJourney() {
                     e.stopPropagation()
                     goTo(i)
                   }}
-                  className="absolute top-1/2 z-[1] flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center"
-                  style={{ left: `calc(0.75rem + (100% - 1.5rem) * ${left / 100})` }}
+                  className="absolute top-1/2 z-[1] flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center sm:h-10 sm:w-10"
+                  style={{ left: `calc(0.5rem + (100% - 1rem) * ${left / 100})` }}
                   aria-label={t(s.labelKey)}
                   aria-current={on ? 'step' : undefined}
                 >
@@ -331,10 +331,10 @@ export function BrandJourney() {
                     className={[
                       'block rounded-full transition-all duration-300',
                       on
-                        ? 'h-3.5 w-3.5 bg-white shadow-[0_0_0_5px_rgba(255,255,255,0.14)]'
+                        ? 'h-3 w-3 bg-white shadow-[0_0_0_4px_rgba(255,255,255,0.14)] sm:h-3.5 sm:w-3.5'
                         : passed
-                          ? 'h-2.5 w-2.5 bg-white'
-                          : 'h-2.5 w-2.5 border-2 border-white/35 bg-[var(--bg-dark)]',
+                          ? 'h-2 w-2 bg-white sm:h-2.5 sm:w-2.5'
+                          : 'h-2 w-2 border-2 border-white/35 bg-[var(--bg-dark)] sm:h-2.5 sm:w-2.5',
                     ].join(' ')}
                   />
                 </button>
@@ -342,31 +342,24 @@ export function BrandJourney() {
             })}
 
             <div
-              className="pointer-events-none absolute top-1/2 z-[2] h-5 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-white shadow-[0_0_12px_rgba(255,255,255,0.25)] transition-[left] duration-300 ease-out sm:h-[22px] sm:w-9"
-              style={{ left: `calc(0.75rem + (100% - 1.5rem) * ${progress})` }}
+              className="pointer-events-none absolute top-1/2 z-[2] h-4 w-7 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-white shadow-[0_0_10px_rgba(255,255,255,0.2)] transition-[left] duration-300 ease-out sm:h-[20px] sm:w-8"
+              style={{ left: `calc(0.5rem + (100% - 1rem) * ${progress})` }}
               aria-hidden
             />
-
-            <div
-              className="pointer-events-none absolute top-[calc(50%+18px)] z-[2] -translate-x-1/2 transition-[left] duration-300 ease-out"
-              style={{ left: `calc(0.75rem + (100% - 1.5rem) * ${progress})` }}
-            >
-              <span className="whitespace-nowrap rounded-full border border-white/25 bg-[var(--bg-dark)] px-2.5 py-0.5 text-[10px] font-medium text-white/95">
-                {t(step.dateKey)}
-              </span>
-            </div>
           </div>
 
-          {/* Static date row (desktop) */}
-          <div className="mt-9 hidden justify-between px-1 sm:flex sm:px-2">
+          {/* Dates under track (sm+) */}
+          <div className="mt-4 hidden grid-cols-6 gap-1 sm:grid">
             {STEPS.map((s, i) => (
               <button
                 key={`${s.id}-date`}
                 type="button"
                 onClick={() => goTo(i)}
                 className={[
-                  'text-[10px] transition-colors duration-200 lg:text-[11px]',
-                  i === active ? 'text-white/75' : 'text-white/25 hover:text-white/45',
+                  'text-center font-sans text-[10px] tabular-nums tracking-wide transition-colors duration-200 lg:text-[11px]',
+                  i === active
+                    ? 'font-medium text-[var(--text-light)]/80'
+                    : 'text-[var(--text-light)]/30 hover:text-[var(--text-light)]/50',
                 ].join(' ')}
               >
                 {t(s.dateKey)}
@@ -374,24 +367,27 @@ export function BrandJourney() {
             ))}
           </div>
 
-          {/* Mobile label + nav buttons */}
-          <div className="mt-10 flex items-center justify-between gap-3 sm:mt-7">
+          {/* Controls row */}
+          <div className="mt-6 flex items-center justify-between gap-3 sm:mt-8">
             <div className="min-w-0 sm:hidden">
-              <p className="truncate text-xs font-semibold uppercase tracking-[0.12em] text-white">
+              <p className="truncate font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--text-light)]">
                 {t(step.labelKey)}
               </p>
-              <p className="mt-0.5 text-[11px] text-white/40">{t(step.dateKey)}</p>
+              <p className="mt-1 text-[11px] tabular-nums text-[var(--text-light)]/40">
+                {t(step.dateKey)}
+              </p>
             </div>
 
-            <div className="ml-auto flex items-center gap-2">
-              <span className="mr-1 hidden text-[11px] tabular-nums text-white/35 sm:inline">
-                {active + 1} / {n}
+            <div className="ml-auto flex items-center gap-2.5">
+              <span className="hidden font-sans text-[11px] tabular-nums tracking-wide text-[var(--text-light)]/40 sm:inline">
+                {active + 1}
+                <span className="text-[var(--text-light)]/25"> / {n}</span>
               </span>
               <button
                 type="button"
                 onClick={prev}
                 disabled={active === 0}
-                className="karya-carousel-nav flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] border border-white/15 text-white transition-colors hover:border-white/35 hover:bg-white/[0.06] active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 sm:h-9 sm:w-9"
+                className="karya-carousel-nav flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] border border-white/15 text-[var(--text-light)] transition-colors hover:border-white/35 hover:bg-white/[0.06] active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 sm:h-9 sm:w-9"
                 aria-label={t('journey.prev')}
               >
                 <ChevronLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={1.8} />
@@ -400,7 +396,7 @@ export function BrandJourney() {
                 type="button"
                 onClick={next}
                 disabled={active === n - 1}
-                className="karya-carousel-nav flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] border border-white/15 text-white transition-colors hover:border-white/35 hover:bg-white/[0.06] active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 sm:h-9 sm:w-9"
+                className="karya-carousel-nav flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] border border-white/15 text-[var(--text-light)] transition-colors hover:border-white/35 hover:bg-white/[0.06] active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 sm:h-9 sm:w-9"
                 aria-label={t('journey.next')}
               >
                 <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={1.8} />
