@@ -204,7 +204,7 @@ export function BoutiqueMap({ title = 'KARYA' }) {
     <div className="karya-map-shell absolute inset-0 h-full w-full min-h-0">
       {status === 'loading' && (
         <div className="pointer-events-none absolute inset-0 z-[5] flex items-center justify-center bg-white">
-          <p className="text-xs font-medium uppercase tracking-widest text-[#8c867e]">
+          <p className="text-xs font-medium uppercase tracking-widest text-[var(--text-muted)]">
             Карта…
           </p>
         </div>

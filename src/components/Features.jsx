@@ -84,6 +84,10 @@ export function Features() {
 
   useEffect(() => {
     if (paused) return undefined
+    const reduce =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reduce) return undefined
     const id = window.setInterval(() => {
       setActive((i) => (i + 1) % n)
     }, INTERVAL_MS)

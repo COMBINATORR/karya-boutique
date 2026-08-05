@@ -78,7 +78,7 @@ export function MobileMenu({ open, onClose }) {
           rel="noopener noreferrer"
           onClick={onClose}
           className={cn(
-            'btn-pill-outline mt-8 max-w-xs border-[var(--border-color-dark)] text-[var(--text-light)] hover:bg-white/10',
+            'btn-outline mt-8 max-w-xs border-[var(--border-color-dark)] text-[var(--text-light)] hover:bg-white/10 hover:text-[var(--text-light)]',
             open ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0',
           )}
           style={{ transitionDelay: open ? `${NAV.length * 80 + 100}ms` : '0ms' }}

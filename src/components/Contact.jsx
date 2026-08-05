@@ -37,7 +37,7 @@ function PhotoCarousel() {
   }, [n])
 
   return (
-    <div className="relative h-full min-h-[280px] w-full overflow-hidden rounded-[var(--radius-lg)] bg-[#F0EBE4] shadow-soft sm:min-h-[360px] lg:min-h-full lg:rounded-[var(--radius-xl)]">
+    <div className="relative h-full min-h-[280px] w-full overflow-hidden rounded-[var(--radius-lg)] bg-[var(--bg-muted)] shadow-soft sm:min-h-[360px] lg:min-h-full lg:rounded-[var(--radius-xl)]">
       <AnimatePresence mode="wait">
         <motion.img
           key={SLIDES[index]}

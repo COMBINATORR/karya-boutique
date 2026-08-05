@@ -483,7 +483,7 @@ function CategoryModal({ line, id, index, onClose }) {
               href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-pill btn-block mt-7"
+              className="btn-secondary-dark btn-block mt-7"
             >
               <MessageCircle className="h-4 w-4" strokeWidth={1.7} />
               {t('categories.request')}
@@ -494,7 +494,7 @@ function CategoryModal({ line, id, index, onClose }) {
               target="_blank"
               rel="noopener noreferrer"
               onClick={onClose}
-              className="btn-pill-outline btn-block mt-2.5"
+              className="btn-outline btn-block mt-2.5"
             >
               <MapPin className="h-3.5 w-3.5 text-[var(--accent-cognac)]" strokeWidth={1.7} />
               {t('categories.visit')}
