@@ -3,5 +3,6 @@ export const NAV = [
   { href: '#details', key: 'nav.details' },
   { href: '#features', key: 'nav.features' },
   { href: '#about', key: 'nav.about' },
+  { href: '#faq', key: 'nav.faq' },
   { href: '#location', key: 'nav.location' },
 ]

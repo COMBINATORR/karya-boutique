@@ -6,6 +6,7 @@ import { About } from './components/About'
 import { Collections } from './components/Collections'
 import { BrandJourney } from './components/BrandJourney'
 import { Features } from './components/Features'
+import { Faq } from './components/Faq'
 import { Contact } from './components/Contact'
 import { Footer } from './components/Footer'
 import { ScrollProgressBar } from './components/ScrollProgressBar'
@@ -37,6 +38,10 @@ export default function App() {
           <SectionDivider className="max-w-[1920px] mx-auto py-2" />
         </div>
         <About />
+        <div className="bg-white px-6 sm:px-12 lg:px-16">
+          <SectionDivider className="max-w-[1920px] mx-auto py-2" />
+        </div>
+        <Faq />
         <div className="bg-white px-6 sm:px-12 lg:px-16">
           <SectionDivider className="max-w-[1920px] mx-auto py-2" />
         </div>
