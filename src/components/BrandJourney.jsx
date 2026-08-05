@@ -391,19 +391,19 @@ export function BrandJourney() {
                 type="button"
                 onClick={prev}
                 disabled={active === 0}
-                className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border border-white/15 text-white transition-colors hover:border-white/35 hover:bg-white/[0.06] active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
+                className="karya-carousel-nav flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] border border-white/15 text-white transition-colors hover:border-white/35 hover:bg-white/[0.06] active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 sm:h-9 sm:w-9"
                 aria-label={t('journey.prev')}
               >
-                <ChevronLeft className="h-4 w-4" strokeWidth={1.8} />
+                <ChevronLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={1.8} />
               </button>
               <button
                 type="button"
                 onClick={next}
                 disabled={active === n - 1}
-                className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border border-white/15 text-white transition-colors hover:border-white/35 hover:bg-white/[0.06] active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
+                className="karya-carousel-nav flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] border border-white/15 text-white transition-colors hover:border-white/35 hover:bg-white/[0.06] active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 sm:h-9 sm:w-9"
                 aria-label={t('journey.next')}
               >
-                <ChevronRight className="h-4 w-4" strokeWidth={1.8} />
+                <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={1.8} />
               </button>
             </div>
           </div>

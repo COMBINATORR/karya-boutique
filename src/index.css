@@ -116,16 +116,27 @@ body {
   overflow-x: clip;
 }
 
-/* Better touch targets on coarse pointers (phones/tablets) */
+/* Better touch targets on coarse pointers (phones/tablets) —
+   do NOT force all buttons: carousel nav / dots stay compact */
 @media (pointer: coarse) {
   .nav-link,
   .lang-switch button,
   .header-cta,
   a.btn-primary,
   a.btn-secondary-dark,
-  button {
+  a.btn-outline,
+  a.btn-pill,
+  a.btn-pill-outline,
+  button.btn-primary,
+  button.btn-secondary-dark {
     min-height: 44px;
   }
+}
+
+/* Compact carousel prev/next — override any global min-height */
+.karya-carousel-nav {
+  min-height: 0 !important;
+  min-width: 0 !important;
 }
 
 ::selection {
