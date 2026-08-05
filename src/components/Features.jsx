@@ -1,14 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Layers, Sparkle, Palette, Wrench } from 'lucide-react'
 
 const INTERVAL_MS = 5500
 
 const FEATURES = [
   {
     id: 'floater',
-    icon: Layers,
     titleKey: 'features.f1Title',
     descKey: 'features.f1Desc',
     cardTitleKey: 'features.f1CardTitle',
@@ -21,7 +19,6 @@ const FEATURES = [
   },
   {
     id: 'patent',
-    icon: Sparkle,
     titleKey: 'features.f2Title',
     descKey: 'features.f2Desc',
     cardTitleKey: 'features.f2CardTitle',
@@ -34,7 +31,6 @@ const FEATURES = [
   },
   {
     id: 'palette',
-    icon: Palette,
     titleKey: 'features.f3Title',
     descKey: 'features.f3Desc',
     cardTitleKey: 'features.f3CardTitle',
@@ -47,7 +43,6 @@ const FEATURES = [
   },
   {
     id: 'craft',
-    icon: Wrench,
     titleKey: 'features.f4Title',
     descKey: 'features.f4Desc',
     cardTitleKey: 'features.f4CardTitle',
@@ -76,11 +71,13 @@ export function Features() {
   const [paused, setPaused] = useState(false)
   const n = FEATURES.length
   const feature = FEATURES[active]
-  const Icon = feature.icon
 
-  const goTo = useCallback((i) => {
-    setActive(((i % n) + n) % n)
-  }, [n])
+  const goTo = useCallback(
+    (i) => {
+      setActive(((i % n) + n) % n)
+    },
+    [n],
+  )
 
   useEffect(() => {
     if (paused) return undefined
@@ -103,7 +100,6 @@ export function Features() {
     >
       <div className="container-wide">
         <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-12 xl:gap-16">
-          {/* —— Left —— */}
           <div className="lg:col-span-5">
             <span className="eyebrow mb-3 block">{t('features.eyebrow')}</span>
             <h2 className="h2-editorial mb-4 text-[clamp(1.85rem,5vw,3.25rem)] tracking-tight">
@@ -115,7 +111,6 @@ export function Features() {
 
             <ul className="mt-8 space-y-1.5 sm:mt-10" role="tablist" aria-label={t('features.listLabel')}>
               {FEATURES.map((item, i) => {
-                const ItemIcon = item.icon
                 const on = i === active
                 return (
                   <li key={item.id}>
@@ -125,7 +120,7 @@ export function Features() {
                       aria-selected={on}
                       onClick={() => goTo(i)}
                       className={[
-                        'relative flex w-full items-center gap-3 rounded-[var(--radius-md)] px-4 py-3.5 text-left transition-all duration-300',
+                        'relative flex w-full items-center rounded-[var(--radius-md)] px-4 py-3.5 text-left transition-all duration-300',
                         on
                           ? 'bg-[var(--bg-muted)] text-[var(--text-primary)] shadow-soft'
                           : 'text-[var(--text-muted)] hover:bg-[var(--bg-muted)]/60 hover:text-[var(--text-primary)]',
@@ -138,16 +133,6 @@ export function Features() {
                           transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                         />
                       ) : null}
-                      <span
-                        className={[
-                          'relative z-[1] flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-sm)] border transition-colors',
-                          on
-                            ? 'border-[var(--border-color)] bg-white text-[var(--accent-cognac)]'
-                            : 'border-transparent bg-transparent text-[var(--text-muted)]',
-                        ].join(' ')}
-                      >
-                        <ItemIcon className="h-4 w-4" strokeWidth={1.6} />
-                      </span>
                       <span className="relative z-[1] font-display text-sm font-semibold tracking-tight sm:text-[15px]">
                         {t(item.titleKey)}
                       </span>
@@ -158,7 +143,6 @@ export function Features() {
             </ul>
           </div>
 
-          {/* —— Right: media + glass card —— */}
           <div className="relative lg:col-span-7">
             <div className="relative aspect-[4/3] overflow-hidden rounded-[var(--radius-lg)] bg-[var(--bg-muted)] shadow-soft sm:aspect-[5/4] lg:min-h-[420px] lg:aspect-auto lg:h-[min(520px,58vh)]">
               <AnimatePresence mode="wait">
@@ -175,10 +159,8 @@ export function Features() {
                 />
               </AnimatePresence>
 
-              {/* Dim for glass readability */}
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-black/35 via-transparent to-black/10" />
 
-              {/* Glass overlay card */}
               <div className="absolute inset-x-4 bottom-4 sm:inset-x-auto sm:bottom-auto sm:left-6 sm:right-auto sm:top-1/2 sm:-translate-y-1/2 sm:w-[min(100%-3rem,320px)]">
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -189,14 +171,9 @@ export function Features() {
                     transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                     className="rounded-[var(--radius-md)] border border-white/40 bg-white/85 p-5 shadow-elevated backdrop-blur-xl sm:p-6"
                   >
-                    <div className="mb-4 flex items-center gap-2">
-                      <span className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--bg-muted)] text-[var(--accent-cognac)]">
-                        <Icon className="h-4 w-4" strokeWidth={1.6} />
-                      </span>
-                      <p className="font-display text-sm font-bold tracking-tight text-[var(--text-primary)] sm:text-base">
-                        {t(feature.cardTitleKey)}
-                      </p>
-                    </div>
+                    <p className="mb-4 font-display text-sm font-bold tracking-tight text-[var(--text-primary)] sm:text-base">
+                      {t(feature.cardTitleKey)}
+                    </p>
 
                     <ul className="space-y-3">
                       {feature.points.map((pk, idx) => (
@@ -225,7 +202,6 @@ export function Features() {
                 </AnimatePresence>
               </div>
 
-              {/* Progress dots */}
               <div className="absolute right-4 top-4 z-[1] flex gap-1.5 sm:right-5 sm:top-5">
                 {FEATURES.map((f, i) => (
                   <button
