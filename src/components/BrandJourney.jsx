@@ -192,7 +192,7 @@ export function BrandJourney() {
                   transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
                   className="flex min-h-[200px] flex-1 flex-col sm:min-h-[230px]"
                 >
-                  <p className="font-display text-xs font-bold uppercase tracking-[0.18em] text-[#C4A07A] sm:text-sm">
+                  <p className="font-display text-xs font-bold uppercase tracking-[0.18em] text-[var(--accent-cognac-soft)] sm:text-sm">
                     {t(step.yearKey)}
                   </p>
                   <div className="mt-auto pt-10 sm:pt-14">
