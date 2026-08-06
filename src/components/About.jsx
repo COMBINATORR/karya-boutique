@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { fadeUp } from '@/lib/motion'
+import { ChapterTitle } from '@/components/ChapterTitle'
 
 const STEPS = [
   { labelKey: 'about.l1', titleKey: 'about.v1Title', descKey: 'about.v1Desc' },
@@ -13,6 +14,7 @@ export function About() {
 
   return (
     <section id="about" className="section-pad surface-white">
+      <ChapterTitle titleKey="chapter.about" />
       <div className="container-wide">
         <div className="grid items-start gap-10 lg:grid-cols-12 lg:gap-14 xl:gap-16">
           <motion.div className="lg:col-span-5" {...fadeUp(0)}>

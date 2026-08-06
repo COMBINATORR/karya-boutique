@@ -10,7 +10,6 @@ import { Faq } from './components/Faq'
 import { Contact } from './components/Contact'
 import { Footer } from './components/Footer'
 import { ScrollProgressBar } from './components/ScrollProgressBar'
-import { ChapterTitle } from './components/ChapterTitle'
 import { ConciergeBar } from './components/ConciergeBar'
 import { useScroll } from './hooks/useScroll'
 
@@ -32,25 +31,14 @@ export default function App() {
       <main>
         <Hero />
 
-        {/* Content stack above sticky hero; chapters use z-20 above section-sheet underlaps */}
+        {/* Content stack above sticky hero */}
         <div className="relative z-[5] bg-white">
-          <ChapterTitle titleKey="chapter.categories" />
           <Collections />
-
-          <ChapterTitle titleKey="chapter.details" />
           <BrandJourney />
-
           <div className="section-underlap" aria-hidden />
-          <ChapterTitle titleKey="chapter.features" />
           <Features />
-
-          <ChapterTitle titleKey="chapter.about" />
           <About />
-
-          <ChapterTitle titleKey="chapter.faq" />
           <Faq />
-
-          <ChapterTitle titleKey="chapter.location" />
           <Contact />
         </div>
       </main>

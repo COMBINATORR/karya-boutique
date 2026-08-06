@@ -12,6 +12,7 @@ import {
 import { ChevronDown, MessageCircle, MapPin } from 'lucide-react'
 import { whatsappRequestUrl, MAPS_DIR_URL } from '@/constants/contact'
 import BlurText from '@/components/BlurText'
+import { ChapterTitle } from '@/components/ChapterTitle'
 
 /** Boutique leather palette chips (visual only — full range in store) */
 const PALETTE = [
@@ -551,6 +552,7 @@ export function Collections() {
       id="categories"
       className="section-pad section-sheet surface-white pt-16 sm:pt-20"
     >
+      <ChapterTitle titleKey="chapter.categories" />
       <div className="container-wide">
         <div className="mx-auto max-w-3xl text-center">
           <span className="eyebrow mb-3 block text-[10px] tracking-[0.18em] sm:mb-4 sm:text-xs sm:tracking-[0.2em]">

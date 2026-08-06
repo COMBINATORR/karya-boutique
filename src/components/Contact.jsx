@@ -14,6 +14,7 @@ import {
 } from '@/constants/contact'
 import { InstagramIcon } from '@/components/InstagramIcon'
 import { BoutiqueMap } from '@/components/BoutiqueMap'
+import { ChapterTitle } from '@/components/ChapterTitle'
 
 const SLIDES = [
   '/images/contact/01.jpg',
@@ -87,6 +88,7 @@ export function Contact() {
     <>
       {/* —— Contact + photo —— */}
       <section id="location" className="section-pad section-sheet surface-white">
+        <ChapterTitle titleKey="chapter.location" />
         <div className="container-wide">
           <div className="grid items-stretch gap-10 lg:grid-cols-12 lg:gap-12 xl:gap-16">
             {/* Left */}

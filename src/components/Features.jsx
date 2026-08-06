@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AnimatePresence, motion } from 'framer-motion'
+import { ChapterTitle } from '@/components/ChapterTitle'
 
 const INTERVAL_MS = 5500
 
@@ -91,6 +92,7 @@ export function Features() {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
+      <ChapterTitle titleKey="chapter.features" />
       <div className="container-wide">
         <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-12 xl:gap-16">
           <div className="lg:col-span-5">

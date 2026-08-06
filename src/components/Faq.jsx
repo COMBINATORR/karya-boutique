@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AnimatePresence, motion } from 'framer-motion'
 import { WHATSAPP_URL } from '@/constants/contact'
+import { ChapterTitle } from '@/components/ChapterTitle'
 
 const FAQ_IDS = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6']
 
@@ -11,6 +12,7 @@ export function Faq() {
 
   return (
     <section id="faq" className="section-pad surface-white">
+      <ChapterTitle titleKey="chapter.faq" />
       <div className="container-wide">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="h2-editorial text-[clamp(1.85rem,5vw,3rem)] tracking-tight">

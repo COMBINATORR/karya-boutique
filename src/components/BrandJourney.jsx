@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChapterTitle } from '@/components/ChapterTitle'
 
 const STEPS = [
   {
@@ -163,6 +164,8 @@ export function BrandJourney() {
       aria-roledescription="carousel"
       aria-label={t('journey.title')}
     >
+      {/* Chapter lives inside history block — not in the white tail of assortment */}
+      <ChapterTitle titleKey="chapter.details" tone="dark" />
       <div className="container-wide">
         {/* Section header — same rhythm as other sections */}
         <header className="mb-8 max-w-2xl sm:mb-10 lg:mb-12">
