@@ -32,24 +32,27 @@ export default function App() {
       <main>
         <Hero />
 
-        <ChapterTitle titleKey="chapter.categories" />
-        <Collections />
+        {/* z-10 stack: sits above sticky hero so chapter titles aren't "masked" under pin */}
+        <div className="relative z-10 bg-[var(--bg-primary)]">
+          <ChapterTitle titleKey="chapter.categories" />
+          <Collections />
 
-        <ChapterTitle titleKey="chapter.details" />
-        <BrandJourney />
+          <ChapterTitle titleKey="chapter.details" />
+          <BrandJourney />
 
-        <div className="section-underlap" aria-hidden />
-        <ChapterTitle titleKey="chapter.features" />
-        <Features />
+          <div className="section-underlap" aria-hidden />
+          <ChapterTitle titleKey="chapter.features" />
+          <Features />
 
-        <ChapterTitle titleKey="chapter.about" />
-        <About />
+          <ChapterTitle titleKey="chapter.about" />
+          <About />
 
-        <ChapterTitle titleKey="chapter.faq" />
-        <Faq />
+          <ChapterTitle titleKey="chapter.faq" />
+          <Faq />
 
-        <ChapterTitle titleKey="chapter.location" />
-        <Contact />
+          <ChapterTitle titleKey="chapter.location" />
+          <Contact />
+        </div>
       </main>
 
       <Footer />
