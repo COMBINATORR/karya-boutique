@@ -32,8 +32,8 @@ export default function App() {
       <main>
         <Hero />
 
-        {/* z-10 stack: sits above sticky hero so chapter titles aren't "masked" under pin */}
-        <div className="relative z-10 bg-[var(--bg-primary)]">
+        {/* Content stack above sticky hero; chapters use z-20 above section-sheet underlaps */}
+        <div className="relative z-[5] bg-white">
           <ChapterTitle titleKey="chapter.categories" />
           <Collections />
 
