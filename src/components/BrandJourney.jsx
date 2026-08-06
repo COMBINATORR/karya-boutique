@@ -211,7 +211,7 @@ export function BrandJourney() {
             </div>
 
             {/* Desktop photo */}
-            <div className="relative hidden min-h-[280px] overflow-hidden rounded-[var(--radius-md)] bg-[var(--bg-dark-elevated)] lg:col-span-6 lg:block lg:min-h-[340px] xl:min-h-[380px]">
+            <div className="relative hidden min-h-[280px] overflow-hidden rounded-[var(--radius-sm)] bg-[var(--bg-dark-elevated)] lg:col-span-6 lg:block lg:min-h-[340px] xl:min-h-[380px]">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={step.image}
@@ -235,7 +235,7 @@ export function BrandJourney() {
 
           {/* Mobile photo — after text */}
           <div className="mt-6 lg:hidden">
-            <div className="relative aspect-[16/10] overflow-hidden rounded-[var(--radius-md)] bg-[var(--bg-dark-elevated)]">
+            <div className="relative aspect-[16/10] overflow-hidden rounded-[var(--radius-sm)] bg-[var(--bg-dark-elevated)]">
               <AnimatePresence mode="wait">
                 <motion.img
                   key={step.image}

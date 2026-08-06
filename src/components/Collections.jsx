@@ -405,7 +405,7 @@ function CategoryModal({ line, id, index, onClose }) {
               type="button"
               onClick={onClose}
               className={[
-                'absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full',
+                'absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)]',
                 'border border-[var(--border-color)] bg-white/95 text-[var(--text-primary)] shadow-soft backdrop-blur-sm',
                 'transition-colors hover:bg-white active:bg-[var(--bg-secondary)]',
                 'sm:right-7 sm:top-7',
@@ -416,7 +416,7 @@ function CategoryModal({ line, id, index, onClose }) {
                 ×
               </span>
             </button>
-            <div className="relative overflow-hidden rounded-[var(--radius-md)] bg-white sm:h-full sm:min-h-[420px] sm:rounded-[var(--radius-md)]">
+            <div className="relative overflow-hidden rounded-[var(--radius-sm)] bg-white sm:h-full sm:min-h-[420px]">
               <CategoryPhoto
                 line={line}
                 id={id}
@@ -508,7 +508,7 @@ function CategoryModal({ line, id, index, onClose }) {
                 {HIGHLIGHT_KEYS.map((key) => (
                   <span
                     key={key}
-                    className="rounded-full border border-[var(--border-color)] bg-[var(--bg-muted)] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--text-secondary)]"
+                    className="rounded-[var(--radius-sm)] border border-[var(--border-color)] bg-[var(--bg-muted)] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--text-secondary)]"
                   >
                     {t(key)}
                   </span>
@@ -583,7 +583,7 @@ export function Collections() {
                   type="button"
                   onClick={() => setLine(key)}
                   className={[
-                    'relative z-20 min-h-11 min-w-[7.5rem] touch-manipulation rounded-[6px] px-6 text-[11px] font-display font-bold uppercase tracking-[0.14em] transition-colors sm:min-w-[9rem] sm:px-8',
+                    'relative z-20 min-h-11 min-w-[7.5rem] touch-manipulation rounded-[var(--radius-sm)] px-6 text-[11px] font-display font-bold uppercase tracking-[0.14em] transition-colors sm:min-w-[9rem] sm:px-8',
                     on
                       ? 'text-[var(--text-light)]'
                       : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]',
@@ -592,7 +592,7 @@ export function Collections() {
                   {on ? (
                     <motion.span
                       layoutId="category-line-pill"
-                      className="absolute inset-0 z-0 rounded-[6px] bg-[var(--bg-dark)]"
+                      className="absolute inset-0 z-0 rounded-[var(--radius-sm)] bg-[var(--bg-dark)]"
                       transition={{ type: 'spring', stiffness: 420, damping: 34 }}
                     />
                   ) : null}

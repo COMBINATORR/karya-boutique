@@ -36,7 +36,7 @@ export function Faq() {
               <div
                 key={id}
                 className={[
-                  'overflow-hidden rounded-[var(--radius-md)] transition-colors duration-200',
+                  'overflow-hidden rounded-[var(--radius-sm)] transition-colors duration-200',
                   isOpen
                     ? 'border border-[var(--border-color)] bg-white shadow-soft'
                     : 'bg-[var(--bg-muted)]',

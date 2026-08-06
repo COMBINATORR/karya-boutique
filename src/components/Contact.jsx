@@ -37,7 +37,7 @@ function PhotoCarousel() {
   }, [n])
 
   return (
-    <div className="relative h-full min-h-[280px] w-full overflow-hidden rounded-[var(--radius-lg)] bg-[var(--bg-muted)] shadow-soft sm:min-h-[360px] lg:min-h-full lg:rounded-[var(--radius-xl)]">
+    <div className="relative h-full min-h-[280px] w-full overflow-hidden rounded-[var(--radius-sm)] bg-[var(--bg-muted)] shadow-soft sm:min-h-[360px] lg:min-h-full">
       <AnimatePresence mode="wait">
         <motion.img
           key={SLIDES[index]}
@@ -192,7 +192,7 @@ export function Contact() {
             </a>
           </div>
 
-          <div className="overflow-hidden rounded-[var(--radius-md)] border border-[var(--border-color)] bg-white shadow-soft sm:rounded-[var(--radius-lg)]">
+          <div className="overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border-color)] bg-white shadow-soft">
             {/* Explicit height required — Leaflet cannot size with min-height alone */}
             <div className="relative h-[300px] w-full sm:h-[380px] lg:h-[440px]">
               <BoutiqueMap title="KARYA" />

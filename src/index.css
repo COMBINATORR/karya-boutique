@@ -46,13 +46,13 @@
   --accent-cognac-soft: #9e6b4c;
   --accent-soft: rgba(140, 94, 60, 0.1);
 
-  /* Radius scale: control / card / media / section sheet */
-  --radius-sm: 8px; /* chips, inputs, square buttons, lang switch */
-  --radius-md: 16px; /* content cards, photo frames, CTA cards */
-  --radius-lg: 20px; /* large media, modals desktop */
-  --radius-xl: 24px; /* hero photo panels */
-  --radius-pill: 9999px; /* marketing CTAs */
-  --radius-sheet: 1.5rem; /* section top curve mobile */
+  /* Radius scale — site default is 8px for cards & controls */
+  --radius-sm: 8px; /* cards, buttons, FAQ, frames, modals */
+  --radius-md: 8px; /* alias → same 8px (legacy class names) */
+  --radius-lg: 8px; /* alias → same 8px */
+  --radius-xl: 8px; /* alias → same 8px */
+  --radius-pill: 9999px; /* only true circles: dots, swatches, timeline thumb */
+  --radius-sheet: 1.5rem; /* section top curve only */
   --radius-sheet-sm: 2rem;
   --radius-sheet-md: 2.5rem;
 

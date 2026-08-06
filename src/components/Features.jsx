@@ -120,7 +120,7 @@ export function Features() {
                       aria-selected={on}
                       onClick={() => goTo(i)}
                       className={[
-                        'relative flex w-full items-center rounded-[var(--radius-md)] px-4 py-3.5 text-left transition-all duration-300',
+                        'relative flex w-full items-center rounded-[var(--radius-sm)] px-4 py-3.5 text-left transition-all duration-300',
                         on
                           ? 'bg-[var(--bg-muted)] text-[var(--text-primary)] shadow-soft'
                           : 'text-[var(--text-muted)] hover:bg-[var(--bg-muted)]/60 hover:text-[var(--text-primary)]',
@@ -129,7 +129,7 @@ export function Features() {
                       {on ? (
                         <motion.span
                           layoutId="features-glass-pill"
-                          className="absolute inset-0 rounded-[var(--radius-md)] border border-[var(--border-color)] bg-white/70 shadow-soft backdrop-blur-md"
+                          className="absolute inset-0 rounded-[var(--radius-sm)] border border-[var(--border-color)] bg-white/70 shadow-soft backdrop-blur-md"
                           transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                         />
                       ) : null}
@@ -144,7 +144,7 @@ export function Features() {
           </div>
 
           <div className="relative lg:col-span-7">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-[var(--radius-lg)] bg-[var(--bg-muted)] shadow-soft sm:aspect-[5/4] lg:min-h-[420px] lg:aspect-auto lg:h-[min(520px,58vh)]">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-[var(--radius-sm)] bg-[var(--bg-muted)] shadow-soft sm:aspect-[5/4] lg:min-h-[420px] lg:aspect-auto lg:h-[min(520px,58vh)]">
               <AnimatePresence mode="wait">
                 <motion.img
                   key={feature.image}
@@ -169,7 +169,7 @@ export function Features() {
                     animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                     exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
                     transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                    className="rounded-[var(--radius-md)] border border-white/40 bg-white/85 p-5 shadow-elevated backdrop-blur-xl sm:p-6"
+                    className="rounded-[var(--radius-sm)] border border-white/40 bg-white/85 p-5 shadow-elevated backdrop-blur-xl sm:p-6"
                   >
                     <p className="mb-4 font-display text-sm font-bold tracking-tight text-[var(--text-primary)] sm:text-base">
                       {t(feature.cardTitleKey)}
@@ -184,7 +184,7 @@ export function Features() {
                           {feature.tags[idx] ? (
                             <span
                               className={[
-                                'shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide',
+                                'shrink-0 rounded-[var(--radius-sm)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide',
                                 tagClass(feature.tags[idx].tone),
                               ].join(' ')}
                             >

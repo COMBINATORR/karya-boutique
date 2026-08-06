@@ -50,7 +50,7 @@ export function About() {
             {STEPS.map((item, idx) => (
               <motion.div
                 key={item.titleKey}
-                className="rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--bg-muted)] p-4 min-[400px]:p-5 sm:p-6"
+                className="rounded-[var(--radius-sm)] border border-[var(--border-color)] bg-[var(--bg-muted)] p-4 min-[400px]:p-5 sm:p-6"
                 {...fadeUp(0.06 * (idx + 1))}
               >
                 <span className="mb-1 block font-mono text-[10px] font-bold uppercase tracking-widest text-[var(--accent-cognac)]">
