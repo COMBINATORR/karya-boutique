@@ -45,6 +45,9 @@
   --accent-cognac-hover: #754d30;
   --accent-cognac-soft: #9e6b4c;
   --accent-soft: rgba(140, 94, 60, 0.1);
+  /* Logo red (KAR + YA) — FAQ open state / accent chips */
+  --accent-brand-red: #c8102e;
+  --accent-brand-red-soft: rgba(200, 16, 46, 0.12);
 
   /* Radius scale — site default is 8px for cards & controls */
   --radius-sm: 8px; /* cards, buttons, FAQ, frames, modals */
