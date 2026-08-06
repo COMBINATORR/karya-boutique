@@ -165,24 +165,23 @@ export function Features() {
                     transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                     className="karya-feature-glass p-4 sm:p-6"
                   >
-                    <p className="mb-3 font-display text-sm font-bold tracking-tight text-[var(--text-primary)] drop-shadow-[0_1px_0_rgba(255,255,255,0.45)] sm:mb-4 sm:text-base">
+                    <p className="karya-feature-glass__title mb-3 font-display text-sm font-bold tracking-tight sm:mb-4 sm:text-base">
                       {t(feature.cardTitleKey)}
                     </p>
 
                     <ul className="space-y-2.5 sm:space-y-3">
                       {feature.points.map((pk, idx) => (
                         <li key={pk} className="flex items-start justify-between gap-3">
-                          <span className="text-[13px] leading-snug text-[var(--text-primary)] sm:text-sm">
+                          <span className="karya-feature-glass__point text-[13px] leading-snug sm:text-sm">
                             {t(pk)}
                           </span>
                           {feature.tags[idx] ? (
                             <span
                               className={[
-                                'shrink-0 rounded-[var(--radius-sm)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide',
-                                'border border-white/35 bg-white/35 backdrop-blur-sm',
+                                'karya-feature-glass__tag shrink-0 rounded-[var(--radius-sm)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide',
                                 feature.tags[idx].tone === 'ok'
-                                  ? 'text-[var(--accent-cognac)]'
-                                  : 'text-[var(--text-secondary)]',
+                                  ? 'karya-feature-glass__tag--accent'
+                                  : '',
                               ].join(' ')}
                             >
                               {t(feature.tags[idx].key)}
@@ -192,7 +191,7 @@ export function Features() {
                       ))}
                     </ul>
 
-                    <p className="mt-3 border-t border-white/30 pt-2.5 text-[11px] leading-relaxed text-[var(--text-primary)]/80 sm:mt-4 sm:pt-3 sm:text-xs">
+                    <p className="karya-feature-glass__desc mt-3 border-t pt-2.5 text-[11px] leading-relaxed sm:mt-4 sm:pt-3 sm:text-xs">
                       {t(feature.descKey)}
                     </p>
                   </motion.div>
