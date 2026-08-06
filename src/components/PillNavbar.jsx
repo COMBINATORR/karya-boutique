@@ -10,23 +10,66 @@ import { BrandMark } from '@/components/BrandMark'
 const BAR_CTRL =
   'inline-flex h-9 items-center justify-center rounded-[var(--radius-sm)] text-[10px] font-bold uppercase tracking-[0.12em]'
 
+/** Ignore tiny scroll noise (touch bounce / trackpad) */
+const SCROLL_DELTA = 6
+/** Always show nav while near the top of the page */
+const TOP_REVEAL = 48
+/** Start auto-hide only after leaving the hero zone a bit */
+const HIDE_AFTER = 80
+
 /**
  * Floating navbar — mobile: logo + hamburger only.
  * Lang + WA live inside the panel (CSS display on .btn-* / .lang-switch
  * overrides Tailwind `hidden`, so we hide via wrappers).
+ * Hides on scroll-down, reappears on scroll-up (classic luxury chrome).
  */
 export function PillNavbar() {
   const { t, i18n } = useTranslation()
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [hidden, setHidden] = useState(false)
   const lang = i18n.language?.startsWith('kk') ? 'kk' : 'ru'
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24)
-    onScroll()
+    let lastY = window.scrollY || 0
+    let ticking = false
+
+    const update = () => {
+      ticking = false
+      const y = window.scrollY || 0
+      setScrolled(y > 24)
+
+      // Menu open → keep bar visible so panel stays reachable
+      if (open) {
+        setHidden(false)
+        lastY = y
+        return
+      }
+
+      const delta = y - lastY
+
+      if (y <= TOP_REVEAL) {
+        setHidden(false)
+      } else if (delta > SCROLL_DELTA && y > HIDE_AFTER) {
+        setHidden(true)
+      } else if (delta < -SCROLL_DELTA) {
+        setHidden(false)
+      }
+
+      lastY = y
+    }
+
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true
+        window.requestAnimationFrame(update)
+      }
+    }
+
+    update()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+  }, [open])
 
   useEffect(() => {
     if (!open) return
@@ -54,7 +97,10 @@ export function PillNavbar() {
 
   return (
     <div
-      className="karya-pill-nav pointer-events-none fixed left-1/2 z-[50] w-[min(100%-1.5rem,1600px)] -translate-x-1/2 transition-[opacity,visibility] duration-200 sm:w-[min(100%-2rem,1600px)]"
+      className={cn(
+        'karya-pill-nav pointer-events-none fixed left-1/2 z-[50] w-[min(100%-1.5rem,1600px)] sm:w-[min(100%-2rem,1600px)]',
+        hidden && !open && 'karya-pill-nav--hidden',
+      )}
       style={{ top: 'max(0.75rem, calc(var(--safe-top) + 0.5rem))' }}
     >
       <div

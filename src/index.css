@@ -1219,11 +1219,36 @@ body {
   }
 }
 
+/* Pill nav: hide on scroll-down, show on scroll-up
+   Use `translate` (not transform) so Tailwind utilities don't fight the motion. */
+.karya-pill-nav {
+  translate: -50% 0;
+  transition:
+    translate 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0.32s;
+  will-change: translate, opacity;
+}
+
+.karya-pill-nav--hidden {
+  translate: -50% calc(-100% - 1.25rem);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .karya-pill-nav {
+    transition-duration: 0.01ms;
+  }
+}
+
 /* Category modal open: hide floating chrome (nav sits under / is unused) */
 body.karya-modal-open .karya-pill-nav {
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
+  translate: -50% calc(-100% - 1.25rem) !important;
 }
 
 body.karya-modal-open .scroll-progress-wrap {
