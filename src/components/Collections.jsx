@@ -534,14 +534,69 @@ function CategoryModal({ line, id, index, onClose }) {
   return createPortal(sheet, document.body)
 }
 
+/** Women / Men switch — shared (intro + sticky rail chrome). */
+function LineToggle({ line, onChange, layoutId = 'category-line-pill' }) {
+  const { t } = useTranslation()
+  return (
+    <div
+      className="inline-flex rounded-[var(--radius-sm)] border border-[var(--border-color)] bg-[var(--bg-muted)] p-1"
+      role="group"
+      aria-label={t('categories.filterLabel')}
+    >
+      {['women', 'men'].map((key) => {
+        const on = line === key
+        return (
+          <button
+            key={key}
+            type="button"
+            onClick={() => onChange(key)}
+            className={[
+              'relative z-20 min-h-10 min-w-[6.5rem] touch-manipulation rounded-[var(--radius-sm)] px-5 text-[11px] font-display font-bold uppercase tracking-[0.14em] transition-colors sm:min-h-11 sm:min-w-[9rem] sm:px-8',
+              on
+                ? 'text-[var(--text-light)]'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]',
+            ].join(' ')}
+          >
+            {on ? (
+              <motion.span
+                layoutId={layoutId}
+                className="absolute inset-0 z-0 rounded-[var(--radius-sm)] bg-[var(--bg-dark)]"
+                transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+              />
+            ) : null}
+            <span className="relative z-[1]">
+              {key === 'women' ? t('categories.women') : t('categories.men')}
+            </span>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
 /** Mobile: vertical scroll drives horizontal category rail (sticky pin). */
-function MobileScrollRail({ line, onOpen }) {
+function MobileScrollRail({ line, onLineChange, onOpen }) {
   const { t } = useTranslation()
   const trackRef = useRef(null)
   const rowRef = useRef(null)
   const [maxX, setMaxX] = useState(0)
   const [activeIdx, setActiveIdx] = useState(0)
   const [reduced, setReduced] = useState(false)
+
+  /** Switch line and jump to start of this rail so new lineup is visible from card 1 */
+  const handleLineChange = useCallback(
+    (key) => {
+      if (key === line) return
+      onLineChange(key)
+      setActiveIdx(0)
+      const track = trackRef.current
+      if (!track) return
+      const top = track.getBoundingClientRect().top + window.scrollY
+      // Small offset so sticky pin engages with progress ≈ 0
+      window.scrollTo({ top: Math.max(0, top + 4), behavior: 'instant' in window ? 'instant' : 'auto' })
+    },
+    [line, onLineChange],
+  )
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -592,10 +647,17 @@ function MobileScrollRail({ line, onOpen }) {
     setActiveIdx(Math.min(n - 1, Math.max(0, Math.round(p * (n - 1)))))
   })
 
-  // Reduced motion: free horizontal swipe instead of scroll-jack
+  // Reduced motion: free horizontal swipe + sticky line toggle
   if (reduced) {
     return (
       <div className="mt-8 md:hidden">
+        <div className="mb-4 flex justify-center px-[max(1rem,var(--safe-left))]">
+          <LineToggle
+            line={line}
+            onChange={onLineChange}
+            layoutId="category-line-pill-mobile"
+          />
+        </div>
         <div
           className={[
             'karya-cat-scroller flex gap-4 overflow-x-auto overscroll-x-contain pb-3',
@@ -632,60 +694,72 @@ function MobileScrollRail({ line, onOpen }) {
       style={{ height: `${Math.max(220, 100 + CATEGORY_IDS.length * 28)}vh` }}
     >
       <div
-        className="sticky top-0 flex h-[100dvh] flex-col justify-center overflow-hidden bg-white"
+        className="sticky top-0 flex h-[100dvh] flex-col overflow-hidden bg-white"
         style={{ paddingTop: 'max(0.5rem, var(--safe-top))' }}
       >
-        <p className="mb-3 px-[max(1rem,var(--safe-left))] text-[10px] font-display font-bold uppercase tracking-[0.16em] text-[var(--text-muted)]">
-          {t('categories.scrollHint')}
-        </p>
-
-        <div className="relative w-full overflow-hidden">
-          <motion.div
-            ref={rowRef}
-            key={line}
-            style={{ x }}
-            className="flex w-max gap-4 will-change-transform pl-[max(1rem,var(--safe-left))] pr-[max(1rem,var(--safe-right))]"
-          >
-            {CATEGORY_IDS.map((id, idx) => {
-              const title = t(`categories.${line}.${id}Title`)
-              return (
-                <CategoryCardButton
-                  key={`${line}-${id}`}
-                  line={line}
-                  id={id}
-                  index={idx}
-                  title={title}
-                  onOpen={onOpen}
-                  className="w-[min(78vw,20rem)] shrink-0"
-                  active={idx === activeIdx}
-                />
-              )
-            })}
-          </motion.div>
-        </div>
-
-        {/* Progress: which card in the horizontal journey */}
-        <div
-          className="mx-auto mt-6 flex max-w-[12rem] items-center gap-1.5 px-4"
-          aria-hidden
-        >
-          {CATEGORY_IDS.map((id, idx) => (
-            <span
-              key={id}
-              className={[
-                'h-1 flex-1 rounded-full transition-colors duration-300',
-                idx === activeIdx
-                  ? 'bg-[var(--accent-cognac)]'
-                  : idx < activeIdx
-                    ? 'bg-[var(--accent-cognac)]/35'
-                    : 'bg-[var(--border-color)]',
-              ].join(' ')}
+        {/* Always-on chrome: line switch stays visible at end of rail */}
+        <div className="relative z-30 shrink-0 border-b border-[var(--border-color)] bg-white/95 px-[max(1rem,var(--safe-left))] py-3 backdrop-blur-md">
+          <div className="flex flex-col items-center gap-2">
+            <LineToggle
+              line={line}
+              onChange={handleLineChange}
+              layoutId="category-line-pill-mobile"
             />
-          ))}
+            <p className="text-[10px] font-display font-bold uppercase tracking-[0.16em] text-[var(--text-muted)]">
+              {t('categories.scrollHint')}
+            </p>
+          </div>
         </div>
-        <p className="mt-2 text-center font-display text-[10px] font-bold tabular-nums tracking-[0.14em] text-[var(--text-muted)]">
-          {String(activeIdx + 1).padStart(2, '0')} / {String(CATEGORY_IDS.length).padStart(2, '0')}
-        </p>
+
+        <div className="flex min-h-0 flex-1 flex-col justify-center">
+          <div className="relative w-full overflow-hidden">
+            <motion.div
+              ref={rowRef}
+              key={line}
+              style={{ x }}
+              className="flex w-max gap-4 will-change-transform pl-[max(1rem,var(--safe-left))] pr-[max(1rem,var(--safe-right))]"
+            >
+              {CATEGORY_IDS.map((id, idx) => {
+                const title = t(`categories.${line}.${id}Title`)
+                return (
+                  <CategoryCardButton
+                    key={`${line}-${id}`}
+                    line={line}
+                    id={id}
+                    index={idx}
+                    title={title}
+                    onOpen={onOpen}
+                    className="w-[min(78vw,20rem)] shrink-0"
+                    active={idx === activeIdx}
+                  />
+                )
+              })}
+            </motion.div>
+          </div>
+
+          <div
+            className="mx-auto mt-5 flex max-w-[12rem] items-center gap-1.5 px-4"
+            aria-hidden
+          >
+            {CATEGORY_IDS.map((id, idx) => (
+              <span
+                key={id}
+                className={[
+                  'h-1 flex-1 rounded-full transition-colors duration-300',
+                  idx === activeIdx
+                    ? 'bg-[var(--accent-cognac)]'
+                    : idx < activeIdx
+                      ? 'bg-[var(--accent-cognac)]/35'
+                      : 'bg-[var(--border-color)]',
+                ].join(' ')}
+              />
+            ))}
+          </div>
+          <p className="mt-2 pb-[max(0.75rem,var(--safe-bottom))] text-center font-display text-[10px] font-bold tabular-nums tracking-[0.14em] text-[var(--text-muted)]">
+            {String(activeIdx + 1).padStart(2, '0')} /{' '}
+            {String(CATEGORY_IDS.length).padStart(2, '0')}
+          </p>
+        </div>
       </div>
     </div>
   )
@@ -758,40 +832,9 @@ export function Collections() {
           />
         </div>
 
-        <div className="relative z-20 mt-8 flex justify-center sm:mt-10">
-          <div
-            className="inline-flex rounded-[var(--radius-sm)] border border-[var(--border-color)] bg-[var(--bg-muted)] p-1"
-            role="group"
-            aria-label={t('categories.filterLabel')}
-          >
-            {['women', 'men'].map((key) => {
-              const on = line === key
-              return (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setLine(key)}
-                  className={[
-                    'relative z-20 min-h-11 min-w-[7.5rem] touch-manipulation rounded-[var(--radius-sm)] px-6 text-[11px] font-display font-bold uppercase tracking-[0.14em] transition-colors sm:min-w-[9rem] sm:px-8',
-                    on
-                      ? 'text-[var(--text-light)]'
-                      : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]',
-                  ].join(' ')}
-                >
-                  {on ? (
-                    <motion.span
-                      layoutId="category-line-pill"
-                      className="absolute inset-0 z-0 rounded-[var(--radius-sm)] bg-[var(--bg-dark)]"
-                      transition={{ type: 'spring', stiffness: 420, damping: 34 }}
-                    />
-                  ) : null}
-                  <span className="relative z-[1]">
-                    {key === 'women' ? t('categories.women') : t('categories.men')}
-                  </span>
-                </button>
-              )
-            })}
-          </div>
+        {/* Desktop: toggle here. Mobile: only inside sticky rail (always reachable). */}
+        <div className="relative z-20 mt-8 hidden justify-center sm:mt-10 md:flex">
+          <LineToggle line={line} onChange={setLine} layoutId="category-line-pill" />
         </div>
 
         <AnimatePresence mode="wait">
@@ -808,8 +851,8 @@ export function Collections() {
         </AnimatePresence>
       </div>
 
-      {/* Mobile: vertical scroll → horizontal categories */}
-      <MobileScrollRail line={line} onOpen={openCategory} />
+      {/* Mobile: vertical scroll → horizontal categories (+ sticky Ж/М) */}
+      <MobileScrollRail line={line} onLineChange={setLine} onOpen={openCategory} />
 
       {/* Desktop: 5-column grid */}
       <div className="mt-10 hidden sm:mt-14 md:block">
