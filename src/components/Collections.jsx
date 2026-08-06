@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import {
@@ -7,6 +7,8 @@ import {
   useMotionValue,
   useTransform,
   useDragControls,
+  useScroll,
+  useMotionValueEvent,
   animate,
 } from 'framer-motion'
 import { ChevronDown, MessageCircle, MapPin } from 'lucide-react'
@@ -532,20 +534,205 @@ function CategoryModal({ line, id, index, onClose }) {
   return createPortal(sheet, document.body)
 }
 
+/** Mobile: vertical scroll drives horizontal category rail (sticky pin). */
+function MobileScrollRail({ line, onOpen }) {
+  const { t } = useTranslation()
+  const trackRef = useRef(null)
+  const rowRef = useRef(null)
+  const [maxX, setMaxX] = useState(0)
+  const [activeIdx, setActiveIdx] = useState(0)
+  const [reduced, setReduced] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const sync = () => setReduced(mq.matches)
+    sync()
+    mq.addEventListener?.('change', sync)
+    return () => mq.removeEventListener?.('change', sync)
+  }, [])
+
+  const measure = useCallback(() => {
+    const row = rowRef.current
+    if (!row) return
+    // Row is full content width; viewport is sticky pin width
+    const parent = row.parentElement
+    if (!parent) return
+    const overflow = row.scrollWidth - parent.clientWidth
+    setMaxX(Math.max(0, overflow))
+  }, [])
+
+  useEffect(() => {
+    measure()
+    const row = rowRef.current
+    if (!row) return
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null
+    ro?.observe(row)
+    window.addEventListener('resize', measure)
+    // images load → width changes
+    const t = window.setTimeout(measure, 400)
+    const t2 = window.setTimeout(measure, 1200)
+    return () => {
+      ro?.disconnect()
+      window.removeEventListener('resize', measure)
+      window.clearTimeout(t)
+      window.clearTimeout(t2)
+    }
+  }, [line, measure])
+
+  const { scrollYProgress } = useScroll({
+    target: trackRef,
+    offset: ['start start', 'end end'],
+  })
+
+  const x = useTransform(scrollYProgress, [0, 1], [0, -maxX])
+
+  useMotionValueEvent(scrollYProgress, 'change', (p) => {
+    const n = CATEGORY_IDS.length
+    if (n <= 1) return
+    setActiveIdx(Math.min(n - 1, Math.max(0, Math.round(p * (n - 1)))))
+  })
+
+  // Reduced motion: free horizontal swipe instead of scroll-jack
+  if (reduced) {
+    return (
+      <div className="mt-8 md:hidden">
+        <div
+          className={[
+            'karya-cat-scroller flex gap-4 overflow-x-auto overscroll-x-contain pb-3',
+            'snap-x snap-mandatory',
+            'px-[max(1rem,var(--safe-left))]',
+            '[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+          ].join(' ')}
+        >
+          {CATEGORY_IDS.map((id, idx) => {
+            const title = t(`categories.${line}.${id}Title`)
+            return (
+              <CategoryCardButton
+                key={`${line}-${id}`}
+                line={line}
+                id={id}
+                index={idx}
+                title={title}
+                onOpen={onOpen}
+                className="w-[calc((100%-1rem)/1.2)] shrink-0 snap-start"
+              />
+            )
+          })}
+          <div className="w-[max(0.5rem,var(--safe-right))] shrink-0" aria-hidden />
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div
+      ref={trackRef}
+      className="relative mt-6 md:hidden"
+      /* Tall runway: ~one card step per ~28vh of vertical scroll */
+      style={{ height: `${Math.max(220, 100 + CATEGORY_IDS.length * 28)}vh` }}
+    >
+      <div
+        className="sticky top-0 flex h-[100dvh] flex-col justify-center overflow-hidden bg-white"
+        style={{ paddingTop: 'max(0.5rem, var(--safe-top))' }}
+      >
+        <p className="mb-3 px-[max(1rem,var(--safe-left))] text-[10px] font-display font-bold uppercase tracking-[0.16em] text-[var(--text-muted)]">
+          {t('categories.scrollHint')}
+        </p>
+
+        <div className="relative w-full overflow-hidden">
+          <motion.div
+            ref={rowRef}
+            key={line}
+            style={{ x }}
+            className="flex w-max gap-4 will-change-transform pl-[max(1rem,var(--safe-left))] pr-[max(1rem,var(--safe-right))]"
+          >
+            {CATEGORY_IDS.map((id, idx) => {
+              const title = t(`categories.${line}.${id}Title`)
+              return (
+                <CategoryCardButton
+                  key={`${line}-${id}`}
+                  line={line}
+                  id={id}
+                  index={idx}
+                  title={title}
+                  onOpen={onOpen}
+                  className="w-[min(78vw,20rem)] shrink-0"
+                  active={idx === activeIdx}
+                />
+              )
+            })}
+          </motion.div>
+        </div>
+
+        {/* Progress: which card in the horizontal journey */}
+        <div
+          className="mx-auto mt-6 flex max-w-[12rem] items-center gap-1.5 px-4"
+          aria-hidden
+        >
+          {CATEGORY_IDS.map((id, idx) => (
+            <span
+              key={id}
+              className={[
+                'h-1 flex-1 rounded-full transition-colors duration-300',
+                idx === activeIdx
+                  ? 'bg-[var(--accent-cognac)]'
+                  : idx < activeIdx
+                    ? 'bg-[var(--accent-cognac)]/35'
+                    : 'bg-[var(--border-color)]',
+              ].join(' ')}
+            />
+          ))}
+        </div>
+        <p className="mt-2 text-center font-display text-[10px] font-bold tabular-nums tracking-[0.14em] text-[var(--text-muted)]">
+          {String(activeIdx + 1).padStart(2, '0')} / {String(CATEGORY_IDS.length).padStart(2, '0')}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+function CategoryCardButton({ line, id, index, title, onOpen, className = '', active = false }) {
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        const y = window.scrollY || document.documentElement.scrollTop || 0
+        onOpen(id)
+        requestAnimationFrame(() => window.scrollTo(0, y))
+      }}
+      className={[
+        'group block text-center outline-none',
+        'cursor-pointer rounded-[var(--radius-sm)] focus-visible:shadow-[var(--shadow-focus)]',
+        'transition-[opacity,transform] duration-300',
+        active ? 'opacity-100 scale-100' : 'opacity-90',
+        className,
+      ].join(' ')}
+    >
+      <div className="overflow-hidden bg-white shadow-soft">
+        <div className="origin-center transition-transform duration-500 group-active:scale-[0.99]">
+          <CategoryPhoto line={line} id={id} index={index} alt={title} />
+        </div>
+      </div>
+      <p className="mt-3 font-display text-xs font-bold uppercase tracking-[0.14em] text-[var(--text-primary)] sm:mt-4 sm:text-sm">
+        {title}
+      </p>
+    </button>
+  )
+}
+
 export function Collections() {
   const { t } = useTranslation()
   const [line, setLine] = useState('women')
   const [openId, setOpenId] = useState(null)
-  const scrollerRef = useRef(null)
 
-  // Reset horizontal scroll when switching women/men
   useEffect(() => {
-    const el = scrollerRef.current
-    if (el) el.scrollTo({ left: 0, behavior: 'instant' in Element.prototype ? 'instant' : 'auto' })
     setOpenId(null)
   }, [line])
 
   const openIndex = openId ? CATEGORY_IDS.indexOf(openId) : -1
+  const openCategory = (id) => setOpenId(id)
 
   return (
     <section
@@ -621,76 +808,39 @@ export function Collections() {
         </AnimatePresence>
       </div>
 
-      {/*
-        Mobile: horizontal scroll — large cards, ~20% of next card peeks.
-        Desktop (md+): 5-column grid.
-      */}
-      <div className="mt-10 sm:mt-14">
+      {/* Mobile: vertical scroll → horizontal categories */}
+      <MobileScrollRail line={line} onOpen={openCategory} />
+
+      {/* Desktop: 5-column grid */}
+      <div className="mt-10 hidden sm:mt-14 md:block">
         <AnimatePresence mode="wait">
           <motion.div
             key={line}
-            ref={scrollerRef}
             variants={listVariants}
             initial="hidden"
             animate="show"
             exit="exit"
             className={[
-              // touch-pan-x alone blocks vertical page scroll when gesture starts on a card
-              'karya-cat-scroller flex gap-4 overflow-x-auto overscroll-x-contain pb-3',
-              'snap-x snap-mandatory',
-              'scroll-pl-[max(1rem,var(--safe-left))] scroll-pr-[max(1rem,var(--safe-right))]',
-              'px-[max(1rem,var(--safe-left))]',
-              '[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
-              'md:container-wide md:grid md:w-full md:grid-cols-5 md:gap-x-8 md:gap-y-12',
-              'md:overflow-visible md:px-[max(2rem,var(--safe-left))] md:pb-0 md:snap-none',
+              'container-wide grid w-full grid-cols-5 gap-x-8 gap-y-12',
+              'px-[max(2rem,var(--safe-left))]',
               'lg:gap-x-10 lg:gap-y-14 xl:gap-x-12',
             ].join(' ')}
           >
             {CATEGORY_IDS.map((id, idx) => {
               const title = t(`categories.${line}.${id}Title`)
               return (
-                <motion.button
-                  key={`${line}-${id}`}
-                  type="button"
-                  variants={cardVariants}
-                  whileTap={{ scale: 0.985 }}
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    // Capture scroll before React re-render / focus quirks
-                    const y =
-                      window.scrollY ||
-                      document.documentElement.scrollTop ||
-                      0
-                    setOpenId(id)
-                    requestAnimationFrame(() => window.scrollTo(0, y))
-                  }}
-                  className={[
-                    'group block snap-start text-center outline-none',
-                    'w-[calc((100%-1rem)/1.2)] shrink-0 grow-0 basis-[calc((100%-1rem)/1.2)]',
-                    'md:w-auto md:basis-auto md:shrink md:snap-align-none',
-                    'cursor-pointer rounded-[var(--radius-sm)] focus-visible:shadow-[var(--shadow-focus)]',
-                  ].join(' ')}
-                >
-                  <div className="overflow-hidden bg-white">
-                    <motion.div
-                      className="origin-center"
-                      whileHover={{ scale: 1.03 }}
-                      transition={{ duration: 0.5, ease: cardEase }}
-                    >
-                      <CategoryPhoto line={line} id={id} index={idx} alt={title} />
-                    </motion.div>
-                  </div>
-                  <p className="mt-3 font-display text-xs font-bold uppercase tracking-[0.14em] text-[var(--text-primary)] transition-colors duration-200 group-hover:text-[var(--accent-cognac)] sm:mt-4 sm:text-sm">
-                    {title}
-                  </p>
-                </motion.button>
+                <motion.div key={`${line}-${id}`} variants={cardVariants}>
+                  <CategoryCardButton
+                    line={line}
+                    id={id}
+                    index={idx}
+                    title={title}
+                    onOpen={openCategory}
+                    className="w-full"
+                  />
+                </motion.div>
               )
             })}
-            <div
-              className="w-[max(0.5rem,var(--safe-right))] shrink-0 grow-0 basis-[max(0.5rem,var(--safe-right))] md:hidden"
-              aria-hidden
-            />
           </motion.div>
         </AnimatePresence>
       </div>
