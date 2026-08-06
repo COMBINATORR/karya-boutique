@@ -10,7 +10,8 @@ import { Faq } from './components/Faq'
 import { Contact } from './components/Contact'
 import { Footer } from './components/Footer'
 import { ScrollProgressBar } from './components/ScrollProgressBar'
-import { SectionDivider } from './components/SectionDivider'
+import { ChapterTitle } from './components/ChapterTitle'
+import { ConciergeBar } from './components/ConciergeBar'
 import { useScroll } from './hooks/useScroll'
 
 export default function App() {
@@ -24,31 +25,35 @@ export default function App() {
   }, [i18n.language])
 
   return (
-    <div className="page-shell">
+    <div className="page-shell page-shell--with-concierge">
       <ScrollProgressBar progress={progress} />
       <PillNavbar />
 
       <main>
         <Hero />
+
+        <ChapterTitle titleKey="chapter.categories" />
         <Collections />
+
+        <ChapterTitle titleKey="chapter.details" />
         <BrandJourney />
+
         <div className="section-underlap" aria-hidden />
+        <ChapterTitle titleKey="chapter.features" />
         <Features />
-        <div className="bg-white px-6 sm:px-12 lg:px-16">
-          <SectionDivider className="max-w-[1920px] mx-auto py-2" />
-        </div>
+
+        <ChapterTitle titleKey="chapter.about" />
         <About />
-        <div className="bg-white px-6 sm:px-12 lg:px-16">
-          <SectionDivider className="max-w-[1920px] mx-auto py-2" />
-        </div>
+
+        <ChapterTitle titleKey="chapter.faq" />
         <Faq />
-        <div className="bg-white px-6 sm:px-12 lg:px-16">
-          <SectionDivider className="max-w-[1920px] mx-auto py-2" />
-        </div>
+
+        <ChapterTitle titleKey="chapter.location" />
         <Contact />
       </main>
 
       <Footer />
+      <ConciergeBar />
     </div>
   )
 }
