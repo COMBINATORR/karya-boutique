@@ -331,8 +331,8 @@ export function Hero() {
             </div>
           </div>
 
-          {/* -15px: stats sat too low after land layout */}
-          <div className="w-full shrink-0 pt-2 sm:pt-3 -translate-y-[15px]">
+          {/* Raised: 15px + 25px = 40px up from original land layout */}
+          <div className="w-full shrink-0 pt-2 sm:pt-3 -translate-y-[40px]">
             <div className="mx-auto grid w-full max-w-xl grid-cols-3 gap-2 border-t border-[var(--text-light)]/15 pt-4 min-[400px]:gap-4 min-[400px]:pt-5 sm:gap-8 sm:pt-6">
               {stats.map((stat, i) => (
                 <div key={stat.label} className="min-w-0 text-center">
