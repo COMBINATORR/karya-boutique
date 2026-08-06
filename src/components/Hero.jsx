@@ -18,12 +18,12 @@ const HERO_VIDEO_FALLBACK = '/videos/Hero_BG_scroll.mp4'
 /**
  * Scroll map (of hero track progress 0→1):
  *  0    – 0.78  video scrubs 0→1 (backpack flies + lands)
- *  0.62 – 0.74  brand + stats decode in (landing beat)
+ *  0.48 – 0.60  brand + stats decode in (~1.5s earlier than previous 0.60–0.72)
  *  0.78 – 1.00  hold on landed frame before next section
  */
 const VIDEO_END = 0.78
-const LAND_IN = 0.6
-const LAND_FULL = 0.72
+const LAND_IN = 0.48
+const LAND_FULL = 0.6
 const LEAVE_START = 0.9
 
 function pickHeroVideo() {
@@ -331,7 +331,8 @@ export function Hero() {
             </div>
           </div>
 
-          <div className="w-full shrink-0 pt-2 sm:pt-3">
+          {/* -15px: stats sat too low after land layout */}
+          <div className="w-full shrink-0 pt-2 sm:pt-3 -translate-y-[15px]">
             <div className="mx-auto grid w-full max-w-xl grid-cols-3 gap-2 border-t border-[var(--text-light)]/15 pt-4 min-[400px]:gap-4 min-[400px]:pt-5 sm:gap-8 sm:pt-6">
               {stats.map((stat, i) => (
                 <div key={stat.label} className="min-w-0 text-center">
