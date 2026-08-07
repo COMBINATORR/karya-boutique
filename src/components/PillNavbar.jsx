@@ -25,7 +25,7 @@ const HIDE_AFTER = 80
 
 /**
  * Floating navbar — mobile: logo + hamburger only.
- * Lang + Phone + WA + Instagram live inside mobile panel and desktop bar.
+ * Lang + Phone + WA + Instagram live inside liquid-glass mobile panel and desktop bar.
  * Hides on scroll-down, reappears on scroll-up (classic luxury chrome).
  */
 export function PillNavbar() {
@@ -221,30 +221,30 @@ export function PillNavbar() {
         </div>
       </div>
 
-      {/* Mobile panel */}
+      {/* Mobile dropdown panel — in signature liquid-glass style */}
       <div
         className={cn(
-          'overflow-hidden border bg-white/98 shadow-elevated backdrop-blur-md transition-all duration-300 md:hidden',
-          'rounded-[var(--radius-sm)]',
+          'liquid-glass-light overflow-hidden transition-all duration-300 md:hidden',
+          'rounded-[var(--radius-sm)] shadow-elevated',
           open
-            ? 'pointer-events-auto mt-2 max-h-[min(80dvh,32rem)] border-[var(--border-color)] opacity-100'
-            : 'pointer-events-none mt-0 max-h-0 border-transparent opacity-0',
+            ? 'pointer-events-auto mt-2 max-h-[min(80dvh,32rem)] opacity-100'
+            : 'pointer-events-none mt-0 max-h-0 opacity-0',
         )}
         aria-hidden={!open}
       >
-        <nav className="flex min-w-0 flex-col p-2">
+        <nav className="relative z-[1] flex min-w-0 flex-col p-2">
           {NAV.map((item) => (
             <a
               key={item.href}
               href={item.href}
               onClick={close}
-              className="rounded-[var(--radius-sm)] px-4 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--text-primary)] transition-colors active:bg-[var(--bg-muted)]"
+              className="rounded-[var(--radius-sm)] px-4 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--text-primary)] transition-colors hover:bg-white/60 active:bg-white/80"
             >
               {t(item.key)}
             </a>
           ))}
 
-          <div className="my-2 border-t border-[var(--border-color)]" />
+          <div className="my-1.5 border-t border-[var(--border-color)]" />
 
           {/* Mobile action bar */}
           <div className="space-y-1.5 p-1">
@@ -257,8 +257,8 @@ export function PillNavbar() {
                   className={cn(
                     'flex h-10 items-center justify-center rounded-[var(--radius-sm)] text-xs font-bold uppercase tracking-wider transition-colors',
                     lang === code
-                      ? 'bg-[var(--bg-dark)] text-[var(--text-light)]'
-                      : 'border border-[var(--border-color)] text-[var(--text-muted)]',
+                      ? 'bg-[var(--bg-dark)] text-[var(--text-light)] shadow-sm'
+                      : 'border border-[var(--border-color)] bg-white/50 text-[var(--text-primary)] hover:bg-white/80',
                   )}
                 >
                   {code.toUpperCase()}
@@ -270,7 +270,7 @@ export function PillNavbar() {
               <a
                 href={PHONE_TEL}
                 onClick={close}
-                className="flex h-11 items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--bg-dark)] text-xs font-bold uppercase tracking-wider text-[var(--text-light)] transition-colors hover:bg-[var(--accent-cognac)] active:scale-95"
+                className="flex h-11 items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--bg-dark)] text-xs font-bold uppercase tracking-wider text-[var(--text-light)] transition-colors hover:bg-[var(--accent-cognac)] active:scale-95 shadow-sm"
                 aria-label="Позвонить"
               >
                 <Phone className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
@@ -281,7 +281,7 @@ export function PillNavbar() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={close}
-                className="flex h-11 items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--bg-dark)] text-xs font-bold uppercase tracking-wider text-[var(--text-light)] transition-colors hover:bg-[#25D366] active:scale-95"
+                className="flex h-11 items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--bg-dark)] text-xs font-bold uppercase tracking-wider text-[var(--text-light)] transition-colors hover:bg-[#25D366] active:scale-95 shadow-sm"
                 aria-label="WhatsApp"
               >
                 <MessageCircle className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
@@ -292,7 +292,7 @@ export function PillNavbar() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={close}
-                className="flex h-11 items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--bg-dark)] text-xs font-bold uppercase tracking-wider text-[var(--text-light)] transition-colors hover:bg-[#E4405F] active:scale-95"
+                className="flex h-11 items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--bg-dark)] text-xs font-bold uppercase tracking-wider text-[var(--text-light)] transition-colors hover:bg-[#E4405F] active:scale-95 shadow-sm"
                 aria-label="Instagram"
               >
                 <InstagramIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
