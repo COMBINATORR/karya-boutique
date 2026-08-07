@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { MessageCircle } from 'lucide-react'
+import { MessageCircle, Phone } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { NAV } from '@/constants/nav'
-import { whatsappRequestUrl, INSTAGRAM_URL } from '@/constants/contact'
+import {
+  PHONE_TEL,
+  PHONE_DISPLAY,
+  whatsappRequestUrl,
+  INSTAGRAM_URL,
+} from '@/constants/contact'
 import { BrandMark } from '@/components/BrandMark'
 import { InstagramIcon } from '@/components/InstagramIcon'
 
@@ -20,7 +25,7 @@ const HIDE_AFTER = 80
 
 /**
  * Floating navbar — mobile: logo + hamburger only.
- * Lang + WA + Instagram live inside the mobile panel and desktop bar.
+ * Lang + Phone + WA + Instagram live inside mobile panel and desktop bar.
  * Hides on scroll-down, reappears on scroll-up (classic luxury chrome).
  */
 export function PillNavbar() {
@@ -126,7 +131,7 @@ export function PillNavbar() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-1.5">
-          {/* Wrapper so CSS display:inline-flex on children cannot un-hide on mobile */}
+          {/* Desktop quick action buttons */}
           <div className="hidden items-center gap-1.5 md:flex">
             <div className="lang-switch !h-9 !p-0.5">
               {['ru', 'kk'].map((code) => (
@@ -144,27 +149,41 @@ export function PillNavbar() {
               ))}
             </div>
 
+            {/* Quick Call */}
+            <a
+              href={PHONE_TEL}
+              className={cn(
+                BAR_CTRL,
+                'h-9 w-9 bg-[var(--bg-dark)] text-[var(--text-light)] transition-colors hover:bg-[var(--accent-cognac)]',
+              )}
+              aria-label="Позвонить в бутик"
+              title={PHONE_DISPLAY}
+            >
+              <Phone className="h-3.5 w-3.5" strokeWidth={1.8} />
+            </a>
+
+            {/* WhatsApp — icon only, brand green on hover */}
             <a
               href={whatsappRequestUrl()}
               target="_blank"
               rel="noopener noreferrer"
               className={cn(
                 BAR_CTRL,
-                'gap-1.5 bg-[var(--bg-dark)] px-3 text-[var(--text-light)] transition-colors hover:bg-[var(--accent-cognac)]',
+                'h-9 w-9 bg-[var(--bg-dark)] text-[var(--text-light)] transition-colors hover:bg-[#25D366] hover:text-white',
               )}
+              aria-label="WhatsApp"
             >
               <MessageCircle className="h-3.5 w-3.5" strokeWidth={1.8} />
-              <span className="hidden lg:inline">{t('nav.whatsapp')}</span>
-              <span className="lg:hidden">WA</span>
             </a>
 
+            {/* Instagram — icon only, brand pink on hover */}
             <a
               href={INSTAGRAM_URL}
               target="_blank"
               rel="noopener noreferrer"
               className={cn(
                 BAR_CTRL,
-                'h-9 w-9 bg-[var(--bg-dark)] text-[var(--text-light)] transition-colors hover:bg-[var(--accent-cognac)]',
+                'h-9 w-9 bg-[var(--bg-dark)] text-[var(--text-light)] transition-colors hover:bg-[#E4405F] hover:text-white',
               )}
               aria-label="Instagram"
             >
@@ -227,45 +246,59 @@ export function PillNavbar() {
 
           <div className="my-2 border-t border-[var(--border-color)]" />
 
-          {/* Equal-size 4-column row: RU | KK | WA | IG */}
-          <div className="grid grid-cols-4 gap-1.5 p-1.5">
-            {['ru', 'kk'].map((code) => (
-              <button
-                key={code}
-                type="button"
-                onClick={() => setLang(code)}
-                className={cn(
-                  'flex h-11 items-center justify-center rounded-[var(--radius-sm)] text-xs font-bold uppercase tracking-wider transition-colors',
-                  lang === code
-                    ? 'bg-[var(--bg-dark)] text-[var(--text-light)]'
-                    : 'border border-[var(--border-color)] text-[var(--text-muted)]',
-                )}
+          {/* Mobile action bar */}
+          <div className="space-y-1.5 p-1">
+            <div className="grid grid-cols-2 gap-1.5">
+              {['ru', 'kk'].map((code) => (
+                <button
+                  key={code}
+                  type="button"
+                  onClick={() => setLang(code)}
+                  className={cn(
+                    'flex h-10 items-center justify-center rounded-[var(--radius-sm)] text-xs font-bold uppercase tracking-wider transition-colors',
+                    lang === code
+                      ? 'bg-[var(--bg-dark)] text-[var(--text-light)]'
+                      : 'border border-[var(--border-color)] text-[var(--text-muted)]',
+                  )}
+                >
+                  {code.toUpperCase()}
+                </button>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-3 gap-1.5">
+              <a
+                href={PHONE_TEL}
+                onClick={close}
+                className="flex h-11 items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--bg-dark)] text-xs font-bold uppercase tracking-wider text-[var(--text-light)] transition-colors hover:bg-[var(--accent-cognac)] active:scale-95"
+                aria-label="Позвонить"
               >
-                {code.toUpperCase()}
-              </button>
-            ))}
-            <a
-              href={whatsappRequestUrl()}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={close}
-              className="flex h-11 items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--bg-dark)] text-xs font-bold uppercase tracking-wider text-[var(--text-light)] transition-colors hover:bg-[var(--accent-cognac)] active:scale-95"
-              aria-label="WhatsApp"
-            >
-              <MessageCircle className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
-              <span>WA</span>
-            </a>
-            <a
-              href={INSTAGRAM_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={close}
-              className="flex h-11 items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--bg-dark)] text-xs font-bold uppercase tracking-wider text-[var(--text-light)] transition-colors hover:bg-[var(--accent-cognac)] active:scale-95"
-              aria-label="Instagram"
-            >
-              <InstagramIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
-              <span>IG</span>
-            </a>
+                <Phone className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
+                <span>Звонок</span>
+              </a>
+              <a
+                href={whatsappRequestUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={close}
+                className="flex h-11 items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--bg-dark)] text-xs font-bold uppercase tracking-wider text-[var(--text-light)] transition-colors hover:bg-[#25D366] active:scale-95"
+                aria-label="WhatsApp"
+              >
+                <MessageCircle className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
+                <span>WA</span>
+              </a>
+              <a
+                href={INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={close}
+                className="flex h-11 items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--bg-dark)] text-xs font-bold uppercase tracking-wider text-[var(--text-light)] transition-colors hover:bg-[#E4405F] active:scale-95"
+                aria-label="Instagram"
+              >
+                <InstagramIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
+                <span>IG</span>
+              </a>
+            </div>
           </div>
         </nav>
       </div>
