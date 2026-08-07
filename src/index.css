@@ -1211,12 +1211,12 @@ body {
 
 /* ——— Concierge bar (bottom) ——— */
 .page-shell--with-concierge {
-  padding-bottom: calc(4.75rem + var(--safe-bottom));
+  padding-bottom: 0;
 }
 
 @media (min-width: 640px) {
   .page-shell--with-concierge {
-    padding-bottom: calc(5.25rem + var(--safe-bottom));
+    padding-bottom: 0;
   }
 }
 

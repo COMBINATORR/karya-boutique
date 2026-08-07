@@ -17,8 +17,8 @@ export function Footer() {
     <footer
       className="surface-white border-t border-[var(--border-color)]"
       style={{
-        paddingTop: 'clamp(2.5rem, 5vw, 3.5rem)',
-        paddingBottom: 'max(2rem, calc(var(--safe-bottom) + 1.25rem))',
+        paddingTop: 'clamp(2rem, 4vw, 3rem)',
+        paddingBottom: 'max(1.5rem, calc(var(--safe-bottom) + 1rem))',
       }}
     >
       <div className="container-wide">
