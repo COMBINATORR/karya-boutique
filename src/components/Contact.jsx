@@ -22,11 +22,10 @@ const SLIDES = [
   '/images/contact/03.webp',
   '/images/contact/04.webp',
   '/images/contact/05.webp',
-  '/images/contact/06.webp',
 ]
 
 /** Bump when gallery assets change */
-const SLIDE_V = 2
+const SLIDE_V = 3
 
 const SLIDE_MS = 5500
 
