@@ -118,7 +118,7 @@ export function PillNavbar() {
           <BrandMark size="sm" shiny />
         </a>
 
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
+        <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
           {NAV.map((item) => (
             <a
               key={item.href}
@@ -132,7 +132,7 @@ export function PillNavbar() {
 
         <div className="flex shrink-0 items-center gap-1.5">
           {/* Desktop quick action buttons */}
-          <div className="hidden items-center gap-1.5 md:flex">
+          <div className="hidden items-center gap-1.5 lg:flex">
             <div className="lang-switch !h-9 !p-0.5">
               {['ru', 'kk'].map((code) => (
                 <button
@@ -195,7 +195,7 @@ export function PillNavbar() {
             type="button"
             className={cn(
               BAR_CTRL,
-              'h-9 w-9 border border-[var(--border-color)] bg-white/80 p-0 md:hidden',
+              'h-9 w-9 border border-[var(--border-color)] bg-white/80 p-0 lg:hidden',
             )}
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? t('nav.closeMenu') : t('nav.openMenu')}
@@ -224,7 +224,7 @@ export function PillNavbar() {
       {/* Mobile dropdown panel — in signature liquid-glass style */}
       <div
         className={cn(
-          'liquid-glass-light overflow-hidden transition-all duration-300 md:hidden',
+          'liquid-glass-light overflow-y-auto transition-all duration-300 lg:hidden',
           'rounded-[var(--radius-sm)] shadow-elevated',
           open
             ? 'pointer-events-auto mt-2 max-h-[min(80dvh,32rem)] opacity-100'
@@ -232,6 +232,7 @@ export function PillNavbar() {
         )}
         aria-hidden={!open}
       >
+
         <nav className="relative z-[1] flex min-w-0 flex-col p-2">
           {NAV.map((item) => (
             <a

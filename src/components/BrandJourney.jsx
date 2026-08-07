@@ -273,7 +273,7 @@ export function BrandJourney() {
       </div>
 
       <div className="mt-3 lg:hidden sm:mt-4">
-        <div className="relative aspect-[16/9] overflow-hidden rounded-[var(--radius-sm)] bg-[var(--bg-dark-elevated)]">
+        <div className="relative aspect-[16/9] max-h-[160px] sm:max-h-none overflow-hidden rounded-[var(--radius-sm)] bg-[var(--bg-dark-elevated)]">
           <AnimatePresence mode="wait">
             <motion.img
               key={step.image}

@@ -212,7 +212,7 @@ export function Features() {
 
         {/* Right: image + glass card */}
         <div className="relative lg:col-span-7">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-[var(--radius-sm)] bg-[var(--bg-muted)] shadow-soft sm:aspect-[5/4] lg:min-h-[380px] lg:aspect-auto lg:h-[min(480px,52vh)]">
+          <div className="relative aspect-[4/3] max-h-[220px] sm:max-h-none overflow-hidden rounded-[var(--radius-sm)] bg-[var(--bg-muted)] shadow-soft sm:aspect-[5/4] lg:min-h-[380px] lg:aspect-auto lg:h-[min(480px,52vh)]">
             <AnimatePresence mode="wait">
               <motion.img
                 key={feature.image}
