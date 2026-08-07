@@ -30,7 +30,7 @@ const STEPS = [
     dateKey: 'journey.s3Date',
     titleKey: 'journey.s3Title',
     descKey: 'journey.s3Desc',
-    image: '/images/journey/03-expansion.jpg',
+    image: '/images/journey/03-expansion.webp',
   },
   {
     id: 'materials',
@@ -225,7 +225,7 @@ export function BrandJourney() {
                   className="absolute inset-0"
                 >
                   <img
-                    src={`${step.image}?v=19`}
+                    src={`${step.image}?v=20`}
                     alt=""
                     className="h-full w-full object-cover object-center"
                     draggable={false}
@@ -242,7 +242,7 @@ export function BrandJourney() {
               <AnimatePresence mode="wait">
                 <motion.img
                   key={step.image}
-                  src={`${step.image}?v=19`}
+                  src={`${step.image}?v=20`}
                   alt=""
                   initial={{ opacity: 0, scale: 1.03 }}
                   animate={{ opacity: 1, scale: 1 }}
