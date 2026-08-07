@@ -12,7 +12,7 @@ const STEPS = [
     dateKey: 'journey.s1Date',
     titleKey: 'journey.s1Title',
     descKey: 'journey.s1Desc',
-    image: '/images/journey/01-founding.jpg',
+    image: '/images/journey/01-founding.webp',
   },
   {
     id: 'modernization',
@@ -21,7 +21,7 @@ const STEPS = [
     dateKey: 'journey.s2Date',
     titleKey: 'journey.s2Title',
     descKey: 'journey.s2Desc',
-    image: '/images/journey/02-modernization.jpg',
+    image: '/images/journey/02-modernization.webp',
   },
   {
     id: 'expansion',
@@ -225,7 +225,7 @@ export function BrandJourney() {
                   className="absolute inset-0"
                 >
                   <img
-                    src={`${step.image}?v=20`}
+                    src={`${step.image}?v=21`}
                     alt=""
                     className="h-full w-full object-cover object-center"
                     draggable={false}
@@ -242,7 +242,7 @@ export function BrandJourney() {
               <AnimatePresence mode="wait">
                 <motion.img
                   key={step.image}
-                  src={`${step.image}?v=20`}
+                  src={`${step.image}?v=21`}
                   alt=""
                   initial={{ opacity: 0, scale: 1.03 }}
                   animate={{ opacity: 1, scale: 1 }}
