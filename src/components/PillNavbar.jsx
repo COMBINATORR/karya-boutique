@@ -24,9 +24,32 @@ const TOP_REVEAL = 48
 const HIDE_AFTER = 80
 
 /**
+ * Rolling text component for luxury hover micro-animation.
+ * Top text rolls up out of mask; new text rolls up from below mask on hover.
+ */
+function RollText({ children, accent = false, className = '' }) {
+  return (
+    <span className={cn('relative inline-block overflow-hidden', className)}>
+      <span className="inline-block transition-transform duration-300 ease-[cubic-bezier(0.77,0,0.175,1)] group-hover/roll:-translate-y-full">
+        {children}
+      </span>
+      <span
+        className={cn(
+          'absolute left-0 top-0 inline-block translate-y-full transition-transform duration-300 ease-[cubic-bezier(0.77,0,0.175,1)] group-hover/roll:translate-y-0',
+          accent && 'text-[var(--accent-cognac)]',
+        )}
+        aria-hidden="true"
+      >
+        {children}
+      </span>
+    </span>
+  )
+}
+
+/**
  * Floating navbar — mobile: logo + hamburger only.
  * Lang + Phone + WA + Instagram live inside liquid-glass mobile panel and desktop bar.
- * Hides on scroll-down, reappears on scroll-up (classic luxury chrome).
+ * Rolling text micro-animation on link & button hover.
  */
 export function PillNavbar() {
   const { t, i18n } = useTranslation()
@@ -118,14 +141,15 @@ export function PillNavbar() {
           <BrandMark size="sm" shiny />
         </a>
 
+        {/* Desktop nav links with text roll animation */}
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
           {NAV.map((item) => (
             <a
               key={item.href}
               href={item.href}
-              className="nav-link rounded-[var(--radius-sm)] px-3 py-1.5 text-[10px] lg:px-3.5 lg:text-[11px]"
+              className="group/roll nav-link rounded-[var(--radius-sm)] px-3 py-1.5 text-[10px] lg:px-3.5 lg:text-[11px]"
             >
-              {t(item.key)}
+              <RollText accent>{t(item.key)}</RollText>
             </a>
           ))}
         </nav>
@@ -140,11 +164,11 @@ export function PillNavbar() {
                   type="button"
                   onClick={() => setLang(code)}
                   className={cn(
-                    '!h-8 !min-h-0 !px-2.5 !text-[10px]',
+                    'group/roll !h-8 !min-h-0 !px-2.5 !text-[10px]',
                     lang === code && 'is-on',
                   )}
                 >
-                  {code.toUpperCase()}
+                  <RollText>{code.toUpperCase()}</RollText>
                 </button>
               ))}
             </div>
@@ -159,7 +183,7 @@ export function PillNavbar() {
               aria-label="Позвонить в бутик"
               title={PHONE_DISPLAY}
             >
-              <Phone className="h-3.5 w-3.5" strokeWidth={1.8} />
+              <Phone className="h-3.5 w-3.5 transition-transform duration-300 hover:scale-110" strokeWidth={1.8} />
             </a>
 
             {/* WhatsApp — icon only, brand green on hover */}
@@ -173,7 +197,7 @@ export function PillNavbar() {
               )}
               aria-label="WhatsApp"
             >
-              <MessageCircle className="h-3.5 w-3.5" strokeWidth={1.8} />
+              <MessageCircle className="h-3.5 w-3.5 transition-transform duration-300 hover:scale-110" strokeWidth={1.8} />
             </a>
 
             {/* Instagram — icon only, brand pink on hover */}
@@ -187,7 +211,7 @@ export function PillNavbar() {
               )}
               aria-label="Instagram"
             >
-              <InstagramIcon className="h-3.5 w-3.5" strokeWidth={1.8} />
+              <InstagramIcon className="h-3.5 w-3.5 transition-transform duration-300 hover:scale-110" strokeWidth={1.8} />
             </a>
           </div>
 
@@ -232,16 +256,15 @@ export function PillNavbar() {
         )}
         aria-hidden={!open}
       >
-
         <nav className="relative z-[1] flex min-w-0 flex-col p-2">
           {NAV.map((item) => (
             <a
               key={item.href}
               href={item.href}
               onClick={close}
-              className="rounded-[var(--radius-sm)] px-4 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--text-primary)] transition-colors hover:bg-white/60 active:bg-white/80"
+              className="group/roll rounded-[var(--radius-sm)] px-4 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--text-primary)] transition-colors hover:bg-white/60 active:bg-white/80"
             >
-              {t(item.key)}
+              <RollText accent>{t(item.key)}</RollText>
             </a>
           ))}
 
@@ -256,13 +279,13 @@ export function PillNavbar() {
                   type="button"
                   onClick={() => setLang(code)}
                   className={cn(
-                    'flex h-10 items-center justify-center rounded-[var(--radius-sm)] text-xs font-bold uppercase tracking-wider transition-colors',
+                    'group/roll flex h-10 items-center justify-center rounded-[var(--radius-sm)] text-xs font-bold uppercase tracking-wider transition-colors',
                     lang === code
                       ? 'bg-[var(--bg-dark)] text-[var(--text-light)] shadow-sm'
                       : 'border border-[var(--border-color)] bg-white/50 text-[var(--text-primary)] hover:bg-white/80',
                   )}
                 >
-                  {code.toUpperCase()}
+                  <RollText>{code.toUpperCase()}</RollText>
                 </button>
               ))}
             </div>
@@ -271,33 +294,33 @@ export function PillNavbar() {
               <a
                 href={PHONE_TEL}
                 onClick={close}
-                className="flex h-11 items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--bg-dark)] text-xs font-bold uppercase tracking-wider text-[var(--text-light)] transition-colors hover:bg-[var(--accent-cognac)] active:scale-95 shadow-sm"
+                className="group/roll flex h-11 items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--bg-dark)] text-xs font-bold uppercase tracking-wider text-[var(--text-light)] transition-colors hover:bg-[var(--accent-cognac)] active:scale-95 shadow-sm"
                 aria-label="Позвонить"
               >
                 <Phone className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
-                <span>Звонок</span>
+                <RollText>Звонок</RollText>
               </a>
               <a
                 href={whatsappRequestUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={close}
-                className="flex h-11 items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--bg-dark)] text-xs font-bold uppercase tracking-wider text-[var(--text-light)] transition-colors hover:bg-[#25D366] active:scale-95 shadow-sm"
+                className="group/roll flex h-11 items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--bg-dark)] text-xs font-bold uppercase tracking-wider text-[var(--text-light)] transition-colors hover:bg-[#25D366] active:scale-95 shadow-sm"
                 aria-label="WhatsApp"
               >
                 <MessageCircle className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
-                <span>WA</span>
+                <RollText>WA</RollText>
               </a>
               <a
                 href={INSTAGRAM_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={close}
-                className="flex h-11 items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--bg-dark)] text-xs font-bold uppercase tracking-wider text-[var(--text-light)] transition-colors hover:bg-[#E4405F] active:scale-95 shadow-sm"
+                className="group/roll flex h-11 items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--bg-dark)] text-xs font-bold uppercase tracking-wider text-[var(--text-light)] transition-colors hover:bg-[#E4405F] active:scale-95 shadow-sm"
                 aria-label="Instagram"
               >
                 <InstagramIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
-                <span>IG</span>
+                <RollText>IG</RollText>
               </a>
             </div>
           </div>
