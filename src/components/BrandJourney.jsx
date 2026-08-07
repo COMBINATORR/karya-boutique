@@ -57,7 +57,7 @@ const STEPS = [
     dateKey: 'journey.s6Date',
     titleKey: 'journey.s6Title',
     descKey: 'journey.s6Desc',
-    image: '/images/journey/06-boutique.jpg',
+    image: '/images/journey/06-boutique.webp',
   },
 ]
 
@@ -225,7 +225,7 @@ export function BrandJourney() {
                   className="absolute inset-0"
                 >
                   <img
-                    src={`${step.image}?v=17`}
+                    src={`${step.image}?v=18`}
                     alt=""
                     className="h-full w-full object-cover object-center"
                     draggable={false}
@@ -242,7 +242,7 @@ export function BrandJourney() {
               <AnimatePresence mode="wait">
                 <motion.img
                   key={step.image}
-                  src={`${step.image}?v=17`}
+                  src={`${step.image}?v=18`}
                   alt=""
                   initial={{ opacity: 0, scale: 1.03 }}
                   animate={{ opacity: 1, scale: 1 }}
