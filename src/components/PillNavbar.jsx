@@ -30,12 +30,12 @@ const HIDE_AFTER = 80
 function RollText({ children, accent = false, className = '' }) {
   return (
     <span className={cn('relative inline-block overflow-hidden', className)}>
-      <span className="inline-block transition-transform duration-300 ease-[cubic-bezier(0.77,0,0.175,1)] group-hover/roll:-translate-y-full">
+      <span className="inline-block transition-transform duration-350 ease-[cubic-bezier(0.6,-0.12,0.8,0.08)] group-hover/roll:-translate-y-full">
         {children}
       </span>
       <span
         className={cn(
-          'absolute left-0 top-0 inline-block translate-y-full transition-transform duration-300 ease-[cubic-bezier(0.77,0,0.175,1)] group-hover/roll:translate-y-0',
+          'absolute left-0 top-0 inline-block translate-y-full transition-transform duration-350 ease-[cubic-bezier(0.6,-0.12,0.8,0.08)] group-hover/roll:translate-y-0',
           accent && 'text-[var(--accent-cognac)]',
         )}
         aria-hidden="true"
