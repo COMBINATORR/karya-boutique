@@ -48,7 +48,7 @@ const STEPS = [
     dateKey: 'journey.s5Date',
     titleKey: 'journey.s5Title',
     descKey: 'journey.s5Desc',
-    image: '/images/journey/05-modern.jpg',
+    image: '/images/journey/05-modern.webp',
   },
   {
     id: 'atyrau',
@@ -225,7 +225,7 @@ export function BrandJourney() {
                   className="absolute inset-0"
                 >
                   <img
-                    src={`${step.image}?v=18`}
+                    src={`${step.image}?v=19`}
                     alt=""
                     className="h-full w-full object-cover object-center"
                     draggable={false}
@@ -242,7 +242,7 @@ export function BrandJourney() {
               <AnimatePresence mode="wait">
                 <motion.img
                   key={step.image}
-                  src={`${step.image}?v=18`}
+                  src={`${step.image}?v=19`}
                   alt=""
                   initial={{ opacity: 0, scale: 1.03 }}
                   animate={{ opacity: 1, scale: 1 }}
