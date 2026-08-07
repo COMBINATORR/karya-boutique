@@ -30,3 +30,21 @@ dist-ssr
 
 # Vercel
 .vercel
+
+.env*
+.vercel
+
+# Debug artifacts (screenshots, audit JSON)
+debug-*
+
+# Scratch / inspect scripts
+scripts/
+
+# Raw product photos (too large for git)
+public/images/1-001/
+public/images/assortment/men/*.jpeg
+
+# Extra videos (not used in prod)
+public/videos/1.mp4
+public/videos/2.mp4
+public/videos/3.mp4
