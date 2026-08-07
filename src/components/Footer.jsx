@@ -8,10 +8,17 @@ import {
 } from '@/constants/contact'
 import { BrandMark } from '@/components/BrandMark'
 import { InstagramIcon } from '@/components/InstagramIcon'
+import { useToast } from '@/components/Toast'
 
 export function Footer() {
   const { t } = useTranslation()
+  const { showToast } = useToast()
   const year = new Date().getFullYear()
+
+  const copyPhone = () => {
+    navigator.clipboard?.writeText(PHONE_DISPLAY)
+    showToast(t('toast.phoneCopied'))
+  }
 
   return (
     <footer
@@ -55,12 +62,23 @@ export function Footer() {
 
           <div className="flex flex-col items-center gap-3 text-center sm:items-start sm:text-left lg:col-span-3 lg:items-end lg:text-right">
             <p className="eyebrow !text-[10px]">{t('footer.contactLabel')}</p>
-            <a
-              href={PHONE_TEL}
-              className="min-h-11 text-base font-semibold leading-[2.75rem] text-[var(--text-primary)] transition-colors hover:text-[var(--accent-cognac)] sm:min-h-0 sm:leading-snug sm:text-lg"
-            >
-              {PHONE_DISPLAY}
-            </a>
+            <div className="flex items-center gap-2">
+              <a
+                href={PHONE_TEL}
+                className="min-h-11 text-base font-semibold leading-[2.75rem] text-[var(--text-primary)] transition-colors hover:text-[var(--accent-cognac)] sm:min-h-0 sm:leading-snug sm:text-lg"
+              >
+                {PHONE_DISPLAY}
+              </a>
+              <button
+                type="button"
+                onClick={copyPhone}
+                className="text-[11px] text-[var(--text-muted)] transition-colors hover:text-[var(--accent-cognac)]"
+                title="Скопировать номер"
+                aria-label="Скопировать номер"
+              >
+                (копировать)
+              </button>
+            </div>
             <a
               href={INSTAGRAM_URL}
               target="_blank"

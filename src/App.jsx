@@ -11,6 +11,8 @@ import { Contact } from './components/Contact'
 import { Footer } from './components/Footer'
 import { ScrollProgressBar } from './components/ScrollProgressBar'
 import { ConciergeBar } from './components/ConciergeBar'
+import { BackToTop } from './components/BackToTop'
+import { ToastProvider } from './components/Toast'
 import { useScroll } from './hooks/useScroll'
 
 export default function App() {
@@ -24,27 +26,30 @@ export default function App() {
   }, [i18n.language])
 
   return (
-    <div className="page-shell page-shell--with-concierge">
-      <ScrollProgressBar progress={progress} />
-      <PillNavbar />
+    <ToastProvider>
+      <div className="page-shell page-shell--with-concierge">
+        <ScrollProgressBar progress={progress} />
+        <PillNavbar />
 
-      <main>
-        <Hero />
+        <main>
+          <Hero />
 
-        {/* Content stack above sticky hero */}
-        <div className="relative z-[5] bg-white">
-          <Collections />
-          <BrandJourney />
-          <div className="section-underlap" aria-hidden />
-          <Features />
-          <About />
-          <Faq />
-          <Contact />
-        </div>
-      </main>
+          {/* Content stack above sticky hero */}
+          <div className="relative z-[5] bg-white">
+            <Collections />
+            <BrandJourney />
+            <div className="section-underlap" aria-hidden />
+            <Features />
+            <About />
+            <Faq />
+            <Contact />
+          </div>
+        </main>
 
-      <Footer />
-      <ConciergeBar />
-    </div>
+        <Footer />
+        <ConciergeBar />
+        <BackToTop />
+      </div>
+    </ToastProvider>
   )
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowRight, ExternalLink, MapPin, MessageCircle } from 'lucide-react'
+import { ArrowRight, Copy, ExternalLink, MapPin, MessageCircle } from 'lucide-react'
 import {
   PHONE_DISPLAY,
   PHONE_TEL,
@@ -15,6 +15,8 @@ import {
 import { InstagramIcon } from '@/components/InstagramIcon'
 import { BoutiqueMap } from '@/components/BoutiqueMap'
 import { ChapterTitle } from '@/components/ChapterTitle'
+import { getBoutiqueStatus } from '@/utils/boutiqueStatus'
+import { useToast } from '@/components/Toast'
 
 const SLIDES = [
   '/images/contact/01.webp',
@@ -89,6 +91,18 @@ function PhotoCarousel() {
 
 export function Contact() {
   const { t } = useTranslation()
+  const { showToast } = useToast()
+  const status = getBoutiqueStatus()
+
+  const copyPhone = () => {
+    navigator.clipboard?.writeText(PHONE_DISPLAY)
+    showToast(t('toast.phoneCopied'))
+  }
+
+  const copyAddress = () => {
+    navigator.clipboard?.writeText(`${t('location.addressValue')}, ${t('location.addressExtra')}`)
+    showToast(t('toast.addressCopied'))
+  }
 
   return (
     <>
@@ -107,17 +121,48 @@ export function Contact() {
                 <br className="hidden min-[400px]:block" />{' '}
                 {t('location.titleLine2')}
               </h2>
+
+              {/* Live boutique open/closed status badge */}
+              <div className="mb-4 inline-flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--bg-muted)] px-3 py-2 border border-[var(--border-color)]">
+                <span className="relative flex h-2 w-2">
+                  <span
+                    className={[
+                      'absolute inline-flex h-full w-full animate-ping rounded-full opacity-75',
+                      status.isOpen ? 'bg-[#25D366]' : 'bg-amber-400',
+                    ].join(' ')}
+                  />
+                  <span
+                    className={[
+                      'relative inline-flex h-2 w-2 rounded-full',
+                      status.isOpen ? 'bg-[#25D366]' : 'bg-amber-400',
+                    ].join(' ')}
+                  />
+                </span>
+                <span className="font-display text-xs font-semibold text-[var(--text-primary)]">
+                  {status.isOpen ? t('boutique.statusOpen') : t('boutique.statusClosed')}
+                </span>
+              </div>
+
               <p className="max-w-md text-base leading-relaxed text-[var(--text-secondary)] sm:text-lg">
                 {t('location.lead')}
               </p>
 
-              {/* Address + phone once */}
+              {/* Address + phone with Click-to-Copy */}
               <div className="mt-10 grid gap-8 border-t border-[var(--border-color)] pt-8 sm:mt-12 sm:grid-cols-2 sm:gap-6 sm:pt-10">
-                <div>
-                  <p className="mb-2 text-[10px] font-display font-bold uppercase tracking-[0.16em] text-[var(--text-muted)]">
-                    {t('location.addressLabel')}
-                  </p>
-                  <p className="text-[15px] font-medium leading-snug text-[var(--text-primary)] sm:text-base">
+                <div className="group/addr cursor-pointer" onClick={copyAddress} title="Кликните, чтобы скопировать">
+                  <div className="mb-2 flex items-center justify-between">
+                    <p className="text-[10px] font-display font-bold uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                      {t('location.addressLabel')}
+                    </p>
+                    <button
+                      type="button"
+                      className="text-[var(--text-muted)] transition-colors group-hover/addr:text-[var(--accent-cognac)]"
+                      aria-label="Скопировать адрес"
+                    >
+                      <Copy className="h-3 w-3" />
+                    </button>
+                  </div>
+                  <p className="text-[15px] font-medium leading-snug text-[var(--text-primary)] transition-colors group-hover/addr:text-[var(--accent-cognac)] sm:text-base">
                     {t('location.addressValue')}
                   </p>
                   <p className="mt-1.5 text-sm text-[var(--text-secondary)]">
@@ -127,17 +172,31 @@ export function Contact() {
                     {t('location.hoursValue')}
                   </p>
                 </div>
+
                 <div>
+                  <div className="group/phone cursor-pointer mb-4" onClick={copyPhone} title="Кликните, чтобы скопировать">
+                    <div className="mb-2 flex items-center justify-between">
+                      <p className="text-[10px] font-display font-bold uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                        {t('location.phoneLabel')}
+                      </p>
+                      <button
+                        type="button"
+                        className="text-[var(--text-muted)] transition-colors group-hover/phone:text-[var(--accent-cognac)]"
+                        aria-label="Скопировать номер"
+                      >
+                        <Copy className="h-3 w-3" />
+                      </button>
+                    </div>
+                    <a
+                      href={PHONE_TEL}
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-[15px] font-medium text-[var(--text-primary)] transition-colors hover:text-[var(--accent-cognac)] group-hover/phone:text-[var(--accent-cognac)] sm:text-base"
+                    >
+                      {PHONE_DISPLAY}
+                    </a>
+                  </div>
+
                   <p className="mb-2 text-[10px] font-display font-bold uppercase tracking-[0.16em] text-[var(--text-muted)]">
-                    {t('location.phoneLabel')}
-                  </p>
-                  <a
-                    href={PHONE_TEL}
-                    className="text-[15px] font-medium text-[var(--text-primary)] transition-colors hover:text-[var(--accent-cognac)] sm:text-base"
-                  >
-                    {PHONE_DISPLAY}
-                  </a>
-                  <p className="mt-4 mb-2 text-[10px] font-display font-bold uppercase tracking-[0.16em] text-[var(--text-muted)]">
                     Instagram
                   </p>
                   <a

@@ -766,9 +766,14 @@ function MobileScrollRail({ line, onLineChange, onOpen }) {
 }
 
 function CategoryCardButton({ line, id, index, title, onOpen, className = '', active = false }) {
+  const { t } = useTranslation()
+  const lineLabel = line === 'women' ? t('categories.women') : t('categories.men')
+  const waUrl = whatsappRequestUrl(
+    t('categories.waAvailability', { title: `${lineLabel} ${title}` }),
+  )
+
   return (
-    <button
-      type="button"
+    <div
       onClick={(e) => {
         e.preventDefault()
         e.stopPropagation()
@@ -783,8 +788,10 @@ function CategoryCardButton({ line, id, index, title, onOpen, className = '', ac
         active ? 'opacity-100 scale-100' : 'opacity-90',
         className,
       ].join(' ')}
+      role="button"
+      tabIndex={0}
     >
-      <div className="overflow-hidden bg-white shadow-soft">
+      <div className="overflow-hidden bg-white shadow-soft rounded-[var(--radius-sm)]">
         <div className="origin-center transition-transform duration-500 group-active:scale-[0.99]">
           <CategoryPhoto line={line} id={id} index={index} alt={title} />
         </div>
@@ -792,7 +799,20 @@ function CategoryCardButton({ line, id, index, title, onOpen, className = '', ac
       <p className="mt-3 font-display text-xs font-bold uppercase tracking-[0.14em] text-[var(--text-primary)] sm:mt-4 sm:text-sm">
         {title}
       </p>
-    </button>
+      <div className="mt-1.5 flex items-center justify-center gap-1.5">
+        <a
+          href={waUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className="inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--text-secondary)] transition-colors hover:text-[#25D366]"
+          title={t('categories.checkAvailability')}
+        >
+          <MessageCircle className="h-3 w-3 text-[#25D366]" strokeWidth={2} />
+          <span>{t('categories.checkAvailability')}</span>
+        </a>
+      </div>
+    </div>
   )
 }
 
