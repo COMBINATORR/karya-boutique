@@ -11,7 +11,9 @@ const INTENTS = [
 
 /**
  * Fixed bottom concierge — calm prompt + intent chips → WhatsApp.
- * Shows after leaving the hero; hides near page end and when modal is open.
+ * Appears when user scrolls to the Assortment/Categories section (#categories);
+ * Hides near page end (footer) and when modal is open.
+ * Styled in signature liquid-glass-light chrome.
  */
 export function ConciergeBar() {
   const { t } = useTranslation()
@@ -26,8 +28,18 @@ export function ConciergeBar() {
       const doc = document.documentElement
       const max = doc.scrollHeight - vh
       const nearEnd = max > 0 && y > max - 280
-      // Appear after ~55% of first screen; hide near footer
-      setVisible(y > vh * 0.55 && !nearEnd)
+
+      // Appear when user reaches the #categories section (assortment)
+      const categoriesEl = document.querySelector('#categories')
+      let threshold = vh * 0.8
+      if (categoriesEl) {
+        const rect = categoriesEl.getBoundingClientRect()
+        const categoriesTop = y + rect.top
+        // Start showing when user is near/at #categories
+        threshold = Math.max(100, categoriesTop - 150)
+      }
+
+      setVisible(y >= threshold && !nearEnd)
     }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
@@ -41,6 +53,7 @@ export function ConciergeBar() {
     syncModal()
     const obs = new MutationObserver(syncModal)
     obs.observe(document.body, { attributes: true, attributeFilter: ['class'] })
+    syncModal()
     return () => obs.disconnect()
   }, [])
 
@@ -57,7 +70,7 @@ export function ConciergeBar() {
       aria-label={t('concierge.aria')}
       aria-hidden={!show}
     >
-      <div className="karya-concierge__inner">
+      <div className="karya-concierge__inner liquid-glass-light shadow-elevated">
         <div className="karya-concierge__copy">
           <p className="karya-concierge__title">{t('concierge.title')}</p>
           <div className="karya-concierge__chips" role="group" aria-label={t('concierge.intentsLabel')}>

@@ -1259,12 +1259,7 @@ body {
   max-width: 42rem;
   margin: 0 auto;
   padding: 0.55rem 0.55rem 0.55rem 0.9rem;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(14px) saturate(1.1);
-  -webkit-backdrop-filter: blur(14px) saturate(1.1);
-  border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-elevated);
 }
 
 .karya-concierge__copy {
@@ -1292,7 +1287,7 @@ body {
 .karya-concierge__chip {
   appearance: none;
   border: 1px solid var(--border-color);
-  background: var(--bg-muted);
+  background: rgba(255, 255, 255, 0.6);
   color: var(--text-secondary);
   font-family: var(--font-display);
   font-size: 10px;
@@ -1311,6 +1306,7 @@ body {
 
 .karya-concierge__chip:hover {
   border-color: rgba(140, 94, 60, 0.35);
+  background: rgba(255, 255, 255, 0.85);
   color: var(--text-primary);
 }
 
@@ -1337,7 +1333,14 @@ body {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   text-decoration: none;
-  transition: background 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.karya-concierge__cta:hover {
+  background: #25D366;
+  color: #ffffff;
 }
 
 .karya-concierge__cta:hover {
