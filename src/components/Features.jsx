@@ -63,8 +63,7 @@ const FEATURES = [
 
 /**
  * Features — scroll-driven sticky section.
- * Vertical scroll advances through 4 feature steps.
- * Falls back to auto-play timer when prefers-reduced-motion.
+ * Integrated header + interactive feature stage pinned inside 100dvh.
  */
 export function Features() {
   const { t } = useTranslation()
@@ -159,13 +158,25 @@ export function Features() {
     [n, reduced, scrollToStep],
   )
 
-  /* ——— Content block (shared between scroll & fallback layouts) ——— */
+  const sectionHeader = (
+    <header className="mb-4 sm:mb-6 max-w-2xl">
+      <ChapterTitle titleKey="chapter.features" />
+      <span className="eyebrow mb-1 block">{t('features.eyebrow')}</span>
+      <h2 className="h2-editorial mb-2 text-[clamp(1.65rem,4.5vw,3rem)] tracking-tight">
+        {t('features.title')}
+      </h2>
+      <p className="max-w-md text-sm leading-relaxed text-[var(--text-secondary)] sm:text-base">
+        {t('features.lead')}
+      </p>
+    </header>
+  )
+
   const contentBlock = (
     <>
-      <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-12 xl:gap-16">
+      <div className="grid items-start gap-6 lg:grid-cols-12 lg:gap-10 xl:gap-12">
         {/* Left: tab list */}
         <div className="lg:col-span-5">
-          <ul className="space-y-1.5 sm:space-y-2" role="tablist" aria-label={t('features.listLabel')}>
+          <ul className="space-y-1 sm:space-y-1.5" role="tablist" aria-label={t('features.listLabel')}>
             {FEATURES.map((item, i) => {
               const on = i === active
               return (
@@ -176,7 +187,7 @@ export function Features() {
                     aria-selected={on}
                     onClick={() => goTo(i)}
                     className={[
-                      'relative flex w-full items-center rounded-[var(--radius-sm)] px-4 py-3.5 text-left transition-all duration-300',
+                      'relative flex w-full items-center rounded-[var(--radius-sm)] px-3.5 py-2.5 sm:px-4 sm:py-3 text-left transition-all duration-300',
                       on
                         ? 'bg-[var(--bg-muted)] text-[var(--text-primary)] shadow-soft'
                         : 'text-[var(--text-muted)] hover:bg-[var(--bg-muted)]/60 hover:text-[var(--text-primary)]',
@@ -201,7 +212,7 @@ export function Features() {
 
         {/* Right: image + glass card */}
         <div className="relative lg:col-span-7">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-[var(--radius-sm)] bg-[var(--bg-muted)] shadow-soft sm:aspect-[5/4] lg:min-h-[420px] lg:aspect-auto lg:h-[min(520px,58vh)]">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-[var(--radius-sm)] bg-[var(--bg-muted)] shadow-soft sm:aspect-[5/4] lg:min-h-[380px] lg:aspect-auto lg:h-[min(480px,52vh)]">
             <AnimatePresence mode="wait">
               <motion.img
                 key={feature.image}
@@ -228,22 +239,22 @@ export function Features() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                  className="karya-feature-glass p-4 sm:p-6"
+                  className="karya-feature-glass p-3.5 sm:p-5"
                 >
-                  <p className="karya-feature-glass__title mb-3 font-display text-sm font-bold tracking-tight sm:mb-4 sm:text-base">
+                  <p className="karya-feature-glass__title mb-2.5 font-display text-sm font-bold tracking-tight sm:mb-3 sm:text-base">
                     {t(feature.cardTitleKey)}
                   </p>
 
-                  <ul className="space-y-2.5 sm:space-y-3">
+                  <ul className="space-y-2 sm:space-y-2.5">
                     {feature.points.map((pk, idx) => (
                       <li key={pk} className="flex items-start justify-between gap-3">
-                        <span className="karya-feature-glass__point text-[13px] leading-snug sm:text-sm">
+                        <span className="karya-feature-glass__point text-[12.5px] leading-snug sm:text-sm">
                           {t(pk)}
                         </span>
                         {feature.tags[idx] ? (
                           <span
                             className={[
-                              'karya-feature-glass__tag shrink-0 rounded-[var(--radius-sm)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide',
+                              'karya-feature-glass__tag shrink-0 rounded-[var(--radius-sm)] px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wide',
                               feature.tags[idx].tone === 'ok'
                                 ? 'karya-feature-glass__tag--accent'
                                 : '',
@@ -256,7 +267,7 @@ export function Features() {
                     ))}
                   </ul>
 
-                  <p className="karya-feature-glass__desc mt-3 border-t pt-2.5 text-[11px] leading-relaxed sm:mt-4 sm:pt-3 sm:text-xs">
+                  <p className="karya-feature-glass__desc mt-2.5 border-t pt-2 text-[11px] leading-relaxed sm:mt-3 sm:pt-2.5 sm:text-xs">
                     {t(feature.descKey)}
                   </p>
                 </motion.div>
@@ -284,7 +295,7 @@ export function Features() {
 
       {/* Scroll hint — only when scroll-driven */}
       {!reduced ? (
-        <p className="mt-6 text-center font-display text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--text-secondary)]/40 sm:mt-8">
+        <p className="mt-4 text-center font-display text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--text-secondary)]/40 sm:mt-6">
           {t('features.scrollHint')}
         </p>
       ) : null}
@@ -298,40 +309,29 @@ export function Features() {
       onMouseEnter={reduced ? () => setPaused(true) : undefined}
       onMouseLeave={reduced ? () => setPaused(false) : undefined}
     >
-      {/* Header — always visible above the pin track */}
-      <div className="section-pad pb-0 sm:pb-0">
-        <ChapterTitle titleKey="chapter.features" />
-        <div className="container-wide">
-          <header className="mb-6 max-w-2xl sm:mb-8 lg:mb-10">
-            <span className="eyebrow mb-3 block">{t('features.eyebrow')}</span>
-            <h2 className="h2-editorial mb-4 text-[clamp(1.85rem,5vw,3.25rem)] tracking-tight">
-              {t('features.title')}
-            </h2>
-            <p className="max-w-md text-base leading-relaxed text-[var(--text-secondary)] sm:text-lg">
-              {t('features.lead')}
-            </p>
-          </header>
-        </div>
-      </div>
-
       {/* Scroll-driven layout (or auto-play fallback) */}
       {reduced ? (
-        <div className="container-wide section-pad pt-0">{contentBlock}</div>
+        <div className="container-wide section-pad">
+          {sectionHeader}
+          {contentBlock}
+        </div>
       ) : (
         <div
           ref={pinTrackRef}
           className="relative"
-          /* ~75vh per step → enough reading room between steps */
           style={{ height: `${Math.max(250, 80 + n * 55)}vh` }}
         >
           <div
-            className="sticky top-0 flex min-h-[100dvh] flex-col justify-center bg-[var(--bg-primary)] py-6 sm:py-8"
+            className="sticky top-0 flex min-h-[100dvh] flex-col justify-center bg-[var(--bg-primary)] py-5 sm:py-7 lg:py-8"
             style={{
-              paddingTop: 'max(1rem, var(--safe-top))',
-              paddingBottom: 'max(1rem, var(--safe-bottom))',
+              paddingTop: 'max(1.25rem, var(--safe-top))',
+              paddingBottom: 'max(1.25rem, var(--safe-bottom))',
             }}
           >
-            <div className="container-wide">{contentBlock}</div>
+            <div className="container-wide">
+              {sectionHeader}
+              {contentBlock}
+            </div>
           </div>
         </div>
       )}

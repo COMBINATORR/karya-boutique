@@ -24,7 +24,7 @@ const STEPS = [
     yearKey: 'journey.s2Year',
     labelKey: 'journey.s2Label',
     dateKey: 'journey.s2Date',
-    titleKey: 'journey.s2Title',
+    titleKey: 'journey.s2Date',
     descKey: 'journey.s2Desc',
     image: '/images/journey/02-modernization.webp',
   },
@@ -70,7 +70,7 @@ const IMG_V = 21
 
 /**
  * Brand journey — sticky story stage; vertical scroll advances steps.
- * Timeline clicks / arrows scroll the page to the matching progress.
+ * Header + story + timeline pinned seamlessly inside 100dvh.
  */
 export function BrandJourney() {
   const { t } = useTranslation()
@@ -142,7 +142,6 @@ export function BrandJourney() {
   useMotionValueEvent(scrollYProgress, 'change', (p) => {
     if (reduced || programmatic.current) return
     if (n <= 1) return
-    // Small dead-zones so steps don't flicker
     const raw = p * (n - 1)
     const idx = Math.round(raw)
     const clamped = Math.max(0, Math.min(n - 1, idx))
@@ -158,7 +157,6 @@ export function BrandJourney() {
     const onKey = (e) => {
       const tag = e.target?.tagName
       if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target?.isContentEditable) return
-      // Only when journey pin is near viewport
       const track = pinTrackRef.current
       if (track) {
         const r = track.getBoundingClientRect()
@@ -212,9 +210,21 @@ export function BrandJourney() {
     [],
   )
 
+  const sectionHeader = (
+    <header className="mb-4 sm:mb-6">
+      <ChapterTitle titleKey="chapter.details" tone="dark" />
+      <span className="eyebrow mb-1 block text-[var(--accent-cognac-soft)] sm:mb-2">
+        {t('journey.eyebrow')}
+      </span>
+      <h2 className="h2-editorial text-[clamp(1.65rem,4.5vw,3rem)] tracking-tight text-[var(--text-light)]">
+        {t('journey.title')}
+      </h2>
+    </header>
+  )
+
   const storyBlock = (
     <>
-      <div className="grid items-start gap-6 lg:grid-cols-12 lg:gap-10 xl:gap-12">
+      <div className="grid items-start gap-4 lg:grid-cols-12 lg:gap-10 xl:gap-12">
         <div className="lg:col-span-6 lg:pt-1 xl:col-span-6">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
@@ -225,22 +235,22 @@ export function BrandJourney() {
               animate="center"
               exit="exit"
               transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
-              className="flex min-h-[9.5rem] flex-col sm:min-h-[10.5rem]"
+              className="flex min-h-[7rem] flex-col sm:min-h-[8.5rem]"
             >
               <p className="font-display text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--accent-cognac-soft)] sm:text-xs">
                 {t(step.yearKey)}
               </p>
-              <h3 className="mt-3 font-display text-[clamp(1.5rem,4vw,2.125rem)] font-bold leading-[1.15] tracking-tight text-[var(--text-light)] sm:mt-4">
+              <h3 className="mt-1.5 font-display text-[clamp(1.35rem,3.5vw,1.85rem)] font-bold leading-[1.15] tracking-tight text-[var(--text-light)] sm:mt-2.5">
                 {t(step.titleKey)}
               </h3>
-              <p className="mt-3 max-w-xl text-[14px] leading-[1.65] text-[var(--text-light)]/65 sm:mt-4 sm:text-[15px] sm:leading-[1.7]">
+              <p className="mt-2 max-w-xl text-[13px] leading-[1.55] text-[var(--text-light)]/65 sm:mt-3 sm:text-[14px] sm:leading-[1.65]">
                 {t(step.descKey)}
               </p>
             </motion.div>
           </AnimatePresence>
         </div>
 
-        <div className="relative hidden min-h-[280px] overflow-hidden rounded-[var(--radius-sm)] bg-[var(--bg-dark-elevated)] lg:col-span-6 lg:block lg:min-h-[340px] xl:min-h-[380px]">
+        <div className="relative hidden min-h-[220px] overflow-hidden rounded-[var(--radius-sm)] bg-[var(--bg-dark-elevated)] lg:col-span-6 lg:block lg:min-h-[280px] xl:min-h-[320px]">
           <AnimatePresence mode="wait">
             <motion.div
               key={step.image}
@@ -262,8 +272,8 @@ export function BrandJourney() {
         </div>
       </div>
 
-      <div className="mt-6 lg:hidden">
-        <div className="relative aspect-[16/10] overflow-hidden rounded-[var(--radius-sm)] bg-[var(--bg-dark-elevated)]">
+      <div className="mt-3 lg:hidden sm:mt-4">
+        <div className="relative aspect-[16/9] overflow-hidden rounded-[var(--radius-sm)] bg-[var(--bg-dark-elevated)]">
           <AnimatePresence mode="wait">
             <motion.img
               key={step.image}
@@ -281,8 +291,8 @@ export function BrandJourney() {
       </div>
 
       {/* Timeline */}
-      <div className="mt-8 border-t border-white/10 pt-6 sm:mt-10 sm:pt-8">
-        <div className="relative mb-5 hidden sm:block">
+      <div className="mt-4 border-t border-white/10 pt-4 sm:mt-6 sm:pt-6">
+        <div className="relative mb-3 hidden sm:block">
           <div className="grid grid-cols-6 gap-1">
             {STEPS.map((s, i) => (
               <button
@@ -304,7 +314,7 @@ export function BrandJourney() {
 
         <div
           ref={timelineRef}
-          className="relative mx-0 h-9 cursor-pointer touch-none select-none px-2 sm:h-10 sm:px-1"
+          className="relative mx-0 h-8 cursor-pointer touch-none select-none px-2 sm:h-9 sm:px-1"
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
@@ -345,7 +355,7 @@ export function BrandJourney() {
                   e.stopPropagation()
                   scrollToStep(i)
                 }}
-                className="absolute top-1/2 z-[1] flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center sm:h-10 sm:w-10"
+                className="absolute top-1/2 z-[1] flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center sm:h-9 sm:w-9"
                 style={{ left: `calc(0.5rem + (100% - 1rem) * ${left / 100})` }}
                 aria-label={t(s.labelKey)}
                 aria-current={on ? 'step' : undefined}
@@ -371,7 +381,7 @@ export function BrandJourney() {
           />
         </div>
 
-        <div className="mt-4 hidden grid-cols-6 gap-1 sm:grid">
+        <div className="mt-3 hidden grid-cols-6 gap-1 sm:grid">
           {STEPS.map((s, i) => (
             <button
               key={`${s.id}-date`}
@@ -389,12 +399,12 @@ export function BrandJourney() {
           ))}
         </div>
 
-        <div className="mt-5 flex items-center justify-between gap-3 sm:mt-6">
+        <div className="mt-3 flex items-center justify-between gap-3 sm:mt-4">
           <div className="min-w-0 sm:hidden">
             <p className="truncate font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--text-light)]">
               {t(step.labelKey)}
             </p>
-            <p className="mt-1 text-[11px] tabular-nums text-[var(--text-light)]/40">
+            <p className="mt-0.5 text-[11px] tabular-nums text-[var(--text-light)]/40">
               {t(step.dateKey)}
             </p>
           </div>
@@ -426,7 +436,7 @@ export function BrandJourney() {
         </div>
 
         {!reduced ? (
-          <p className="mt-4 text-center font-display text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--text-light)]/30">
+          <p className="mt-3 text-center font-display text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--text-light)]/30 sm:mt-4">
             {t('journey.scrollHint')}
           </p>
         ) : null}
@@ -441,37 +451,28 @@ export function BrandJourney() {
       aria-roledescription="carousel"
       aria-label={t('journey.title')}
     >
-      <div className="section-pad pb-0 sm:pb-0">
-        <ChapterTitle titleKey="chapter.details" tone="dark" />
-        <div className="container-wide">
-          <header className="mb-6 max-w-2xl sm:mb-8 lg:mb-10">
-            <span className="eyebrow mb-3 block text-[var(--accent-cognac-soft)]">
-              {t('journey.eyebrow')}
-            </span>
-            <h2 className="h2-editorial text-[clamp(1.85rem,5.5vw,3.25rem)] tracking-tight text-[var(--text-light)]">
-              {t('journey.title')}
-            </h2>
-          </header>
-        </div>
-      </div>
-
       {reduced ? (
-        <div className="container-wide section-pad pt-0">{storyBlock}</div>
+        <div className="container-wide section-pad">
+          {sectionHeader}
+          {storyBlock}
+        </div>
       ) : (
         <div
           ref={pinTrackRef}
           className="relative"
-          /* ~55–70vh per step so history can be read while scrolling */
-          style={{ height: `${Math.max(280, 90 + n * 55)}vh` }}
+          style={{ height: `${Math.max(260, 80 + n * 55)}vh` }}
         >
           <div
-            className="sticky top-0 flex min-h-[100dvh] flex-col justify-center bg-[var(--bg-dark)] py-6 sm:py-8"
+            className="sticky top-0 flex min-h-[100dvh] flex-col justify-center bg-[var(--bg-dark)] py-5 sm:py-7 lg:py-8"
             style={{
-              paddingTop: 'max(1rem, var(--safe-top))',
-              paddingBottom: 'max(1rem, var(--safe-bottom))',
+              paddingTop: 'max(1.25rem, var(--safe-top))',
+              paddingBottom: 'max(1.25rem, var(--safe-bottom))',
             }}
           >
-            <div className="container-wide">{storyBlock}</div>
+            <div className="container-wide">
+              {sectionHeader}
+              {storyBlock}
+            </div>
           </div>
         </div>
       )}
