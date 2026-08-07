@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next'
 import { MessageCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { NAV } from '@/constants/nav'
-import { whatsappRequestUrl } from '@/constants/contact'
+import { whatsappRequestUrl, INSTAGRAM_URL } from '@/constants/contact'
 import { BrandMark } from '@/components/BrandMark'
+import { InstagramIcon } from '@/components/InstagramIcon'
 
 /** Shared control size in the top bar (desktop) */
 const BAR_CTRL =
@@ -19,8 +20,7 @@ const HIDE_AFTER = 80
 
 /**
  * Floating navbar — mobile: logo + hamburger only.
- * Lang + WA live inside the panel (CSS display on .btn-* / .lang-switch
- * overrides Tailwind `hidden`, so we hide via wrappers).
+ * Lang + WA + Instagram live inside the mobile panel and desktop bar.
  * Hides on scroll-down, reappears on scroll-up (classic luxury chrome).
  */
 export function PillNavbar() {
@@ -157,6 +157,19 @@ export function PillNavbar() {
               <span className="hidden lg:inline">{t('nav.whatsapp')}</span>
               <span className="lg:hidden">WA</span>
             </a>
+
+            <a
+              href={INSTAGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                BAR_CTRL,
+                'h-9 w-9 bg-[var(--bg-dark)] text-[var(--text-light)] transition-colors hover:bg-[var(--accent-cognac)]',
+              )}
+              aria-label="Instagram"
+            >
+              <InstagramIcon className="h-3.5 w-3.5" strokeWidth={1.8} />
+            </a>
           </div>
 
           <button
@@ -214,8 +227,8 @@ export function PillNavbar() {
 
           <div className="my-2 border-t border-[var(--border-color)]" />
 
-          {/* Equal-size row: RU | KK | WhatsApp */}
-          <div className="grid grid-cols-3 gap-2 p-2">
+          {/* Equal-size 4-column row: RU | KK | WA | IG */}
+          <div className="grid grid-cols-4 gap-1.5 p-1.5">
             {['ru', 'kk'].map((code) => (
               <button
                 key={code}
@@ -236,10 +249,22 @@ export function PillNavbar() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={close}
-              className="flex h-11 items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--bg-dark)] text-xs font-bold uppercase tracking-wider text-[var(--text-light)] transition-colors hover:bg-[var(--accent-cognac)]"
+              className="flex h-11 items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--bg-dark)] text-xs font-bold uppercase tracking-wider text-[var(--text-light)] transition-colors hover:bg-[var(--accent-cognac)] active:scale-95"
+              aria-label="WhatsApp"
             >
               <MessageCircle className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
-              WA
+              <span>WA</span>
+            </a>
+            <a
+              href={INSTAGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={close}
+              className="flex h-11 items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--bg-dark)] text-xs font-bold uppercase tracking-wider text-[var(--text-light)] transition-colors hover:bg-[var(--accent-cognac)] active:scale-95"
+              aria-label="Instagram"
+            >
+              <InstagramIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
+              <span>IG</span>
             </a>
           </div>
         </nav>
