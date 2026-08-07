@@ -17,11 +17,16 @@ import { BoutiqueMap } from '@/components/BoutiqueMap'
 import { ChapterTitle } from '@/components/ChapterTitle'
 
 const SLIDES = [
-  '/images/contact/01.jpg',
-  '/images/contact/02.jpg',
-  '/images/contact/03.jpg',
-  '/images/contact/04.jpg',
+  '/images/contact/01.webp',
+  '/images/contact/02.webp',
+  '/images/contact/03.webp',
+  '/images/contact/04.webp',
+  '/images/contact/05.webp',
+  '/images/contact/06.webp',
 ]
+
+/** Bump when gallery assets change */
+const SLIDE_V = 2
 
 const SLIDE_MS = 5500
 
@@ -42,7 +47,7 @@ function PhotoCarousel() {
       <AnimatePresence mode="wait">
         <motion.img
           key={SLIDES[index]}
-          src={`${SLIDES[index]}?v=1`}
+          src={`${SLIDES[index]}?v=${SLIDE_V}`}
           alt=""
           initial={{ opacity: 0, scale: 1.04 }}
           animate={{ opacity: 1, scale: 1 }}
