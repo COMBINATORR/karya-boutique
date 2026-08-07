@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AnimatePresence, motion } from 'framer-motion'
+import {
+  AnimatePresence,
+  motion,
+  useScroll,
+  useMotionValueEvent,
+} from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { ChapterTitle } from '@/components/ChapterTitle'
 
@@ -61,40 +66,104 @@ const STEPS = [
   },
 ]
 
+const IMG_V = 21
+
 /**
- * Interactive brand journey — timeline + story card + photo
- * Layout inspired by progressive timeline UI (screenshot reference).
+ * Brand journey — sticky story stage; vertical scroll advances steps.
+ * Timeline clicks / arrows scroll the page to the matching progress.
  */
 export function BrandJourney() {
   const { t } = useTranslation()
   const [active, setActive] = useState(0)
   const [direction, setDirection] = useState(0)
-  const trackRef = useRef(null)
+  const [reduced, setReduced] = useState(false)
+  const pinTrackRef = useRef(null)
+  const timelineRef = useRef(null)
   const dragging = useRef(false)
-  const touchStart = useRef({ x: 0, y: 0 })
+  const programmatic = useRef(false)
+  const activeRef = useRef(0)
 
   const n = STEPS.length
   const step = STEPS[active]
   const progress = n <= 1 ? 0 : active / (n - 1)
 
-  const goTo = useCallback(
-    (index) => {
+  useEffect(() => {
+    activeRef.current = active
+  }, [active])
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const sync = () => setReduced(mq.matches)
+    sync()
+    mq.addEventListener?.('change', sync)
+    return () => mq.removeEventListener?.('change', sync)
+  }, [])
+
+  const setStep = useCallback(
+    (index, dirHint) => {
       const next = Math.max(0, Math.min(n - 1, index))
-      if (next === active) return
-      setDirection(next > active ? 1 : -1)
+      if (next === activeRef.current) return
+      setDirection(
+        dirHint != null ? dirHint : next > activeRef.current ? 1 : -1,
+      )
       setActive(next)
     },
-    [active, n],
+    [n],
   )
 
-  const prev = useCallback(() => goTo(active - 1), [active, goTo])
-  const next = useCallback(() => goTo(active + 1), [active, goTo])
+  /** Scroll page so pin-track progress matches step index */
+  const scrollToStep = useCallback(
+    (index) => {
+      const track = pinTrackRef.current
+      if (!track || reduced) {
+        setStep(index)
+        return
+      }
+      const next = Math.max(0, Math.min(n - 1, index))
+      const rect = track.getBoundingClientRect()
+      const trackTop = window.scrollY + rect.top
+      const maxScroll = Math.max(1, track.offsetHeight - window.innerHeight)
+      const p = n <= 1 ? 0 : next / (n - 1)
+      programmatic.current = true
+      setStep(next)
+      window.scrollTo({ top: trackTop + p * maxScroll, behavior: 'smooth' })
+      window.setTimeout(() => {
+        programmatic.current = false
+      }, 700)
+    },
+    [n, reduced, setStep],
+  )
 
-  // Keyboard when section is in view / focused
+  const { scrollYProgress } = useScroll({
+    target: pinTrackRef,
+    offset: ['start start', 'end end'],
+  })
+
+  useMotionValueEvent(scrollYProgress, 'change', (p) => {
+    if (reduced || programmatic.current) return
+    if (n <= 1) return
+    // Small dead-zones so steps don't flicker
+    const raw = p * (n - 1)
+    const idx = Math.round(raw)
+    const clamped = Math.max(0, Math.min(n - 1, idx))
+    if (clamped !== activeRef.current) {
+      setStep(clamped)
+    }
+  })
+
+  const prev = useCallback(() => scrollToStep(active - 1), [active, scrollToStep])
+  const next = useCallback(() => scrollToStep(active + 1), [active, scrollToStep])
+
   useEffect(() => {
     const onKey = (e) => {
       const tag = e.target?.tagName
       if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target?.isContentEditable) return
+      // Only when journey pin is near viewport
+      const track = pinTrackRef.current
+      if (track) {
+        const r = track.getBoundingClientRect()
+        if (r.bottom < 80 || r.top > window.innerHeight - 80) return
+      }
       if (e.key === 'ArrowLeft') {
         e.preventDefault()
         prev()
@@ -110,7 +179,7 @@ export function BrandJourney() {
 
   const indexFromClientX = useCallback(
     (clientX) => {
-      const el = trackRef.current
+      const el = timelineRef.current
       if (!el) return active
       const rect = el.getBoundingClientRect()
       const pad = 12
@@ -124,290 +193,288 @@ export function BrandJourney() {
   const onPointerDown = (e) => {
     dragging.current = true
     e.currentTarget.setPointerCapture?.(e.pointerId)
-    goTo(indexFromClientX(e.clientX))
+    scrollToStep(indexFromClientX(e.clientX))
   }
   const onPointerMove = (e) => {
     if (!dragging.current) return
-    goTo(indexFromClientX(e.clientX))
+    scrollToStep(indexFromClientX(e.clientX))
   }
   const onPointerUp = () => {
     dragging.current = false
   }
 
-  // Horizontal swipe on story card
-  const onTouchStart = (e) => {
-    const t0 = e.touches[0]
-    touchStart.current = { x: t0.clientX, y: t0.clientY }
-  }
-  const onTouchEnd = (e) => {
-    const t0 = e.changedTouches[0]
-    const dx = t0.clientX - touchStart.current.x
-    const dy = t0.clientY - touchStart.current.y
-    if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.2) return
-    if (dx < 0) next()
-    else prev()
-  }
-
   const slideVariants = useMemo(
     () => ({
-      enter: (dir) => ({ opacity: 0, x: dir > 0 ? 32 : -32, filter: 'blur(8px)' }),
+      enter: (dir) => ({ opacity: 0, x: dir > 0 ? 28 : -28, filter: 'blur(6px)' }),
       center: { opacity: 1, x: 0, filter: 'blur(0px)' },
-      exit: (dir) => ({ opacity: 0, x: dir > 0 ? -32 : 32, filter: 'blur(8px)' }),
+      exit: (dir) => ({ opacity: 0, x: dir > 0 ? -28 : 28, filter: 'blur(6px)' }),
     }),
     [],
+  )
+
+  const storyBlock = (
+    <>
+      <div className="grid items-start gap-6 lg:grid-cols-12 lg:gap-10 xl:gap-12">
+        <div className="lg:col-span-6 lg:pt-1 xl:col-span-6">
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={step.id}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+              className="flex min-h-[9.5rem] flex-col sm:min-h-[10.5rem]"
+            >
+              <p className="font-display text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--accent-cognac-soft)] sm:text-xs">
+                {t(step.yearKey)}
+              </p>
+              <h3 className="mt-3 font-display text-[clamp(1.5rem,4vw,2.125rem)] font-bold leading-[1.15] tracking-tight text-[var(--text-light)] sm:mt-4">
+                {t(step.titleKey)}
+              </h3>
+              <p className="mt-3 max-w-xl text-[14px] leading-[1.65] text-[var(--text-light)]/65 sm:mt-4 sm:text-[15px] sm:leading-[1.7]">
+                {t(step.descKey)}
+              </p>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        <div className="relative hidden min-h-[280px] overflow-hidden rounded-[var(--radius-sm)] bg-[var(--bg-dark-elevated)] lg:col-span-6 lg:block lg:min-h-[340px] xl:min-h-[380px]">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={step.image}
+              initial={{ opacity: 0, scale: 1.04 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute inset-0"
+            >
+              <img
+                src={`${step.image}?v=${IMG_V}`}
+                alt=""
+                className="h-full w-full object-cover object-center"
+                draggable={false}
+              />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/5" />
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+
+      <div className="mt-6 lg:hidden">
+        <div className="relative aspect-[16/10] overflow-hidden rounded-[var(--radius-sm)] bg-[var(--bg-dark-elevated)]">
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={step.image}
+              src={`${step.image}?v=${IMG_V}`}
+              alt=""
+              initial={{ opacity: 0, scale: 1.03 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="absolute inset-0 h-full w-full object-cover"
+              draggable={false}
+            />
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* Timeline */}
+      <div className="mt-8 border-t border-white/10 pt-6 sm:mt-10 sm:pt-8">
+        <div className="relative mb-5 hidden sm:block">
+          <div className="grid grid-cols-6 gap-1">
+            {STEPS.map((s, i) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => scrollToStep(i)}
+                className={[
+                  'px-0.5 text-center font-display text-[9px] font-semibold uppercase leading-snug tracking-[0.08em] transition-colors duration-200 lg:text-[10px]',
+                  i === active
+                    ? 'text-[var(--text-light)]'
+                    : 'text-[var(--text-light)]/35 hover:text-[var(--text-light)]/60',
+                ].join(' ')}
+              >
+                {t(s.labelKey)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div
+          ref={timelineRef}
+          className="relative mx-0 h-9 cursor-pointer touch-none select-none px-2 sm:h-10 sm:px-1"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
+          role="slider"
+          aria-valuemin={0}
+          aria-valuemax={n - 1}
+          aria-valuenow={active}
+          aria-valuetext={`${t(step.labelKey)} — ${t(step.dateKey)}`}
+          aria-label={t('journey.timelineLabel')}
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowLeft' || e.key === 'Home') {
+              e.preventDefault()
+              e.key === 'Home' ? scrollToStep(0) : prev()
+            }
+            if (e.key === 'ArrowRight' || e.key === 'End') {
+              e.preventDefault()
+              e.key === 'End' ? scrollToStep(n - 1) : next()
+            }
+          }}
+        >
+          <div className="pointer-events-none absolute left-2 right-2 top-1/2 h-px -translate-y-1/2 rounded-full bg-white/20 sm:left-1 sm:right-1" />
+          <div
+            className="pointer-events-none absolute left-2 top-1/2 h-px -translate-y-1/2 rounded-full bg-white transition-[width] duration-300 ease-out sm:left-1"
+            style={{ width: `calc((100% - 1rem) * ${progress})` }}
+          />
+
+          {STEPS.map((s, i) => {
+            const left = n <= 1 ? 0 : (i / (n - 1)) * 100
+            const on = i === active
+            const passed = i <= active
+            return (
+              <button
+                key={s.id}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  scrollToStep(i)
+                }}
+                className="absolute top-1/2 z-[1] flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center sm:h-10 sm:w-10"
+                style={{ left: `calc(0.5rem + (100% - 1rem) * ${left / 100})` }}
+                aria-label={t(s.labelKey)}
+                aria-current={on ? 'step' : undefined}
+              >
+                <span
+                  className={[
+                    'block rounded-full transition-all duration-300',
+                    on
+                      ? 'h-3 w-3 bg-white shadow-[0_0_0_4px_rgba(255,255,255,0.14)] sm:h-3.5 sm:w-3.5'
+                      : passed
+                        ? 'h-2 w-2 bg-white sm:h-2.5 sm:w-2.5'
+                        : 'h-2 w-2 border-2 border-white/35 bg-[var(--bg-dark)] sm:h-2.5 sm:w-2.5',
+                  ].join(' ')}
+                />
+              </button>
+            )
+          })}
+
+          <div
+            className="pointer-events-none absolute top-1/2 z-[2] h-4 w-7 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-white shadow-[0_0_10px_rgba(255,255,255,0.2)] transition-[left] duration-300 ease-out sm:h-[20px] sm:w-8"
+            style={{ left: `calc(0.5rem + (100% - 1rem) * ${progress})` }}
+            aria-hidden
+          />
+        </div>
+
+        <div className="mt-4 hidden grid-cols-6 gap-1 sm:grid">
+          {STEPS.map((s, i) => (
+            <button
+              key={`${s.id}-date`}
+              type="button"
+              onClick={() => scrollToStep(i)}
+              className={[
+                'text-center font-sans text-[10px] tabular-nums tracking-wide transition-colors duration-200 lg:text-[11px]',
+                i === active
+                  ? 'font-medium text-[var(--text-light)]/80'
+                  : 'text-[var(--text-light)]/30 hover:text-[var(--text-light)]/50',
+              ].join(' ')}
+            >
+              {t(s.dateKey)}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-5 flex items-center justify-between gap-3 sm:mt-6">
+          <div className="min-w-0 sm:hidden">
+            <p className="truncate font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--text-light)]">
+              {t(step.labelKey)}
+            </p>
+            <p className="mt-1 text-[11px] tabular-nums text-[var(--text-light)]/40">
+              {t(step.dateKey)}
+            </p>
+          </div>
+
+          <div className="ml-auto flex items-center gap-2.5">
+            <span className="hidden font-sans text-[11px] tabular-nums tracking-wide text-[var(--text-light)]/40 sm:inline">
+              {active + 1}
+              <span className="text-[var(--text-light)]/25"> / {n}</span>
+            </span>
+            <button
+              type="button"
+              onClick={prev}
+              disabled={active === 0}
+              className="karya-carousel-nav flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] border border-white/15 text-[var(--text-light)] transition-colors hover:border-white/35 hover:bg-white/[0.06] active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 sm:h-9 sm:w-9"
+              aria-label={t('journey.prev')}
+            >
+              <ChevronLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={1.8} />
+            </button>
+            <button
+              type="button"
+              onClick={next}
+              disabled={active === n - 1}
+              className="karya-carousel-nav flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] border border-white/15 text-[var(--text-light)] transition-colors hover:border-white/35 hover:bg-white/[0.06] active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 sm:h-9 sm:w-9"
+              aria-label={t('journey.next')}
+            >
+              <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={1.8} />
+            </button>
+          </div>
+        </div>
+
+        {!reduced ? (
+          <p className="mt-4 text-center font-display text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--text-light)]/30">
+            {t('journey.scrollHint')}
+          </p>
+        ) : null}
+      </div>
+    </>
   )
 
   return (
     <section
       id="details"
-      className="section-sheet surface-dark section-pad text-[var(--text-light)]"
+      className="section-sheet surface-dark text-[var(--text-light)]"
       aria-roledescription="carousel"
       aria-label={t('journey.title')}
     >
-      {/* Chapter lives inside history block — not in the white tail of assortment */}
-      <ChapterTitle titleKey="chapter.details" tone="dark" />
-      <div className="container-wide">
-        {/* Section header — same rhythm as other sections */}
-        <header className="mb-8 max-w-2xl sm:mb-10 lg:mb-12">
-          <span className="eyebrow mb-3 block text-[var(--accent-cognac-soft)]">
-            {t('journey.eyebrow')}
-          </span>
-          <h2 className="h2-editorial text-[clamp(1.85rem,5.5vw,3.25rem)] tracking-tight text-[var(--text-light)]">
-            {t('journey.title')}
-          </h2>
-        </header>
-
-        {/* Story + photo */}
-        <div
-          className="relative"
-          onTouchStart={onTouchStart}
-          onTouchEnd={onTouchEnd}
-        >
-          <div className="grid items-start gap-6 lg:grid-cols-12 lg:gap-10 xl:gap-12">
-            {/* Text column — top-aligned stack, fixed hierarchy */}
-            <div className="lg:col-span-6 lg:pt-1 xl:col-span-6">
-              <AnimatePresence mode="wait" custom={direction}>
-                <motion.div
-                  key={step.id}
-                  custom={direction}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
-                  className="flex flex-col"
-                >
-                  {/* Meta: year */}
-                  <p className="font-display text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--accent-cognac-soft)] sm:text-xs">
-                    {t(step.yearKey)}
-                  </p>
-                  {/* Title */}
-                  <h3 className="mt-3 font-display text-[clamp(1.5rem,4vw,2.125rem)] font-bold leading-[1.15] tracking-tight text-[var(--text-light)] sm:mt-4">
-                    {t(step.titleKey)}
-                  </h3>
-                  {/* Body */}
-                  <p className="mt-3 max-w-xl text-[14px] leading-[1.65] text-[var(--text-light)]/65 sm:mt-4 sm:text-[15px] sm:leading-[1.7]">
-                    {t(step.descKey)}
-                  </p>
-                </motion.div>
-              </AnimatePresence>
-            </div>
-
-            {/* Desktop photo */}
-            <div className="relative hidden min-h-[280px] overflow-hidden rounded-[var(--radius-sm)] bg-[var(--bg-dark-elevated)] lg:col-span-6 lg:block lg:min-h-[340px] xl:min-h-[380px]">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={step.image}
-                  initial={{ opacity: 0, scale: 1.04 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.98 }}
-                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                  className="absolute inset-0"
-                >
-                  <img
-                    src={`${step.image}?v=21`}
-                    alt=""
-                    className="h-full w-full object-cover object-center"
-                    draggable={false}
-                  />
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/5" />
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </div>
-
-          {/* Mobile photo — after text */}
-          <div className="mt-6 lg:hidden">
-            <div className="relative aspect-[16/10] overflow-hidden rounded-[var(--radius-sm)] bg-[var(--bg-dark-elevated)]">
-              <AnimatePresence mode="wait">
-                <motion.img
-                  key={step.image}
-                  src={`${step.image}?v=21`}
-                  alt=""
-                  initial={{ opacity: 0, scale: 1.03 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="absolute inset-0 h-full w-full object-cover"
-                  draggable={false}
-                />
-              </AnimatePresence>
-            </div>
-          </div>
-        </div>
-
-        {/* Timeline */}
-        <div className="mt-10 border-t border-white/10 pt-8 sm:mt-12 sm:pt-10 lg:mt-14">
-          {/* Step labels (sm+) — equal columns under dots */}
-          <div className="relative mb-5 hidden sm:block">
-            <div className="grid grid-cols-6 gap-1">
-              {STEPS.map((s, i) => (
-                <button
-                  key={s.id}
-                  type="button"
-                  onClick={() => goTo(i)}
-                  className={[
-                    'px-0.5 text-center font-display text-[9px] font-semibold uppercase leading-snug tracking-[0.08em] transition-colors duration-200 lg:text-[10px]',
-                    i === active
-                      ? 'text-[var(--text-light)]'
-                      : 'text-[var(--text-light)]/35 hover:text-[var(--text-light)]/60',
-                  ].join(' ')}
-                >
-                  {t(s.labelKey)}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Track */}
-          <div
-            ref={trackRef}
-            className="relative mx-0 h-9 cursor-pointer touch-none select-none px-2 sm:h-10 sm:px-1"
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-            onPointerCancel={onPointerUp}
-            role="slider"
-            aria-valuemin={0}
-            aria-valuemax={n - 1}
-            aria-valuenow={active}
-            aria-valuetext={`${t(step.labelKey)} — ${t(step.dateKey)}`}
-            aria-label={t('journey.timelineLabel')}
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === 'ArrowLeft' || e.key === 'Home') {
-                e.preventDefault()
-                e.key === 'Home' ? goTo(0) : prev()
-              }
-              if (e.key === 'ArrowRight' || e.key === 'End') {
-                e.preventDefault()
-                e.key === 'End' ? goTo(n - 1) : next()
-              }
-            }}
-          >
-            <div className="pointer-events-none absolute left-2 right-2 top-1/2 h-px -translate-y-1/2 rounded-full bg-white/20 sm:left-1 sm:right-1" />
-            <div
-              className="pointer-events-none absolute left-2 top-1/2 h-px -translate-y-1/2 rounded-full bg-white transition-[width] duration-300 ease-out sm:left-1"
-              style={{
-                width: `calc((100% - 1rem) * ${progress})`,
-              }}
-            />
-
-            {STEPS.map((s, i) => {
-              const left = n <= 1 ? 0 : (i / (n - 1)) * 100
-              const on = i === active
-              const passed = i <= active
-              return (
-                <button
-                  key={s.id}
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    goTo(i)
-                  }}
-                  className="absolute top-1/2 z-[1] flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center sm:h-10 sm:w-10"
-                  style={{ left: `calc(0.5rem + (100% - 1rem) * ${left / 100})` }}
-                  aria-label={t(s.labelKey)}
-                  aria-current={on ? 'step' : undefined}
-                >
-                  <span
-                    className={[
-                      'block rounded-full transition-all duration-300',
-                      on
-                        ? 'h-3 w-3 bg-white shadow-[0_0_0_4px_rgba(255,255,255,0.14)] sm:h-3.5 sm:w-3.5'
-                        : passed
-                          ? 'h-2 w-2 bg-white sm:h-2.5 sm:w-2.5'
-                          : 'h-2 w-2 border-2 border-white/35 bg-[var(--bg-dark)] sm:h-2.5 sm:w-2.5',
-                    ].join(' ')}
-                  />
-                </button>
-              )
-            })}
-
-            <div
-              className="pointer-events-none absolute top-1/2 z-[2] h-4 w-7 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-white shadow-[0_0_10px_rgba(255,255,255,0.2)] transition-[left] duration-300 ease-out sm:h-[20px] sm:w-8"
-              style={{ left: `calc(0.5rem + (100% - 1rem) * ${progress})` }}
-              aria-hidden
-            />
-          </div>
-
-          {/* Dates under track (sm+) */}
-          <div className="mt-4 hidden grid-cols-6 gap-1 sm:grid">
-            {STEPS.map((s, i) => (
-              <button
-                key={`${s.id}-date`}
-                type="button"
-                onClick={() => goTo(i)}
-                className={[
-                  'text-center font-sans text-[10px] tabular-nums tracking-wide transition-colors duration-200 lg:text-[11px]',
-                  i === active
-                    ? 'font-medium text-[var(--text-light)]/80'
-                    : 'text-[var(--text-light)]/30 hover:text-[var(--text-light)]/50',
-                ].join(' ')}
-              >
-                {t(s.dateKey)}
-              </button>
-            ))}
-          </div>
-
-          {/* Controls row */}
-          <div className="mt-6 flex items-center justify-between gap-3 sm:mt-8">
-            <div className="min-w-0 sm:hidden">
-              <p className="truncate font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--text-light)]">
-                {t(step.labelKey)}
-              </p>
-              <p className="mt-1 text-[11px] tabular-nums text-[var(--text-light)]/40">
-                {t(step.dateKey)}
-              </p>
-            </div>
-
-            <div className="ml-auto flex items-center gap-2.5">
-              <span className="hidden font-sans text-[11px] tabular-nums tracking-wide text-[var(--text-light)]/40 sm:inline">
-                {active + 1}
-                <span className="text-[var(--text-light)]/25"> / {n}</span>
-              </span>
-              <button
-                type="button"
-                onClick={prev}
-                disabled={active === 0}
-                className="karya-carousel-nav flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] border border-white/15 text-[var(--text-light)] transition-colors hover:border-white/35 hover:bg-white/[0.06] active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 sm:h-9 sm:w-9"
-                aria-label={t('journey.prev')}
-              >
-                <ChevronLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={1.8} />
-              </button>
-              <button
-                type="button"
-                onClick={next}
-                disabled={active === n - 1}
-                className="karya-carousel-nav flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] border border-white/15 text-[var(--text-light)] transition-colors hover:border-white/35 hover:bg-white/[0.06] active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 sm:h-9 sm:w-9"
-                aria-label={t('journey.next')}
-              >
-                <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={1.8} />
-              </button>
-            </div>
-          </div>
+      <div className="section-pad pb-0 sm:pb-0">
+        <ChapterTitle titleKey="chapter.details" tone="dark" />
+        <div className="container-wide">
+          <header className="mb-6 max-w-2xl sm:mb-8 lg:mb-10">
+            <span className="eyebrow mb-3 block text-[var(--accent-cognac-soft)]">
+              {t('journey.eyebrow')}
+            </span>
+            <h2 className="h2-editorial text-[clamp(1.85rem,5.5vw,3.25rem)] tracking-tight text-[var(--text-light)]">
+              {t('journey.title')}
+            </h2>
+          </header>
         </div>
       </div>
+
+      {reduced ? (
+        <div className="container-wide section-pad pt-0">{storyBlock}</div>
+      ) : (
+        <div
+          ref={pinTrackRef}
+          className="relative"
+          /* ~55–70vh per step so history can be read while scrolling */
+          style={{ height: `${Math.max(280, 90 + n * 55)}vh` }}
+        >
+          <div
+            className="sticky top-0 flex min-h-[100dvh] flex-col justify-center bg-[var(--bg-dark)] py-6 sm:py-8"
+            style={{
+              paddingTop: 'max(1rem, var(--safe-top))',
+              paddingBottom: 'max(1rem, var(--safe-bottom))',
+            }}
+          >
+            <div className="container-wide">{storyBlock}</div>
+          </div>
+        </div>
+      )}
     </section>
   )
 }
