@@ -5,8 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 
 /**
  * Floating glass back-to-top button.
- * Aligned strictly within the site container on the right side.
- * Appears when scrolling down past ~450px; smoothly scrolls back to #top.
+ * Fixed in bottom-right corner, visible whenever scrolled > 300px.
  */
 export function BackToTop() {
   const { t } = useTranslation()
@@ -15,7 +14,7 @@ export function BackToTop() {
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY || 0
-      setShow(y > 450)
+      setShow(y > 300)
     }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
@@ -36,15 +35,17 @@ export function BackToTop() {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
           transition={{ duration: 0.2 }}
-          className="liquid-glass-light fixed z-[45] flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] text-[var(--text-primary)] shadow-elevated transition-transform hover:scale-110 active:scale-95 sm:h-11 sm:w-11"
+          className="liquid-glass-light flex h-11 w-11 items-center justify-center rounded-[var(--radius-sm)] text-[var(--text-primary)] shadow-elevated transition-transform hover:scale-110 active:scale-95 cursor-pointer"
           style={{
-            right: 'max(1rem, calc((100vw - 1600px) / 2 + 1.25rem))',
-            bottom: 'max(5.5rem, calc(var(--safe-bottom) + 5.5rem))',
+            position: 'fixed',
+            right: 'max(1.25rem, calc(var(--safe-right) + 1.25rem))',
+            bottom: 'max(1.25rem, calc(var(--safe-bottom) + 1.25rem))',
+            zIndex: 99,
           }}
           aria-label={t('backToTop.aria')}
           title={t('backToTop.aria')}
         >
-          <ArrowUp className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={2} />
+          <ArrowUp className="h-5 w-5" strokeWidth={2} />
         </motion.button>
       ) : null}
     </AnimatePresence>
